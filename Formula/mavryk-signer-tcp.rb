@@ -1,13 +1,13 @@
 # SPDX-FileCopyrightText: 2021 Oxhead Alpha
 # SPDX-License-Identifier: LicenseRef-MIT-OA
 
-class TezosSignerTcp < Formula
+class MavrykSignerTcp < Formula
   url "file:///dev/null"
   version "v20.1-2"
 
-  depends_on "tezos-signer"
+  depends_on "mavryk-signer"
 
-  desc "Meta formula that provides backround tezos-signer service that runs over tcp socket"
+  desc "Meta formula that provides backround mavryk-signer service that runs over tcp socket"
 
   def install
     startup_contents =
@@ -16,7 +16,7 @@ class TezosSignerTcp < Formula
 
       set -euo pipefail
 
-      signer="/usr/local/bin/octez-signer"
+      signer="/usr/local/bin/mavkit-signer"
 
       if [[ -n $PIDFILE ]]; then
         pid_file_args=("--pid-file" "$PIDFILE")
@@ -36,23 +36,23 @@ class TezosSignerTcp < Formula
         check_high_watermark_args=()
       fi
 
-      "$signer" -d "$TEZOS_CLIENT_DIR" launch socket signer --address "$ADDRESS" --port "$PORT" --timeout "$TIMEOUT" \
+      "$signer" -d "$MAVRYK_CLIENT_DIR" launch socket signer --address "$ADDRESS" --port "$PORT" --timeout "$TIMEOUT" \
         ${pid_file_args[@]+"${pid_file_args[@]}"} ${magic_bytes_args[@]+"${magic_bytes_args[@]}"} \
         ${check_high_watermark_args[@]+"${check_high_watermark_args[@]}"} "$@"
     EOS
-    File.write("tezos-signer-tcp-start", startup_contents)
-    bin.install "tezos-signer-tcp-start"
+    File.write("mavryk-signer-tcp-start", startup_contents)
+    bin.install "mavryk-signer-tcp-start"
   end
 
   service do
-    run opt_bin/"tezos-signer-tcp-start"
+    run opt_bin/"mavryk-signer-tcp-start"
     require_root true
-    environment_variables TEZOS_CLIENT_DIR: var/"lib/tezos/client", TIMEOUT: "1", ADDRESS: "127.0.0.1", PORT:"8080", PIDFILE: "", MAGIC_BYTES: "", CHECK_HIGH_WATERMARK: ""
-    log_path var/"log/tezos-signer-tcp.log"
-    error_log_path var/"log/tezos-signer-tcp.log"
+    environment_variables MAVRYK_CLIENT_DIR: var/"lib/mavryk/client", TIMEOUT: "1", ADDRESS: "127.0.0.1", PORT:"8080", PIDFILE: "", MAGIC_BYTES: "", CHECK_HIGH_WATERMARK: ""
+    log_path var/"log/mavryk-signer-tcp.log"
+    error_log_path var/"log/mavryk-signer-tcp.log"
   end
 
   def post_install
-    mkdir "#{var}/lib/tezos/signer-tcp"
+    mkdir "#{var}/lib/mavryk/signer-tcp"
   end
 end

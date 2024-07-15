@@ -24,13 +24,13 @@ def update_binaries(binaries, field):
 def main():
     tag = packages_meta.tag
     binaries = []
-    with open(f"{os.path.dirname(__file__)}/../octez-executables", "r") as f:
-        binaries = [l.strip().replace("octez", "tezos") for l in f.readlines()]
+    with open(f"{os.path.dirname(__file__)}/../mavkit-executables", "r") as f:
+        binaries = [l.strip().replace("mavkit", "mavryk") for l in f.readlines()]
     if not binaries:
         raise Exception(
             "Exception, while reading binaries list: binaries list is empty"
         )
-    binaries.extend(["tezos-sapling-params", "tezos-baking"])
+    binaries.extend(["mavryk-sapling-params", "mavryk-baking"])
 
     field = "candidates" if "rc" in tag else "released"
 

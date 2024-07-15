@@ -3,18 +3,18 @@
 # SPDX-FileCopyrightText: 2021 Oxhead Alpha
 # SPDX-License-Identifier: LicenseRef-MIT-OA
 
-# This script builds static tezos-binaries using custom alpine image.
+# This script builds static mavryk-binaries using custom alpine image.
 # It expects docker or podman to be installed and configured.
 
 set -euo pipefail
 
-if [ -z ${OCTEZ_EXECUTABLES+x} ]; then
+if [ -z ${MAVKIT_EXECUTABLES+x} ]; then
 
-    readarray -t binaries < ./octez-executables
+    readarray -t binaries < ./mavkit-executables
 
-    OCTEZ_EXECUTABLES="$( IFS=$' '; echo "${binaries[*]}" )"
+    MAVKIT_EXECUTABLES="$( IFS=$' '; echo "${binaries[*]}" )"
 else
-    IFS=' ' read -r -a binaries <<< "$OCTEZ_EXECUTABLES"
+    IFS=' ' read -r -a binaries <<< "$MAVKIT_EXECUTABLES"
 fi
 
 if [[ "${USE_PODMAN-}" == "True" ]]; then
@@ -43,9 +43,9 @@ if [[ $arch == "aarch64" && $(uname -m) != "x86_64" ]]; then
     echo "Compiling for aarch64 is supported only from aarch64 and x86_64"
 fi
 
-"$virtualisation_engine" build -t alpine-tezos -f "$docker_file" --build-arg=OCTEZ_VERSION="$OCTEZ_VERSION" --build-arg=OCTEZ_EXECUTABLES="$OCTEZ_EXECUTABLES" .
-container_id="$("$virtualisation_engine" create alpine-tezos)"
+"$virtualisation_engine" build -t alpine-mavryk -f "$docker_file" --build-arg=MAVKIT_VERSION="$MAVKIT_VERSION" --build-arg=MAVKIT_EXECUTABLES="$MAVKIT_EXECUTABLES" .
+container_id="$("$virtualisation_engine" create alpine-mavryk)"
 for b in "${binaries[@]}"; do
-    "$virtualisation_engine" cp "$container_id:/tezos/$b" "$b"
+    "$virtualisation_engine" cp "$container_id:/mavryk/$b" "$b"
 done
 "$virtualisation_engine" rm -v "$container_id"

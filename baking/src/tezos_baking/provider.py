@@ -9,11 +9,11 @@ import urllib.request
 from abc import abstractmethod
 from dataclasses import dataclass
 
-from tezos_baking.util import *
+from mavryk_baking.util import *
 
 
 def get_node_version():
-    version = get_proc_output("octez-node --version").stdout.decode("ascii")
+    version = get_proc_output("mavkit-node --version").stdout.decode("ascii")
     major_version, minor_version, rc_version = re.search(
         r"[a-z0-9]+ \(.*\) \(([0-9]+).([0-9]+)(?:(?:~rc([1-9]+))|(?:\+dev))?\)",
         version,
@@ -40,17 +40,17 @@ class Marigold(Provider):
     # Returns relevant snapshot's metadata
     # It filters out provided snapshots by `network` and `history_mode`
     # provided by the user and then follows this steps:
-    # * tries to find the snapshot of exact same Octez version, that is used by the user.
+    # * tries to find the snapshot of exact same Mavkit version, that is used by the user.
     # * if there is none, try to find the snapshot with the same major version, but less minor version
-    #   and with the `snapshot_version` compatible with the user's Octez version.
-    # * If there is none, try to find the snapshot with any Octez version, but compatible `snapshot_version`.
+    #   and with the `snapshot_version` compatible with the user's Mavkit version.
+    # * If there is none, try to find the snapshot with any Mavkit version, but compatible `snapshot_version`.
     def extract_relevant_snapshot(self, snapshot_array, network, history_mode):
         from functools import reduce
 
         def find_snapshot(pred):
             return next(
                 filter(
-                    lambda artifact: artifact["artifact_type"] == "tezos-snapshot"
+                    lambda artifact: artifact["artifact_type"] == "mavryk-snapshot"
                     and artifact["chain_name"] == network
                     and (
                         artifact["history_mode"] == history_mode
@@ -71,7 +71,7 @@ class Marigold(Provider):
             )
 
         def get_artifact_node_version(artifact):
-            version = artifact["tezos_version"]["version"]
+            version = artifact["mavryk_version"]["version"]
             # there seem to be some inconsistency with that field in different providers
             # so the only thing we check is if it's a string
             additional_info = version["additional_info"]
@@ -243,7 +243,7 @@ compatible_snapshot_version = 7
 default_providers = [
     TzInit("tzinit"),
     Marigold(
-        "marigold.dev", "https://snapshots.tezos.marigold.dev/api/tezos-snapshots.json"
+        "marigold.dev", "https://snapshots.mavryk.network/api/mavryk-snapshots.json"
     ),
 ]
 

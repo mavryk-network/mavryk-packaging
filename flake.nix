@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: LicenseRef-MIT-OA
 
 {
-  description = "The tezos-packaging flake";
+  description = "The mavryk-packaging flake";
 
   nixConfig.flake-registry = "https://github.com/serokell/flake-registry/raw/master/flake-registry.json";
 
@@ -21,8 +21,8 @@
     opam-repository.url = "github:ocaml/opam-repository";
     opam-repository.flake = false;
 
-    tezos.url = "gitlab:tezos/tezos";
-    tezos.flake = false;
+    mavryk.url = "gitlab:mavryk-network/mavryk-protocol";
+    mavryk.flake = false;
   };
 
   outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, flake-utils, serokell-nix, nix, ... }:
@@ -31,22 +31,22 @@
     protocols = nixpkgs.lib.importJSON ./protocols.json;
     meta = nixpkgs.lib.importJSON ./meta.json;
 
-    tezos = builtins.path {
-      path = inputs.tezos;
-      name = "tezos";
+    mavryk = builtins.path {
+      path = inputs.mavryk;
+      name = "mavryk";
       # we exclude optional development packages
-      filter = path: _: !(builtins.elem (baseNameOf path) [ "octez-dev-deps.opam" "tezos-time-measurement.opam" ]);
+      filter = path: _: !(builtins.elem (baseNameOf path) [ "mavkit-dev-deps.opam" "mavryk-time-measurement.opam" ]);
     };
-    sources = { inherit tezos; inherit (inputs) opam-repository; };
+    sources = { inherit mavryk; inherit (inputs) opam-repository; };
 
     ocaml-overlay = import ./nix/build/ocaml-overlay.nix (inputs // { inherit sources protocols meta; });
   in pkgs-darwin.lib.recursiveUpdate
   {
       nixosModules = {
-        tezos-node = import ./nix/modules/tezos-node.nix;
-        tezos-accuser = import ./nix/modules/tezos-accuser.nix;
-        tezos-baker = import ./nix/modules/tezos-baker.nix;
-        tezos-signer = import ./nix/modules/tezos-signer.nix;
+        mavryk-node = import ./nix/modules/mavryk-node.nix;
+        mavryk-accuser = import ./nix/modules/mavryk-accuser.nix;
+        mavryk-baker = import ./nix/modules/mavryk-baker.nix;
+        mavryk-signer = import ./nix/modules/mavryk-signer.nix;
       };
 
       devShells."aarch64-darwin".autorelease-macos =
@@ -84,7 +84,7 @@
       callPackage = pkg: input:
         import pkg (inputs // { inherit sources protocols meta pkgs; } // input);
 
-      inherit (callPackage ./nix {}) octez-binaries tezos-binaries;
+      inherit (callPackage ./nix {}) mavkit-binaries mavryk-binaries;
 
       release = callPackage ./release.nix {};
 
@@ -94,20 +94,20 @@
 
       inherit release;
 
-      packages = octez-binaries // tezos-binaries
-        // { default = pkgs.linkFarmFromDrvs "binaries" (builtins.attrValues octez-binaries); };
+      packages = mavkit-binaries // mavryk-binaries
+        // { default = pkgs.linkFarmFromDrvs "binaries" (builtins.attrValues mavkit-binaries); };
 
       devShells = {
         buildkite = callPackage ./.buildkite/shell.nix {};
         autorelease = callPackage ./scripts/shell.nix {};
-        docker-tezos-packages = callPackage ./shell.nix {};
+        docker-mavryk-packages = callPackage ./shell.nix {};
       };
 
       checks = {
-        tezos-nix-binaries = callPackage ./tests/tezos-nix-binaries.nix {};
-        tezos-modules = callPackage ./tests/tezos-modules.nix {};
+        mavryk-nix-binaries = callPackage ./tests/mavryk-nix-binaries.nix {};
+        mavryk-modules = callPackage ./tests/mavryk-modules.nix {};
       };
 
-      binaries-test = callPackage ./tests/tezos-binaries.nix {};
+      binaries-test = callPackage ./tests/mavryk-binaries.nix {};
     }));
 }

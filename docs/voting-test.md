@@ -10,7 +10,7 @@ amendment periods.
 
 ## Prerequisites
 
-1) Install `tezos-baking` package should on your system.
+1) Install `mavryk-baking` package should on your system.
 2) Create a temporary directory where the node's data directory and the local-chain will reside:
 
 ```bash
@@ -24,7 +24,7 @@ git clone https://gitlab.com/morley-framework/local-chain
 1) Generate a pair of keys associated with `baker` alias:
 
     ```bash
-    sudo -u tezos tezos-client gen keys baker
+    sudo -u tezos mavryk-client gen keys baker
     ```
 
     If you want to use your ledger device for voting, you should import its encrypted private key instead:
@@ -32,13 +32,13 @@ git clone https://gitlab.com/morley-framework/local-chain
     First, run this command:
 
     ```
-    sudo -u tezos tezos-client list connected ledgers
+    sudo -u tezos mavryk-client list connected ledgers
     ```
 
     This will display some instructions to import the Ledger encrypted private key. Then run
 
     ```
-    sudo -u tezos tezos-client import secret key baker ledger://XXXXXXXXXX
+    sudo -u tezos mavryk-client import secret key baker ledger://XXXXXXXXXX
     ```
 
     And confirm providing the public key using the prompt on the ledger device.
@@ -52,8 +52,8 @@ git clone https://gitlab.com/morley-framework/local-chain
 4) Create environment files for the custom baking service that will be used by the voting wizard:
 
     ```bash
-    sudo cp /etc/default/tezos-node-custom@ /etc/default/tezos-node-custom@voting
-    sudo cp /etc/default/tezos-baking-custom@ /etc/default/tezos-baking-custom@voting
+    sudo cp /etc/default/mavryk-node-custom@ /etc/default/mavryk-node-custom@voting
+    sudo cp /etc/default/mavryk-baking-custom@ /etc/default/mavryk-baking-custom@voting
     ```
 
     Edit the node environment file with the config provided by the voting script on the second step:
@@ -62,7 +62,7 @@ git clone https://gitlab.com/morley-framework/local-chain
     NODE_RPC_ADDR="127.0.0.1:8732"
     CERT_PATH=""
     KEY_PATH=""
-    TEZOS_NODE_DIR=/tmp/voting/node-custom
+    MAVRYK_NODE_DIR=/tmp/voting/node-custom
     CUSTOM_NODE_CONFIG=/tmp/voting/local-chain/voting-config.json
     RESET_ON_STOP=""
     ```
@@ -73,21 +73,21 @@ git clone https://gitlab.com/morley-framework/local-chain
 5) Start custom baking service:
 
     ```bash
-    sudo systemctl start tezos-baking-custom@voting
+    sudo systemctl start mavryk-baking-custom@voting
     ```
 
-    Note that `tezos-node` service may take some time to generate a fresh identity and start.
+    Note that `mavryk-node` service may take some time to generate a fresh identity and start.
 
     To check the status of the node service run:
 
     ```bash
-    systemctl status tezos-node-custom@voting
+    systemctl status mavryk-node-custom@voting
     ```
 
-6) Register `baker` key as delegate once `tezos-node` is up and running:
+6) Register `baker` key as delegate once `mavryk-node` is up and running:
 
     ```bash
-    sudo -u tezos tezos-client register key baker as delegate
+    sudo -u tezos mavryk-client register key baker as delegate
     ```
 
 7) After that `voting.py` will start going through the voting cycle.
@@ -97,7 +97,7 @@ git clone https://gitlab.com/morley-framework/local-chain
     Launch the wizard by running:
 
     ```bash
-    tezos-vote --network voting
+    mavryk-vote --network voting
     ```
 
     Under normal conditions, you won't have to adjust any information about your baking service.
@@ -108,5 +108,5 @@ git clone https://gitlab.com/morley-framework/local-chain
 8) Stop custom baking service once voting cycle is over:
 
     ```bash
-    sudo systemctl stop tezos-baking-custom@voting
+    sudo systemctl stop mavryk-baking-custom@voting
     ```

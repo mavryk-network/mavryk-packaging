@@ -6,14 +6,14 @@
 
 set -euo pipefail
 
-# Note: the 'TEZOS_CLIENT_DIR' env var is expected and used by the baker
+# Note: the 'MAVRYK_CLIENT_DIR' env var is expected and used by the baker
 
 # $PROTOCOL should be defined in the system unit environment
-baker="/usr/bin/octez-baker-$PROTOCOL"
-tezos_client="/usr/bin/octez-client"
+baker="/usr/bin/mavkit-baker-$PROTOCOL"
+mavryk_client="/usr/bin/mavkit-client"
 
-baker_config="$TEZOS_CLIENT_DIR/config"
-mkdir -p "$TEZOS_CLIENT_DIR"
+baker_config="$MAVRYK_CLIENT_DIR/config"
+mkdir -p "$MAVRYK_CLIENT_DIR"
 
 if [ ! -f "$baker_config" ]; then
     "$baker" --endpoint "$NODE_RPC_SCHEME://$NODE_RPC_ADDR" \
@@ -27,16 +27,16 @@ vote_args=(--liquidity-baking-toggle-vote "$LIQUIDITY_BAKING_TOGGLE_VOTE")
 
 launch_baker() {
     if [[ -n ${1-} ]]; then
-        key_type="$("$tezos_client" show address "$BAKER_ADDRESS_ALIAS" -S | grep "Secret Key:" | cut -d':' -f2-2 | xargs)"
+        key_type="$("$mavryk_client" show address "$BAKER_ADDRESS_ALIAS" -S | grep "Secret Key:" | cut -d':' -f2-2 | xargs)"
     fi
     if [[ ${key_type:-} == "encrypted" ]]; then
-        password="$(systemd-ask-password --keyname="tezos-$BAKER_ADDRESS_ALIAS" --accept-cached \
+        password="$(systemd-ask-password --keyname="mavryk-$BAKER_ADDRESS_ALIAS" --accept-cached \
             "Enter password for $BAKER_ADDRESS_ALIAS key:")"
         "$baker" --endpoint "$NODE_RPC_SCHEME://$NODE_RPC_ADDR" \
-            run with local node "$TEZOS_NODE_DIR" "${vote_args[@]}" "$@" <<< "$password" &
+            run with local node "$MAVRYK_NODE_DIR" "${vote_args[@]}" "$@" <<< "$password" &
     else
         "$baker" --endpoint "$NODE_RPC_SCHEME://$NODE_RPC_ADDR" \
-            run with local node "$TEZOS_NODE_DIR" "${vote_args[@]}" "$@" &
+            run with local node "$MAVRYK_NODE_DIR" "${vote_args[@]}" "$@" &
     fi
 }
 

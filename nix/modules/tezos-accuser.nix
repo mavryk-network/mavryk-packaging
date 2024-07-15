@@ -6,24 +6,22 @@
 with lib;
 
 let
-  octez-accuser-pkgs = {
-    "PtParisB" =
-      "${pkgs.octezPackages.octez-accuser-PtParisB}/bin/octez-accuser-PtParisB";
-    "PsParisC" =
-      "${pkgs.octezPackages.octez-accuser-PsParisC}/bin/octez-accuser-PsParisC";
+  mavkit-accuser-pkgs = {
+    "PtBoreas" =
+      "${pkgs.mavkitPackages.mavkit-accuser-PtBoreas}/bin/mavkit-accuser-PtBoreas";
   };
-  cfg = config.services.octez-accuser;
+  cfg = config.services.mavkit-accuser;
   common = import ./common.nix { inherit lib; inherit pkgs; };
   instanceOptions = types.submodule ( {...} : {
     options = common.daemonOptions // {
 
-      enable = mkEnableOption "Octez accuser service";
+      enable = mkEnableOption "Mavkit accuser service";
 
     };
   });
 
 in {
-  options.services.octez-accuser = {
+  options.services.mavkit-accuser = {
     instances = mkOption {
       type = types.attrsOf instanceOptions;
       description = "Configuration options";
@@ -33,14 +31,14 @@ in {
   config =
     let accuser-start-script = node-cfg: concatMapStringsSep "\n" (baseProtocol:
       ''
-        ${octez-accuser-pkgs.${baseProtocol}} -d "$STATE_DIRECTORY/client/data" \
+        ${mavkit-accuser-pkgs.${baseProtocol}} -d "$STATE_DIRECTORY/client/data" \
         -E "http://localhost:${toString node-cfg.rpcPort}" \
         run "$@" &
       '') node-cfg.baseProtocols;
     in common.genDaemonConfig {
       instancesCfg = cfg.instances;
       service-name = "accuser";
-      service-pkgs = octez-accuser-pkgs;
+      service-pkgs = mavkit-accuser-pkgs;
       service-start-script = accuser-start-script;
     };
 }

@@ -9,9 +9,9 @@ from dataclasses import dataclass, field
 import textwrap
 import sys
 
-from tezos_baking.util import *
-from tezos_baking.validators import Validator
-import tezos_baking.validators as validators
+from mavryk_baking.util import *
+from mavryk_baking.validators import Validator
+import mavryk_baking.validators as validators
 
 
 class Step:
@@ -104,10 +104,9 @@ key_import_modes = {
 }
 
 networks = {
-    "mainnet": "Main Tezos network",
-    "ghostnet": "Long running test network, currently using the Paris Tezos protocol",
-    "paris2net": "Test network using the PtParisB Tezos protocol",
-    "pariscnet": "Test network using the PsParisC Tezos protocol",
+    "mainnet": "Main Mavryk network",
+    "basenet": "Long running test network, currently using the Boreas Mavryk protocol",
+    "boreasnet": "Test network using the PtBoreas Mavryk protocol",
 }
 
 # Steps
@@ -170,13 +169,13 @@ def ledger_urls_info(ledgers_derivations, node_endpoint, client_dir):
     for ledger_url, derivations_paths in ledgers_derivations.items():
         for derivation_path in derivations_paths:
             output = get_proc_output(
-                f"sudo -u tezos {suppress_warning_text} octez-client --base-dir {client_dir} "
+                f"sudo -u tezos {suppress_warning_text} mavkit-client --base-dir {client_dir} "
                 f"show ledger {ledger_url + derivation_path}"
             ).stdout
             addr = re.search(address_regex, output).group(0).decode()
             balance = (
                 get_proc_output(
-                    f"sudo -u tezos {suppress_warning_text} octez-client --base-dir {client_dir} "
+                    f"sudo -u tezos {suppress_warning_text} mavkit-client --base-dir {client_dir} "
                     f"--endpoint {node_endpoint} get balance for {addr}"
                 )
                 .stdout.decode()
@@ -191,7 +190,7 @@ def ledger_urls_info(ledgers_derivations, node_endpoint, client_dir):
 
 
 # We define this step as a function since the corresponding step requires
-# tezos-node to be running and bootstrapped in order to gather the data
+# mavryk-node to be running and bootstrapped in order to gather the data
 # about the ledger-stored addresses, so it's called right before invoking
 # after the node was boostrapped
 def get_ledger_derivation_query(ledgers_derivations, node_endpoint, client_dir):

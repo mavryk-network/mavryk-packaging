@@ -100,26 +100,26 @@ def or_custom(validator):
     return _validator
 
 
-# To be validated, the input should adhere to the Tezos secret key format:
+# To be validated, the input should adhere to the Mavryk secret key format:
 # {encrypted, unencrypted}:<base58 encoded string with length 54 or 88>
 def secret_key(input):
     match = re.match(secret_key_regex.decode("utf-8"), input.strip())
     if not bool(match):
         raise ValueError(
-            "The input doesn't match the format for a Tezos secret key: "
+            "The input doesn't match the format for a Mavryk secret key: "
             "{{encrypted, unencrypted}:<base58 encoded string with length 54 or 88>}"
             "\nPlease check the input and try again."
         )
     return input
 
 
-# To be validated, the input should adhere to the Tezos secret key format:
+# To be validated, the input should adhere to the Mavryk secret key format:
 # {encrypted, unencrypted}:<base58 encoded string with length 54 or 88>
 def unencrypted_secret_key(input):
     match = re.match(unencrypted_secret_key_regex.decode("utf-8"), input.strip())
     if not bool(match):
         raise ValueError(
-            "The input doesn't match the format for a Tezos secret key: "
+            "The input doesn't match the format for a Mavryk secret key: "
             "{{encrypted, unencrypted}:<base58 encoded string with length 54 or 88>}"
             "\nPlease check the input and try again."
         )

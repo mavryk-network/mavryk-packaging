@@ -3,7 +3,7 @@
    - SPDX-License-Identifier: LicenseRef-MIT-OA
    -->
 
-# Building and packaging tezos using nix
+# Building and packaging mavryk using nix
 
 ## Dynamically built binaries
 
@@ -15,6 +15,6 @@ nix build .
 Alternatively, you can build a single binary too.
 For example, this:
 ```
-nix build .#tezos-client
+nix build .#mavryk-client
 ```
-will produce the `tezos-client` binary.
+will produce the `mavryk-client` binary.

@@ -4,9 +4,9 @@
 
 set -euo pipefail
 
-# Note: the 'TEZOS_CLIENT_DIR' env var is expected and used by the rollup node
+# Note: the 'MAVRYK_CLIENT_DIR' env var is expected and used by the rollup node
 
-node="/usr/bin/octez-smart-rollup-node"
+node="/usr/bin/mavkit-smart-rollup-node"
 
 "$node" init "$ROLLUP_MODE" config \
     for "$ROLLUP_ALIAS" \

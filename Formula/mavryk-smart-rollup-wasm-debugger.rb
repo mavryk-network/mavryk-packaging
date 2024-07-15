@@ -1,15 +1,16 @@
-# SPDX-FileCopyrightText: 2024 Oxhead Alpha
+#!/usr/bin/env ruby
+# SPDX-FileCopyrightText: 2023 Oxhead Alpha
 # SPDX-License-Identifier: LicenseRef-MIT-OA
 
-class TezosDalNode < Formula
+class MavrykSmartRollupWasmDebugger < Formula
   @all_bins = []
 
   class << self
     attr_accessor :all_bins
   end
-  homepage "https://gitlab.com/tezos/tezos"
+  homepage "https://gitlab.com/mavryk-network/mavryk-protocol"
 
-  url "https://gitlab.com/tezos/tezos.git", :tag => "octez-v20.1", :shallow => false
+  url "https://gitlab.com/mavryk-network/mavryk-protocol.git", :tag => "mavkit-v20.1", :shallow => false
 
   version "v20.1-2"
 
@@ -18,16 +19,16 @@ class TezosDalNode < Formula
     depends_on dependency => :build
   end
 
-  dependencies = %w[gmp hidapi libev protobuf sqlite tezos-sapling-params]
+  dependencies = %w[gmp hidapi libev protobuf sqlite mavryk-sapling-params]
   dependencies.each do |dependency|
     depends_on dependency
   end
-  desc "A Data Availability Layer Tezos node"
+  desc "Smart contract rollup wasm debugger"
 
   bottle do
-    root_url "https://github.com/serokell/tezos-packaging/releases/download/#{TezosDalNode.version}/"
-    sha256 cellar: :any, monterey: "07d1ea35af52627449bfa7f7f1ccf49bd0bbbe7e90e01c4dc24af40588100196"
-    sha256 cellar: :any, arm64_monterey: "770f533ac621f03552efc9a729b37629993e37d68622d41676c394994b79b43c"
+    root_url "https://github.com/mavryk-network/mavryk-packaging/releases/download/#{MavrykSmartRollupWasmDebugger.version}/"
+    sha256 cellar: :any, monterey: "279af5023ff33a9290073b7827992408d880ba56375cd413319c7037f6ad2b32"
+    sha256 cellar: :any, arm64_monterey: "3c5330dca54d0975b88abf07ef1032f864f14d87b50af8615131c12f66f5cf19"
   end
 
   def make_deps
@@ -37,9 +38,9 @@ class TezosDalNode < Formula
     # with old CPUs, see https://gitlab.com/dannywillems/ocaml-bls12-381/-/merge_requests/135/
     ENV["BLST_PORTABLE"]="yes"
     # Force linker to use libraries from the current brew installation.
-    # Workaround for https://github.com/serokell/tezos-packaging/issues/700
+    # Workaround for https://github.com/mavryk-network/mavryk-packaging/issues/700
     ENV["LDFLAGS"] = "-L#{HOMEBREW_PREFIX}/lib"
-    # Here is the workaround to use opam 2.0.9 because Tezos is currently not compatible with opam 2.1.0 and newer
+    # Here is the workaround to use opam 2.0.9 because Mavryk is currently not compatible with opam 2.1.0 and newer
     arch = RUBY_PLATFORM.include?("arm64") ? "arm64" : "x86_64"
     system "rustup-init", "--default-toolchain", "1.71.1", "-y"
     system "opam", "init", "--bare", "--debug", "--auto-setup", "--disable-sandboxing"
@@ -51,13 +52,13 @@ class TezosDalNode < Formula
     self.class.all_bins << name
     system ["eval $(opam env)", "dune build #{dune_path}", "cp #{exec_path} #{name}"].join(" && ")
     bin.install name
-    ln_sf "#{bin}/#{name}", "#{bin}/#{name.gsub("octez", "tezos")}"
+    ln_sf "#{bin}/#{name}", "#{bin}/#{name.gsub("mavkit", "mavryk")}"
   end
 
   def install
     make_deps
-    install_template "src/bin_dal_node/main.exe",
-                     "_build/default/src/bin_dal_node/main.exe",
-                     "octez-dal-node"
+    install_template "src/bin_wasm_debugger/main_wasm_debugger.exe",
+                     "_build/default/src/bin_wasm_debugger/main_wasm_debugger.exe",
+                     "mavkit-smart-rollup-wasm-debugger"
   end
 end

@@ -4,21 +4,21 @@
 env:
   USE_NEWER_NIX: 1
   DOCKER_BUILDKIT: 1
-  SET_VERSION: "export OCTEZ_VERSION=\"$(cat meta.json | jq -r '.tezos_ref' | cut -d'/' -f3)\""
+  SET_VERSION: "export MAVKIT_VERSION=\"$(cat meta.json | jq -r '.mavryk_ref' | cut -d'/' -f3)\""
 
 
 steps:
- - label: Check for new Octez release
+ - label: Check for new Mavkit release
    if: build.source == "schedule" && build.branch == "master"
    commands:
-   - nix develop .#autorelease -c ./scripts/update-tezos.sh
+   - nix develop .#autorelease -c ./scripts/update-mavryk.sh
 
  - label: Build ubuntu source packages
    key: build-ubuntu-source-packages
    if: build.tag =~ /^v.*-1/
    commands:
    - eval "$SET_VERSION"
-   - nix develop .#docker-tezos-packages -c ./docker/build/ubuntu/build.py --type source
+   - nix develop .#docker-mavryk-packages -c ./docker/build/ubuntu/build.py --type source
    artifact_paths:
      - ./out/*
 
@@ -27,7 +27,7 @@ steps:
    if: build.tag =~ /^v.*-1/
    commands:
    - eval "$SET_VERSION"
-   - nix develop .#docker-tezos-packages -c ./docker/build/fedora/build.py --type source
+   - nix develop .#docker-mavryk-packages -c ./docker/build/fedora/build.py --type source
    artifact_paths:
      - ./out/*
 
@@ -39,7 +39,7 @@ steps:
    commands:
    - eval "$SET_VERSION"
    - buildkite-agent artifact download "out/*" . --step build-ubuntu-source-packages
-   - nix develop .#docker-tezos-packages -c ./docker/build/ubuntu/sign.py -d out -i 'Serokell <tezos-packaging@serokell.io>'
+   - nix develop .#docker-mavryk-packages -c ./docker/build/ubuntu/sign.py -d out -i 'Mavryk Dynamics <info@mavryk.io>'
    artifact_paths:
      - ./out/*
 
@@ -51,7 +51,7 @@ steps:
    commands:
    - eval "$SET_VERSION"
    - buildkite-agent artifact download "out/*" . --step build-fedora-source-packages
-   - nix develop .#docker-tezos-packages -c ./docker/build/fedora/sign.py -d out -i 'Serokell <tezos-packaging@serokell.io>'
+   - nix develop .#docker-mavryk-packages -c ./docker/build/fedora/sign.py -d out -i 'Mavryk Dynamics <info@mavryk.io>'
    artifact_paths:
      - ./out/*
 
@@ -81,7 +81,7 @@ steps:
    - cd docker
    - ./docker-static-build.sh
    artifact_paths:
-     - ./docker/octez-*
+     - ./docker/mavkit-*
 
  - label: Build source packages from static binaries
    key: build-source-packages-from-static-binaries
@@ -92,7 +92,7 @@ steps:
    - eval "$SET_VERSION"
    - mkdir binaries
    - buildkite-agent artifact download "docker/*" binaries --step build-via-docker
-   - nix develop .#docker-tezos-packages -c ./docker/build/fedora/build.py --type source --output-dir epel --binaries-dir ./binaries/docker
+   - nix develop .#docker-mavryk-packages -c ./docker/build/fedora/build.py --type source --output-dir epel --binaries-dir ./binaries/docker
    artifact_paths:
      - ./epel/*
 
@@ -104,7 +104,7 @@ steps:
    commands:
    - eval "$SET_VERSION"
    - buildkite-agent artifact download "epel/*" . --step build-source-packages-from-static-binaries
-   - nix develop .#docker-tezos-packages -c ./docker/build/fedora/sign.py -d epel -i 'Serokell <tezos-packaging@serokell.io>'
+   - nix develop .#docker-mavryk-packages -c ./docker/build/fedora/sign.py -d epel -i 'Mavryk Dynamics <info@mavryk.io>'
    artifact_paths:
      - ./epel/*
 

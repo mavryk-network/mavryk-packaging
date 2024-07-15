@@ -27,6 +27,6 @@ with pkgs; mkShell {
     debian-devscripts
     python3Packages.black
   ];
-  OCTEZ_VERSION= with pkgs.lib; lists.last (strings.splitString "/" (meta.tezos_ref));
+  MAVKIT_VERSION= with pkgs.lib; lists.last (strings.splitString "/" (meta.mavryk_ref));
   DOCKER_BUILDKIT = 1;
 }

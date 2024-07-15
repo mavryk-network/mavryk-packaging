@@ -27,7 +27,7 @@ derivation_path_regex = b"(?:bip25519|ed25519|secp256k1|P-256)\/[0-9]+h\/[0-9]+h
 
 http_request_headers = {"User-Agent": "Mozilla/5.0"}
 
-suppress_warning_text = "TEZOS_CLIENT_UNSAFE_DISABLE_DISCLAIMER=YES"
+suppress_warning_text = "MAVRYK_CLIENT_UNSAFE_DISABLE_DISCLAIMER=YES"
 
 
 def proc_call(cmd):

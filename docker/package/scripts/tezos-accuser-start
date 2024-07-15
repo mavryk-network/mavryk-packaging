@@ -6,13 +6,13 @@
 
 set -euo pipefail
 
-# Note: the 'TEZOS_CLIENT_DIR' env var is expected and used by the accuser
+# Note: the 'MAVRYK_CLIENT_DIR' env var is expected and used by the accuser
 
 # $PROTOCOL should be defined in the system unit environment
-accuser="/usr/bin/octez-accuser-$PROTOCOL"
+accuser="/usr/bin/mavkit-accuser-$PROTOCOL"
 
-accuser_config="$TEZOS_CLIENT_DIR/config"
-mkdir -p "$TEZOS_CLIENT_DIR"
+accuser_config="$MAVRYK_CLIENT_DIR/config"
+mkdir -p "$MAVRYK_CLIENT_DIR"
 
 if [ ! -f "$accuser_config" ]; then
     "$accuser" --endpoint "$NODE_RPC_SCHEME://$NODE_RPC_ADDR" \

@@ -1,15 +1,15 @@
 # SPDX-FileCopyrightText: 2021 Oxhead Alpha
 # SPDX-License-Identifier: LicenseRef-MIT-OA
 
-class TezosSigner < Formula
+class MavrykNode < Formula
   @all_bins = []
 
   class << self
     attr_accessor :all_bins
   end
-  homepage "https://gitlab.com/tezos/tezos"
+  homepage "https://gitlab.com/mavryk-network/mavryk-protocol"
 
-  url "https://gitlab.com/tezos/tezos.git", :tag => "octez-v20.1", :shallow => false
+  url "https://gitlab.com/mavryk-network/mavryk-protocol.git", :tag => "mavkit-v20.1", :shallow => false
 
   version "v20.1-2"
 
@@ -18,16 +18,16 @@ class TezosSigner < Formula
     depends_on dependency => :build
   end
 
-  dependencies = %w[gmp hidapi libev protobuf sqlite]
+  dependencies = %w[gmp hidapi libev protobuf sqlite mavryk-sapling-params]
   dependencies.each do |dependency|
     depends_on dependency
   end
-  desc "A client to remotely sign operations or blocks"
+  desc "Entry point for initializing, configuring and running a Mavryk node"
 
   bottle do
-    root_url "https://github.com/serokell/tezos-packaging/releases/download/#{TezosSigner.version}/"
-    sha256 cellar: :any, monterey: "d09f93834335b4f48c022a8e40433fb3abb376a1ac50458e4efbaef261cf1e1e"
-    sha256 cellar: :any, arm64_monterey: "16428d42ae877e794566e56969f448e6e37ca1078de4d95017ad1aa6e7e98597"
+    root_url "https://github.com/mavryk-network/mavryk-packaging/releases/download/#{MavrykNode.version}/"
+    sha256 cellar: :any, monterey: "1bf6c43127f1a76628011b2ec2034c34378fd06b349646a04dade0430e86011a"
+    sha256 cellar: :any, arm64_monterey: "26ee79c463272f1c4307f5fcc73a7be72aed246351772dc08dd847a277dbce0a"
   end
 
   def make_deps
@@ -37,9 +37,9 @@ class TezosSigner < Formula
     # with old CPUs, see https://gitlab.com/dannywillems/ocaml-bls12-381/-/merge_requests/135/
     ENV["BLST_PORTABLE"]="yes"
     # Force linker to use libraries from the current brew installation.
-    # Workaround for https://github.com/serokell/tezos-packaging/issues/700
+    # Workaround for https://github.com/mavryk-network/mavryk-packaging/issues/700
     ENV["LDFLAGS"] = "-L#{HOMEBREW_PREFIX}/lib"
-    # Here is the workaround to use opam 2.0.9 because Tezos is currently not compatible with opam 2.1.0 and newer
+    # Here is the workaround to use opam 2.0.9 because Mavryk is currently not compatible with opam 2.1.0 and newer
     arch = RUBY_PLATFORM.include?("arm64") ? "arm64" : "x86_64"
     system "rustup-init", "--default-toolchain", "1.71.1", "-y"
     system "opam", "init", "--bare", "--debug", "--auto-setup", "--disable-sandboxing"
@@ -51,13 +51,13 @@ class TezosSigner < Formula
     self.class.all_bins << name
     system ["eval $(opam env)", "dune build #{dune_path}", "cp #{exec_path} #{name}"].join(" && ")
     bin.install name
-    ln_sf "#{bin}/#{name}", "#{bin}/#{name.gsub("octez", "tezos")}"
+    ln_sf "#{bin}/#{name}", "#{bin}/#{name.gsub("mavkit", "mavryk")}"
   end
 
   def install
     make_deps
-    install_template "src/bin_signer/main_signer.exe",
-                     "_build/default/src/bin_signer/main_signer.exe",
-                     "octez-signer"
+    install_template "src/bin_node/main.exe",
+                     "_build/default/src/bin_node/main.exe",
+                     "mavkit-node"
   end
 end

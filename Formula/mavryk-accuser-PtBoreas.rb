@@ -1,15 +1,15 @@
 # SPDX-FileCopyrightText: 2024 Oxhead Alpha
 # SPDX-License-Identifier: LicenseRef-MIT-OA
 
-class TezosAccuserPsparisc < Formula
+class MavrykAccuserPtboreas < Formula
   @all_bins = []
 
   class << self
     attr_accessor :all_bins
   end
-  homepage "https://gitlab.com/tezos/tezos"
+  homepage "https://gitlab.com/mavryk-network/mavryk-protocol"
 
-  url "https://gitlab.com/tezos/tezos.git", :tag => "octez-v20.1", :shallow => false
+  url "https://gitlab.com/mavryk-network/mavryk-protocol.git", :tag => "mavkit-v20.1", :shallow => false
 
   version "v20.1-2"
 
@@ -25,7 +25,7 @@ class TezosAccuserPsparisc < Formula
   desc "Daemon for accusing"
 
   bottle do
-    root_url "https://github.com/serokell/tezos-packaging/releases/download/#{TezosAccuserPsparisc.version}/"
+    root_url "https://github.com/mavryk-network/mavryk-packaging/releases/download/#{MavrykAccuserPtboreas.version}/"
     sha256 cellar: :any, monterey: "7b614c2748b4e74c7445f2885e5038521a0ba7730b2edab8f8e657eab5ceaac1"
     sha256 cellar: :any, arm64_monterey: "d9a7da86ebe52152b98400c615c68a0b0027673a4d546f76a16d6bfd3089d2d5"
   end
@@ -37,9 +37,9 @@ class TezosAccuserPsparisc < Formula
     # with old CPUs, see https://gitlab.com/dannywillems/ocaml-bls12-381/-/merge_requests/135/
     ENV["BLST_PORTABLE"]="yes"
     # Force linker to use libraries from the current brew installation.
-    # Workaround for https://github.com/serokell/tezos-packaging/issues/700
+    # Workaround for https://github.com/mavryk-network/mavryk-packaging/issues/700
     ENV["LDFLAGS"] = "-L#{HOMEBREW_PREFIX}/lib"
-    # Here is the workaround to use opam 2.0 because Tezos is currently not compatible with opam 2.1.0 and newer
+    # Here is the workaround to use opam 2.0 because Mavryk is currently not compatible with opam 2.1.0 and newer
     arch = RUBY_PLATFORM.include?("arm64") ? "arm64" : "x86_64"
     system "rustup-init", "--default-toolchain", "1.71.1", "-y"
     system "opam", "init", "--bare", "--debug", "--auto-setup", "--disable-sandboxing"
@@ -51,7 +51,7 @@ class TezosAccuserPsparisc < Formula
     self.class.all_bins << name
     system ["eval $(opam env)", "dune build #{dune_path}", "cp #{exec_path} #{name}"].join(" && ")
     bin.install name
-    ln_sf "#{bin}/#{name}", "#{bin}/#{name.gsub("octez", "tezos")}"
+    ln_sf "#{bin}/#{name}", "#{bin}/#{name.gsub("mavkit", "mavryk")}"
   end
 
   def install
@@ -61,10 +61,10 @@ class TezosAccuserPsparisc < Formula
 
       set -euo pipefail
 
-      accuser="#{bin}/octez-accuser-PsParisC"
+      accuser="#{bin}/mavkit-accuser-PtBoreas"
 
-      accuser_config="$TEZOS_CLIENT_DIR/config"
-      mkdir -p "$TEZOS_CLIENT_DIR"
+      accuser_config="$MAVRYK_CLIENT_DIR/config"
+      mkdir -p "$MAVRYK_CLIENT_DIR"
 
       if [ ! -f "$accuser_config" ]; then
           "$accuser" --endpoint "$NODE_RPC_SCHEME://$NODE_RPC_ADDR" \
@@ -76,24 +76,24 @@ class TezosAccuserPsparisc < Formula
 
       exec "$accuser" --endpoint "$NODE_RPC_SCHEME://$NODE_RPC_ADDR" run
     EOS
-    File.write("tezos-accuser-PsParisC-start", startup_contents)
-    bin.install "tezos-accuser-PsParisC-start"
+    File.write("mavryk-accuser-PtBoreas-start", startup_contents)
+    bin.install "mavryk-accuser-PtBoreas-start"
     make_deps
-    install_template "src/proto_020_PsParisC/bin_accuser/main_accuser_020_PsParisC.exe",
-                     "_build/default/src/proto_020_PsParisC/bin_accuser/main_accuser_020_PsParisC.exe",
-                     "octez-accuser-PsParisC"
+    install_template "src/proto_020_PtBoreas/bin_accuser/main_accuser_020_PtBoreas.exe",
+                     "_build/default/src/proto_020_PtBoreas/bin_accuser/main_accuser_020_PtBoreas.exe",
+                     "mavkit-accuser-PtBoreas"
   end
 
   service do
-    run opt_bin/"tezos-accuser-PsParisC-start"
+    run opt_bin/"mavryk-accuser-PtBoreas-start"
     require_root true
-    environment_variables TEZOS_CLIENT_DIR: var/"lib/tezos/client", NODE_RPC_SCHEME: "http", NODE_RPC_ADDR: "localhost:8732"
+    environment_variables MAVRYK_CLIENT_DIR: var/"lib/mavryk/client", NODE_RPC_SCHEME: "http", NODE_RPC_ADDR: "localhost:8732"
     keep_alive true
-    log_path var/"log/tezos-accuser-PsParisC.log"
-    error_log_path var/"log/tezos-accuser-PsParisC.log"
+    log_path var/"log/mavryk-accuser-PtBoreas.log"
+    error_log_path var/"log/mavryk-accuser-PtBoreas.log"
   end
 
   def post_install
-    mkdir "#{var}/lib/tezos/client"
+    mkdir "#{var}/lib/mavryk/client"
   end
 end

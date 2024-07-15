@@ -1256,7 +1256,7 @@
         "opam-nix": "opam-nix",
         "opam-repository": "opam-repository_2",
         "serokell-nix": "serokell-nix",
-        "tezos": "tezos"
+        "mavryk": "mavryk"
       }
     },
     "serokell-nix": {
@@ -1362,19 +1362,19 @@
         "type": "github"
       }
     },
-    "tezos": {
+    "mavryk": {
       "flake": false,
       "locked": {
         "lastModified": 1718697806,
         "narHash": "sha256-rF93yY0b0d53LUmYAoDjueqOBM5U/xA6riF/zXb7DXg=",
-        "owner": "tezos",
-        "repo": "tezos",
+        "owner": "mavryk",
+        "repo": "mavryk",
         "rev": "1a991a031e88249e187e6d39d979d2533233c17c",
         "type": "gitlab"
       },
       "original": {
-        "owner": "tezos",
-        "repo": "tezos",
+        "owner": "mavryk",
+        "repo": "mavryk",
         "type": "gitlab"
       }
     },

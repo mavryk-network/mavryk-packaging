@@ -4,7 +4,7 @@
 let
   inherit (pkgs) system;
 
-  octez-node = {
+  mavkit-node = {
     enable = true;
     additionalOptions = [
       "--bootstrap-threshold=1"
@@ -12,42 +12,42 @@ let
     ];
   };
 
-  octez-signer = {
+  mavkit-signer = {
     enable = true;
     networkProtocol = "http";
   };
 
-  octez-accuser = {
+  mavkit-accuser = {
     enable = true;
-    baseProtocols = ["PtParisB"];
+    baseProtocols = ["PtBoreas"];
   };
 
-  octez-baker = {
+  mavkit-baker = {
     enable = true;
-    baseProtocols = ["PtParisB"];
+    baseProtocols = ["PtBoreas"];
     bakerAccountAlias = "baker";
     bakerSecretKey = "unencrypted:edsk3KaTNj1d8Xd3kMBrZkJrfkqsz4XwwiBXatuuVgTdPye2KpE98o";
   };
 in
 import "${nixpkgs}/nixos/tests/make-test-python.nix" ({ ... }:
 {
-  name = "tezos-modules-test";
+  name = "mavryk-modules-test";
   machine = { ... }: {
     virtualisation.memorySize = 1024;
     virtualisation.diskSize = 1024;
 
     nixpkgs.pkgs = pkgs;
-    imports = [ ../nix/modules/tezos-node.nix
-                ../nix/modules/tezos-signer.nix
-                ../nix/modules/tezos-accuser.nix
-                ../nix/modules/tezos-baker.nix
+    imports = [ ../nix/modules/mavryk-node.nix
+                ../nix/modules/mavryk-signer.nix
+                ../nix/modules/mavryk-accuser.nix
+                ../nix/modules/mavryk-baker.nix
               ];
 
     services = {
-      octez-node.instances.ghostnet = octez-node;
-      octez-signer.instances.ghostnet = octez-signer;
-      octez-accuser.instances.ghostnet = octez-accuser;
-      octez-baker.instances.ghostnet = octez-baker;
+      mavkit-node.instances.basenet = mavkit-node;
+      mavkit-signer.instances.basenet = mavkit-signer;
+      mavkit-accuser.instances.basenet = mavkit-accuser;
+      mavkit-baker.instances.basenet = mavkit-baker;
     };
 
   };
@@ -58,17 +58,17 @@ import "${nixpkgs}/nixos/tests/make-test-python.nix" ({ ... }:
     start_all()
 
     services: List[str] = [
-        ${if octez-node.enable then ''"octez-node",'' else ""}
-        ${if octez-signer.enable then ''"octez-signer",'' else ""}
-        ${if octez-accuser.enable then ''"octez-accuser",'' else ""}
-        ${if octez-baker.enable then ''"octez-baker",'' else ""}
+        ${if mavkit-node.enable then ''"mavkit-node",'' else ""}
+        ${if mavkit-signer.enable then ''"mavkit-signer",'' else ""}
+        ${if mavkit-accuser.enable then ''"mavkit-accuser",'' else ""}
+        ${if mavkit-baker.enable then ''"mavkit-baker",'' else ""}
     ]
 
     for s in services:
-        machine.wait_for_unit(f"tezos-ghostnet-{s}.service")
+        machine.wait_for_unit(f"mavryk-basenet-{s}.service")
 
-    ${if octez-node.enable then ''
-    with subtest("check octez-node rpc response"):
+    ${if mavkit-node.enable then ''
+    with subtest("check mavkit-node rpc response"):
         machine.wait_for_open_port(8732)
         machine.wait_until_succeeds(
             "curl --silent http://localhost:8732/chains/main/blocks/head/header | grep level"
@@ -78,6 +78,6 @@ import "${nixpkgs}/nixos/tests/make-test-python.nix" ({ ... }:
 
     with subtest("service status sanity check"):
         for s in services:
-            machine.succeed(f"systemctl status tezos-ghostnet-{s}.service")
+            machine.succeed(f"systemctl status mavryk-basenet-{s}.service")
   '';
 }) { inherit pkgs system; }

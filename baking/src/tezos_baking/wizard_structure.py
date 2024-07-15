@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: LicenseRef-MIT-OA
 
 """
-Contains shared code from all Tezos wizards for a command line wizard skeleton.
+Contains shared code from all Mavryk wizards for a command line wizard skeleton.
 
 Helps with writing a tool that asks questions, validates answers, and executes
 the appropriate steps using the final configuration.
@@ -16,10 +16,10 @@ from logging.handlers import RotatingFileHandler
 import urllib.request
 import json
 
-from tezos_baking.util import *
-from tezos_baking.validators import Validator
-import tezos_baking.validators as validators
-from tezos_baking.steps import *
+from mavryk_baking.util import *
+from mavryk_baking.validators import Validator
+import mavryk_baking.validators as validators
+from mavryk_baking.steps import *
 
 # Command line argument parsing
 
@@ -30,20 +30,20 @@ parser = argparse.ArgumentParser()
 
 def get_data_dir(network):
     logging.info("Getting node data dir")
-    node_env = get_systemd_service_env(f"tezos-node-{network}")
-    data_dir = node_env.get("TEZOS_NODE_DIR")
+    node_env = get_systemd_service_env(f"mavryk-node-{network}")
+    data_dir = node_env.get("MAVRYK_NODE_DIR")
     if data_dir is None:
         print_and_log(
-            "TEZOS_NODE_DIR is undefined, defaulting to /var/lib/tezos/node-" + network
+            "MAVRYK_NODE_DIR is undefined, defaulting to /var/lib/mavryk/node-" + network
         )
-        return "/var/lib/tezos/node-" + network
+        return "/var/lib/mavryk/node-" + network
     return data_dir
 
 
-def get_key_address(tezos_client_options, key_alias):
+def get_key_address(mavryk_client_options, key_alias):
     logging.info("Getting the secret key address")
     address = get_proc_output(
-        f"sudo -u tezos {suppress_warning_text} octez-client {tezos_client_options} "
+        f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
         f"show address {key_alias} --show-secret"
     )
     if address.returncode == 0:
@@ -66,9 +66,9 @@ def get_key_address(tezos_client_options, key_alias):
 def wait_for_ledger_app(ledger_app, client_dir):
     output = b""
     try:
-        while re.search(f"Found a Tezos {ledger_app}".encode(), output) is None:
+        while re.search(f"Found a Mavryk {ledger_app}".encode(), output) is None:
             output = get_proc_output(
-                f"sudo -u tezos {suppress_warning_text} octez-client --base-dir {client_dir} list connected ledgers"
+                f"sudo -u tezos {suppress_warning_text} mavkit-client --base-dir {client_dir} list connected ledgers"
             ).stdout
             proc_call("sleep 1")
     except KeyboardInterrupt:
@@ -95,7 +95,7 @@ def search_json_with_default(json_filepath, field, default):
 
 
 def setup_logger(log_file):
-    log_dir = f"{os.getenv('HOME')}/.tezos-logs/.debug"
+    log_dir = f"{os.getenv('HOME')}/.mavryk-logs/.debug"
     os.makedirs(log_dir, exist_ok=True)
     log_file = os.path.join(log_dir, log_file)
     logging.basicConfig(
@@ -122,7 +122,7 @@ def log_exception(exception, logfile):
     print("\nHere are last 10 lines of the error output:")
     print("\n".join(error_output.splitlines()[-9:]))
 
-    log_dir = f".tezos-logs/"
+    log_dir = f".mavryk-logs/"
 
     with open(os.path.join(os.getenv("HOME"), log_dir, logfile), "a") as f:
         f.write(datetime.now().strftime("%H:%M:%S %d/%m/%Y:"))
@@ -177,13 +177,13 @@ class Setup:
 
     def systemctl_simple_action(self, action, service):
         proc_call(
-            f"sudo systemctl {action} tezos-{service}-{self.config['network']}.service"
+            f"sudo systemctl {action} mavryk-{service}-{self.config['network']}.service"
         )
 
     def systemctl_enable(self):
         if self.config["systemd_mode"] == "yes":
             print(
-                "Enabling the tezos-{}-{}.service".format(
+                "Enabling the mavryk-{}-{}.service".format(
                     self.config["mode"], self.config["network"]
                 )
             )
@@ -191,7 +191,7 @@ class Setup:
         else:
             print("The services won't restart on boot.")
 
-    def get_tezos_client_options(self):
+    def get_mavryk_client_options(self):
         options = (
             f"--base-dir {self.config['client_data_dir']} "
             f"--endpoint {self.config['node_rpc_endpoint']}"
@@ -202,21 +202,21 @@ class Setup:
 
     def query_and_update_config(self, query):
         self.query_step(query)
-        self.config["tezos_client_options"] = self.get_tezos_client_options()
-        logging.info("Updating octez-node config")
+        self.config["mavryk_client_options"] = self.get_mavryk_client_options()
+        logging.info("Updating mavkit-node config")
         proc_call(
-            f"sudo -u tezos {suppress_warning_text} octez-client "
-            f"{self.config['tezos_client_options']} config update"
+            f"sudo -u tezos {suppress_warning_text} mavkit-client "
+            f"{self.config['mavryk_client_options']} config update"
         )
 
     def fill_baking_config(self):
         logging.info("Filling in baking config...")
         net = self.config["network"]
-        baking_env = get_systemd_service_env(f"tezos-baking-{net}")
+        baking_env = get_systemd_service_env(f"mavryk-baking-{net}")
 
         self.config["client_data_dir"] = baking_env.get(
-            "TEZOS_CLIENT_DIR",
-            "/var/lib/tezos/.tezos-client",
+            "MAVRYK_CLIENT_DIR",
+            "/var/lib/mavryk/.mavryk-client",
         )
 
         node_rpc_addr = baking_env.get(
@@ -251,7 +251,7 @@ class Setup:
     def check_baker_account(self):
         logging.info("Checking baker account")
         baker_alias = self.config["baker_alias"]
-        baker_key_value = get_key_address(self.get_tezos_client_options(), baker_alias)
+        baker_key_value = get_key_address(self.get_mavryk_client_options(), baker_alias)
         if baker_key_value is not None:
             value, address = baker_key_value
             print()
@@ -268,7 +268,7 @@ class Setup:
     def import_key(self, key_mode_query, ledger_app=None):
 
         baker_alias = self.config["baker_alias"]
-        tezos_client_options = self.get_tezos_client_options()
+        mavryk_client_options = self.get_mavryk_client_options()
 
         valid_choice = False
         while not valid_choice:
@@ -280,27 +280,27 @@ class Setup:
                     self.query_step(secret_key_query)
                     logging.info("Importing secret key")
                     proc_call(
-                        f"sudo -u tezos {suppress_warning_text} octez-client {tezos_client_options} "
+                        f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
                         f"import secret key {baker_alias} {self.config['secret_key']} --force"
                     )
                 elif self.config["key_import_mode"] == "remote":
                     self.fill_remote_signer_infos()
 
-                    tezos_client_options = self.get_tezos_client_options()
+                    mavryk_client_options = self.get_mavryk_client_options()
                     logging.info("Importing remote secret key")
                     proc_call(
-                        f"sudo -u tezos {suppress_warning_text} octez-client {tezos_client_options} "
+                        f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
                         f"import secret key {baker_alias} remote:{self.config['remote_key']} --force"
                     )
                 elif self.config["key_import_mode"] == "generate-fresh-key":
                     logging.info("Generating secret key")
                     proc_call(
-                        f"sudo -u tezos {suppress_warning_text} octez-client {tezos_client_options} "
+                        f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
                         f"gen keys {baker_alias} --force"
                     )
                     print("Newly generated baker key:")
                     proc_call(
-                        f"sudo -u tezos {suppress_warning_text} octez-client {tezos_client_options} "
+                        f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
                         f"show address {baker_alias}"
                     )
                     network = self.config["network"]
@@ -314,7 +314,7 @@ class Setup:
                     try:
                         while True:
                             result = get_proc_output(
-                                f"sudo -u tezos {suppress_warning_text} octez-client {tezos_client_options} "
+                                f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
                                 f"register key {baker_alias} as delegate"
                             )
                             if result.returncode == 0:
@@ -331,7 +331,7 @@ class Setup:
                     logging.info("Importing json faucet file")
                     json_tmp_path = shutil.copy(self.config["json_filepath"], "/tmp/")
                     proc_call(
-                        f"sudo -u tezos {suppress_warning_text} octez-client {tezos_client_options} "
+                        f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
                         f"activate account {baker_alias} with {json_tmp_path} --force"
                     )
                     try:
@@ -339,11 +339,11 @@ class Setup:
                     except:
                         pass
                 else:
-                    print(f"Please open the Tezos {ledger_app} app on your ledger or")
+                    print(f"Please open the Mavryk {ledger_app} app on your ledger or")
                     print("press Ctrl+C to go back to the key import mode selection.")
                     print(
                         color(
-                            f"Waiting for the Tezos {ledger_app} to be opened...",
+                            f"Waiting for the Mavryk {ledger_app} to be opened...",
                             color_green,
                         ),
                         end="",
@@ -408,7 +408,7 @@ class Setup:
                     )
                     logging.info("Importing secret key")
                     proc_call(
-                        f"sudo -u tezos {suppress_warning_text} octez-client {tezos_client_options} "
+                        f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
                         f"import secret key {baker_alias} {baker_ledger_url} --force"
                     )
 
@@ -417,7 +417,7 @@ class Setup:
                 raise EOFError
             except Exception as e:
                 print_and_log(
-                    "Something went wrong when calling octez-client:", logging.error
+                    "Something went wrong when calling mavkit-client:", logging.error
                 )
                 print_and_log(str(e), logging.error)
                 print()
@@ -425,6 +425,6 @@ class Setup:
             else:
                 valid_choice = True
                 value, _ = get_key_address(
-                    tezos_client_options, self.config["baker_alias"]
+                    mavryk_client_options, self.config["baker_alias"]
                 )
                 self.config["baker_key_value"] = value

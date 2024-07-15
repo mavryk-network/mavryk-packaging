@@ -6,34 +6,30 @@ from .meta import packages_meta
 
 from .model import (
     AdditionalScript,
-    TezosBinaryPackage,
-    TezosSaplingParamsPackage,
-    TezosBakingServicesPackage,
+    MavrykBinaryPackage,
+    MavrykSaplingParamsPackage,
+    MavrykBakingServicesPackage,
 )
 
 from .systemd import Service, ServiceFile, SystemdUnit, Unit, Install
 from collections import ChainMap
 
-# Testnets are either supported by the tezos-node directly or have known URL with
+# Testnets are either supported by the mavryk-node directly or have known URL with
 # the config
 networks = {
     "mainnet": "mainnet",
-    "ghostnet": "ghostnet",
-    "paris2net": "https://teztnets.com/paris2net",
-    "pariscnet": "https://teztnets.com/pariscnet",
+    "basenet": "basenet",
+    "boreasnet": "https://testnets.mavryk.network/boreasnet",
 }
 networks_protos = {
-    "mainnet": ["PtParisB", "PsParisC"],
-    "ghostnet": ["PtParisB", "PsParisC"],
-    "paris2net": ["PtParisB"],
-    "pariscnet": ["PsParisC"],
+    "mainnet": ["PtBoreas"],
+    "basenet": ["PtBoreas"],
+    "boreasnet": ["PtBoreas"],
 }
 
 protocol_numbers = {
-    "PtNairob": "017",
-    "Proxford": "018",
-    "PtParisB": "019",
-    "PsParisC": "020",
+    "PtAtLas": "018",
+    "PtBoreas": "020",
 }
 
 signer_units = [
@@ -41,60 +37,60 @@ signer_units = [
         ServiceFile(
             Unit(
                 after=["network.target"],
-                description="Tezos signer daemon running over TCP socket",
+                description="Mavryk signer daemon running over TCP socket",
             ),
             Service(
-                environment_files=["/etc/default/tezos-signer-tcp"],
-                exec_start="/usr/bin/tezos-signer-start launch socket signer "
+                environment_files=["/etc/default/mavryk-signer-tcp"],
+                exec_start="/usr/bin/mavryk-signer-start launch socket signer "
                 + " --address ${ADDRESS} --port ${PORT} --timeout ${TIMEOUT}",
-                state_directory="tezos",
+                state_directory="mavryk",
                 user="tezos",
             ),
             Install(wanted_by=["multi-user.target"]),
         ),
         suffix="tcp",
-        startup_script="tezos-signer-start",
-        config_file="tezos-signer.conf",
+        startup_script="mavryk-signer-start",
+        config_file="mavryk-signer.conf",
         config_file_append=['ADDRESS="127.0.0.1"', 'PORT="8000"', 'TIMEOUT="1"'],
     ),
     SystemdUnit(
         ServiceFile(
             Unit(
                 after=["network.target"],
-                description="Tezos signer daemon running over UNIX socket",
+                description="Mavryk signer daemon running over UNIX socket",
             ),
             Service(
-                environment_files=["/etc/default/tezos-signer-unix"],
-                exec_start="/usr/bin/tezos-signer-start launch local signer "
+                environment_files=["/etc/default/mavryk-signer-unix"],
+                exec_start="/usr/bin/mavryk-signer-start launch local signer "
                 + "--socket ${SOCKET}",
-                state_directory="tezos",
+                state_directory="mavryk",
                 user="tezos",
             ),
             Install(wanted_by=["multi-user.target"]),
         ),
         suffix="unix",
-        startup_script="tezos-signer-start",
-        config_file="tezos-signer.conf",
+        startup_script="mavryk-signer-start",
+        config_file="mavryk-signer.conf",
         config_file_append=['SOCKET=""'],
     ),
     SystemdUnit(
         ServiceFile(
             Unit(
                 after=["network.target"],
-                description="Tezos signer daemon running over HTTP",
+                description="Mavryk signer daemon running over HTTP",
             ),
             Service(
-                environment_files=["/etc/default/tezos-signer-http"],
-                exec_start="/usr/bin/tezos-signer-start launch http signer "
+                environment_files=["/etc/default/mavryk-signer-http"],
+                exec_start="/usr/bin/mavryk-signer-start launch http signer "
                 + "--address ${ADDRESS} --port ${PORT}",
-                state_directory="tezos",
+                state_directory="mavryk",
                 user="tezos",
             ),
             Install(wanted_by=["multi-user.target"]),
         ),
         suffix="http",
-        startup_script="tezos-signer-start",
-        config_file="tezos-signer.conf",
+        startup_script="mavryk-signer-start",
+        config_file="mavryk-signer.conf",
         config_file_append=[
             'CERT_PATH="',
             'KEY_PATH=""',
@@ -106,20 +102,20 @@ signer_units = [
         ServiceFile(
             Unit(
                 after=["network.target"],
-                description="Tezos signer daemon running over HTTPs",
+                description="Mavryk signer daemon running over HTTPs",
             ),
             Service(
-                environment_files=["/etc/default/tezos-signer-https"],
-                exec_start="/usr/bin/tezos-signer-start launch https signer "
+                environment_files=["/etc/default/mavryk-signer-https"],
+                exec_start="/usr/bin/mavryk-signer-start launch https signer "
                 + "${CERT_PATH} ${KEY_PATH} --address ${ADDRESS} --port ${PORT}",
-                state_directory="tezos",
+                state_directory="mavryk",
                 user="tezos",
             ),
             Install(wanted_by=["multi-user.target"]),
         ),
         suffix="https",
-        startup_script="tezos-signer-start",
-        config_file="tezos-signer.conf",
+        startup_script="mavryk-signer-start",
+        config_file="mavryk-signer.conf",
         config_file_append=[
             'CERT_PATH="',
             'KEY_PATH=""',
@@ -130,9 +126,9 @@ signer_units = [
 ]
 
 postinst_steps_common = """
-if [ -z $(getent passwd tezos) ]; then
-    useradd -r -s /bin/false -m -d /var/lib/tezos tezos
-    chmod 0755 /var/lib/tezos
+if [ -z $(getent passwd mavryk) ]; then
+    useradd -r -s /bin/false -m -d /var/lib/mavryk mavryk
+    chmod 0755 /var/lib/mavryk
 fi
 """
 
@@ -142,26 +138,26 @@ ledger_udev_postinst = open(
 
 packages = [
     {
-        "tezos-client": TezosBinaryPackage(
-            "tezos-client",
-            "CLI client for interacting with tezos blockchain",
+        "mavryk-client": MavrykBinaryPackage(
+            "mavryk-client",
+            "CLI client for interacting with mavryk blockchain",
             meta=packages_meta,
-            additional_native_deps=["tezos-sapling-params", "udev"],
+            additional_native_deps=["mavryk-sapling-params", "udev"],
             postinst_steps=postinst_steps_common + ledger_udev_postinst,
             dune_filepath="src/bin_client/main_client.exe",
         )
     },
     {
-        "tezos-admin-client": TezosBinaryPackage(
-            "tezos-admin-client",
+        "mavryk-admin-client": MavrykBinaryPackage(
+            "mavryk-admin-client",
             "Administration tool for the node",
             meta=packages_meta,
             dune_filepath="src/bin_client/main_admin.exe",
         )
     },
     {
-        "tezos-signer": TezosBinaryPackage(
-            "tezos-signer",
+        "mavryk-signer": MavrykBinaryPackage(
+            "mavryk-signer",
             "A client to remotely sign operations or blocks",
             meta=packages_meta,
             additional_native_deps=["udev"],
@@ -171,40 +167,40 @@ packages = [
         )
     },
     {
-        "tezos-codec": TezosBinaryPackage(
-            "tezos-codec",
+        "mavryk-codec": MavrykBinaryPackage(
+            "mavryk-codec",
             "A client to decode and encode JSON",
             meta=packages_meta,
             dune_filepath="src/bin_codec/codec.exe",
         )
     },
     {
-        "tezos-dac-client": TezosBinaryPackage(
-            "tezos-dac-client",
-            "A Data Availability Committee Tezos client",
+        "mavryk-dac-client": MavrykBinaryPackage(
+            "mavryk-dac-client",
+            "A Data Availability Committee Mavryk client",
             meta=packages_meta,
             dune_filepath="src/bin_dac_client/main_dac_client.exe",
         )
     },
     {
-        "tezos-dac-node": TezosBinaryPackage(
-            "tezos-dac-node",
-            "A Data Availability Committee Tezos node",
+        "mavryk-dac-node": MavrykBinaryPackage(
+            "mavryk-dac-node",
+            "A Data Availability Committee Mavryk node",
             meta=packages_meta,
             dune_filepath="src/bin_dac_node/main_dac.exe",
         )
     },
     {
-        "tezos-dal-node": TezosBinaryPackage(
-            "tezos-dal-node",
-            "A Data Availability Layer Tezos node",
+        "mavryk-dal-node": MavrykBinaryPackage(
+            "mavryk-dal-node",
+            "A Data Availability Layer Mavryk node",
             meta=packages_meta,
             dune_filepath="src/bin_dal_node/main.exe",
         )
     },
     {
-        "tezos-smart-rollup-wasm-debugger": TezosBinaryPackage(
-            "tezos-smart-rollup-wasm-debugger",
+        "mavryk-smart-rollup-wasm-debugger": MavrykBinaryPackage(
+            "mavryk-smart-rollup-wasm-debugger",
             "Smart contract rollup wasm debugger",
             meta=packages_meta,
             dune_filepath="src/bin_wasm_debugger/main_wasm_debugger.exe",
@@ -223,17 +219,17 @@ def mk_node_unit(
     dependencies_suffix = suffix if dependencies_suffix is None else dependencies_suffix
     service_file = ServiceFile(
         Unit(
-            after=["network.target", f"tezos-baking-{dependencies_suffix}.service"],
+            after=["network.target", f"mavryk-baking-{dependencies_suffix}.service"],
             requires=[],
             description=desc,
-            part_of=[f"tezos-baking-{dependencies_suffix}.service"],
+            part_of=[f"mavryk-baking-{dependencies_suffix}.service"],
         ),
         Service(
-            environment_files=[f"/etc/default/tezos-node-{dependencies_suffix}"],
-            exec_start="/usr/bin/tezos-node-start",
-            exec_start_pre=["/usr/bin/tezos-node-prestart"],
+            environment_files=[f"/etc/default/mavryk-node-{dependencies_suffix}"],
+            exec_start="/usr/bin/mavryk-node-start",
+            exec_start_pre=["/usr/bin/mavryk-node-prestart"],
             timeout_start_sec="2400s",
-            state_directory="tezos",
+            state_directory="mavryk",
             user="tezos",
             type_="notify",
             notify_access="all",
@@ -243,10 +239,10 @@ def mk_node_unit(
     return SystemdUnit(
         suffix=suffix,
         service_file=service_file,
-        startup_script="tezos-node-start",
-        prestart_script="tezos-node-prestart",
+        startup_script="mavryk-node-start",
+        prestart_script="mavryk-node-prestart",
         instances=[] if instantiated else None,
-        config_file="tezos-node.conf",
+        config_file="mavryk-node.conf",
         config_file_append=config_file_append,
     )
 
@@ -256,68 +252,68 @@ node_postinst_steps = postinst_steps_common
 node_additional_scripts = []
 for network, network_config in networks.items():
     config_file_append = [
-        f'TEZOS_NODE_DIR="/var/lib/tezos/node-{network}"',
+        f'MAVRYK_NODE_DIR="/var/lib/mavryk/node-{network}"',
         f'NETWORK="{network_config}"',
     ]
     node_units.append(
         mk_node_unit(
             suffix=network,
             config_file_append=config_file_append,
-            desc=f"Tezos node {network}",
+            desc=f"Mavryk node {network}",
         )
     )
     node_additional_scripts.append(
         AdditionalScript(
-            name=f"octez-node-{network}",
-            symlink_name=f"tezos-node-{network}",
-            local_file_name="octez-node-wrapper",
+            name=f"mavkit-node-{network}",
+            symlink_name=f"mavryk-node-{network}",
+            local_file_name="mavkit-node-wrapper",
             transform=lambda x, network=network: x.replace("{network}", network),
         )
     )
     node_postinst_steps += f"""
-mkdir -p /var/lib/tezos/node-{network}
-[ ! -f /var/lib/tezos/node-{network}/config.json ] && octez-node config init --data-dir /var/lib/tezos/node-{network} --network {network_config}
-chown -R tezos:tezos /var/lib/tezos/node-{network}
+mkdir -p /var/lib/mavryk/node-{network}
+[ ! -f /var/lib/mavryk/node-{network}/config.json ] && mavkit-node config init --data-dir /var/lib/mavryk/node-{network} --network {network_config}
+chown -R tezos:tezos /var/lib/mavryk/node-{network}
 """
 
 # Add custom config service
 custom_node_unit = mk_node_unit(
     suffix="custom",
     config_file_append=[
-        'TEZOS_NODE_DIR="/var/lib/tezos/node-custom"',
+        'MAVRYK_NODE_DIR="/var/lib/mavryk/node-custom"',
         'CUSTOM_NODE_CONFIG=""',
     ],
-    desc="Tezos node with custom config",
+    desc="Mavryk node with custom config",
 )
-custom_node_unit.poststop_script = "tezos-node-custom-poststop"
+custom_node_unit.poststop_script = "mavryk-node-custom-poststop"
 node_units.append(custom_node_unit)
-node_postinst_steps += "mkdir -p /var/lib/tezos/node-custom\n"
+node_postinst_steps += "mkdir -p /var/lib/mavryk/node-custom\n"
 # Add instantiated custom config service
 custom_node_instantiated = mk_node_unit(
     suffix="custom",
     config_file_append=[
-        "TEZOS_NODE_DIR=/var/lib/tezos/node-custom@%i",
+        "MAVRYK_NODE_DIR=/var/lib/mavryk/node-custom@%i",
         "CUSTOM_NODE_CONFIG=",
         'RESET_ON_STOP=""',
     ],
-    desc="Tezos node with custom config",
+    desc="Mavryk node with custom config",
     instantiated=True,
     dependencies_suffix="custom@%i",
 )
-custom_node_instantiated.poststop_script = "tezos-node-custom-poststop"
+custom_node_instantiated.poststop_script = "mavryk-node-custom-poststop"
 node_units.append(custom_node_instantiated)
 
 
 packages.append(
     {
-        "tezos-node": TezosBinaryPackage(
-            "tezos-node",
-            "Entry point for initializing, configuring and running a Tezos node",
+        "mavryk-node": MavrykBinaryPackage(
+            "mavryk-node",
+            "Entry point for initializing, configuring and running a Mavryk node",
             meta=packages_meta,
             systemd_units=node_units,
             postinst_steps=node_postinst_steps,
             additional_native_deps=[
-                "tezos-sapling-params",
+                "mavryk-sapling-params",
                 "curl",
                 {"ubuntu": "netbase"},
             ],
@@ -343,8 +339,8 @@ daemon_decs = {
 daemon_postinst_common = (
     postinst_steps_common
     + """
-mkdir -p /var/lib/tezos/.tezos-client
-chown -R tezos:tezos /var/lib/tezos/.tezos-client
+mkdir -p /var/lib/mavryk/.mavryk-client
+chown -R tezos:tezos /var/lib/mavryk/.mavryk-client
 """
 )
 
@@ -354,22 +350,22 @@ for proto in active_protocols:
     daemons_instances = [
         network for network, protos in networks_protos.items() if proto in protos
     ]
-    baker_startup_script = f"/usr/bin/tezos-baker-{proto.lower()}-start"
-    accuser_startup_script = f"/usr/bin/tezos-accuser-{proto.lower()}-start"
+    baker_startup_script = f"/usr/bin/mavryk-baker-{proto.lower()}-start"
+    accuser_startup_script = f"/usr/bin/mavryk-accuser-{proto.lower()}-start"
     service_file_baker = ServiceFile(
-        Unit(after=["network.target"], description="Tezos baker"),
+        Unit(after=["network.target"], description="Mavryk baker"),
         Service(
             # The node settings for a generic baker are defined in its own
             # 'EnvironmentFile', as we can't tell the network from the protocol
             # alone, nor what node this might connect to
-            environment_files=[f"/etc/default/tezos-baker-{proto}"],
+            environment_files=[f"/etc/default/mavryk-baker-{proto}"],
             environment=[f"PROTOCOL={proto}"],
             exec_start_pre=[
                 "+/usr/bin/setfacl -m u:tezos:rwx /run/systemd/ask-password"
             ],
             exec_start=baker_startup_script,
             exec_stop_post=["+/usr/bin/setfacl -x u:tezos /run/systemd/ask-password"],
-            state_directory="tezos",
+            state_directory="mavryk",
             user="tezos",
             type_="forking",
             keyring_mode="shared",
@@ -380,21 +376,21 @@ for proto in active_protocols:
         Unit(
             after=[
                 "network.target",
-                "tezos-node-%i.service",
-                "tezos-baking-%i.service",
+                "mavryk-node-%i.service",
+                "mavryk-baking-%i.service",
             ],
-            requires=["tezos-node-%i.service"],
-            part_of=["tezos-baking-%i.service"],
-            description="Instantiated tezos baker daemon service",
+            requires=["mavryk-node-%i.service"],
+            part_of=["mavryk-baking-%i.service"],
+            description="Instantiated mavryk baker daemon service",
         ),
         Service(
             environment_files=[
-                "/etc/default/tezos-baking-%i",
-                "/etc/default/tezos-node-%i",
+                "/etc/default/mavryk-baking-%i",
+                "/etc/default/mavryk-node-%i",
             ],
             environment=[f"PROTOCOL={proto}"],
             exec_start=baker_startup_script,
-            state_directory="tezos",
+            state_directory="mavryk",
             user="tezos",
             restart="on-failure",
             type_="forking",
@@ -403,12 +399,12 @@ for proto in active_protocols:
         Install(wanted_by=["multi-user.target"]),
     )
     service_file_accuser = ServiceFile(
-        Unit(after=["network.target"], description="Tezos accuser"),
+        Unit(after=["network.target"], description="Mavryk accuser"),
         Service(
-            environment_files=[f"/etc/default/tezos-accuser-{proto}"],
+            environment_files=[f"/etc/default/mavryk-accuser-{proto}"],
             environment=[f"PROTOCOL={proto}"],
             exec_start=accuser_startup_script,
-            state_directory="tezos",
+            state_directory="mavryk",
             user="tezos",
         ),
         Install(wanted_by=["multi-user.target"]),
@@ -417,18 +413,18 @@ for proto in active_protocols:
         Unit(
             after=[
                 "network.target",
-                "tezos-node-%i.service",
-                "tezos-baking-%i.service",
+                "mavryk-node-%i.service",
+                "mavryk-baking-%i.service",
             ],
-            requires=["tezos-node-%i.service"],
-            part_of=["tezos-baking-%i.service"],
-            description="Instantiated tezos accuser daemon service",
+            requires=["mavryk-node-%i.service"],
+            part_of=["mavryk-baking-%i.service"],
+            description="Instantiated mavryk accuser daemon service",
         ),
         Service(
-            environment_files=["/etc/default/tezos-baking-%i"],
+            environment_files=["/etc/default/mavryk-baking-%i"],
             environment=[f"PROTOCOL={proto}"],
             exec_start=accuser_startup_script,
-            state_directory="tezos",
+            state_directory="mavryk",
             user="tezos",
             restart="on-failure",
         ),
@@ -436,29 +432,29 @@ for proto in active_protocols:
     )
     packages.append(
         {
-            f"tezos-baker-{proto}": TezosBinaryPackage(
-                f"tezos-baker-{proto}",
+            f"mavryk-baker-{proto}": MavrykBinaryPackage(
+                f"mavryk-baker-{proto}",
                 "Daemon for baking",
                 meta=packages_meta,
                 systemd_units=[
                     SystemdUnit(
                         service_file=service_file_baker,
                         startup_script=baker_startup_script.split("/")[-1],
-                        startup_script_source="tezos-baker-start",
-                        config_file="tezos-baker.conf",
+                        startup_script_source="mavryk-baker-start",
+                        config_file="mavryk-baker.conf",
                     ),
                     SystemdUnit(
                         service_file=service_file_baker_instantiated,
                         startup_script=baker_startup_script.split("/")[-1],
-                        startup_script_source="tezos-baker-start",
+                        startup_script_source="mavryk-baker-start",
                         instances=daemons_instances,
                     ),
                 ],
                 target_proto=proto,
                 postinst_steps=daemon_postinst_common,
                 additional_native_deps=[
-                    "tezos-sapling-params",
-                    "tezos-client",
+                    "mavryk-sapling-params",
+                    "mavryk-client",
                     "acl",
                     "udev",
                 ],
@@ -468,21 +464,21 @@ for proto in active_protocols:
     )
     packages.append(
         {
-            f"tezos-accuser-{proto}": TezosBinaryPackage(
-                f"tezos-accuser-{proto}",
+            f"mavryk-accuser-{proto}": MavrykBinaryPackage(
+                f"mavryk-accuser-{proto}",
                 "Daemon for accusing",
                 meta=packages_meta,
                 systemd_units=[
                     SystemdUnit(
                         service_file=service_file_accuser,
                         startup_script=accuser_startup_script.split("/")[-1],
-                        startup_script_source="tezos-accuser-start",
-                        config_file="tezos-accuser.conf",
+                        startup_script_source="mavryk-accuser-start",
+                        config_file="mavryk-accuser.conf",
                     ),
                     SystemdUnit(
                         service_file=service_file_accuser_instantiated,
                         startup_script=accuser_startup_script.split("/")[-1],
-                        startup_script_source="tezos-accuser-start",
+                        startup_script_source="mavryk-accuser-start",
                         instances=daemons_instances,
                     ),
                 ],
@@ -496,7 +492,7 @@ for proto in active_protocols:
 
 packages.append(
     {
-        "tezos-sapling-params": TezosSaplingParamsPackage(
+        "mavryk-sapling-params": MavrykSaplingParamsPackage(
             meta=packages_meta,
             params_revision="95911b0639ff01807b8fd7b9e36d508e657d80a8",
         )
@@ -505,31 +501,31 @@ packages.append(
 
 packages.append(
     {
-        "tezos-baking": TezosBakingServicesPackage(
+        "mavryk-baking": MavrykBakingServicesPackage(
             target_networks=networks.keys(),
             network_protos=networks_protos,
             meta=packages_meta,
             additional_native_deps=[
-                f"tezos-baker-{proto}" for proto in active_protocols
+                f"mavryk-baker-{proto}" for proto in active_protocols
             ]
-            + ["tezos-node", "acl", "wget"],
+            + ["mavryk-node", "acl", "wget"],
         )
     }
 )
 
 
 def mk_rollup_node():
-    startup_script = f"/usr/bin/tezos-smart-rollup-node-start"
+    startup_script = f"/usr/bin/mavryk-smart-rollup-node-start"
     service_file = ServiceFile(
-        Unit(after=["network.target"], description=f"Tezos smart rollup node"),
+        Unit(after=["network.target"], description=f"Mavryk smart rollup node"),
         Service(
-            environment_files=[f"/etc/default/tezos-smart-rollup-node"],
+            environment_files=[f"/etc/default/mavryk-smart-rollup-node"],
             exec_start_pre=[
                 "+/usr/bin/setfacl -m u:tezos:rwx /run/systemd/ask-password"
             ],
             exec_start=startup_script,
             exec_stop_post=["+/usr/bin/setfacl -x u:tezos /run/systemd/ask-password"],
-            state_directory="tezos",
+            state_directory="mavryk",
             user="tezos",
             type_="simple",
             keyring_mode="shared",
@@ -540,21 +536,21 @@ def mk_rollup_node():
         SystemdUnit(
             service_file=service_file,
             startup_script=startup_script.split("/")[-1],
-            startup_script_source="tezos-rollup-node-start",
-            config_file="tezos-rollup-node.conf",
+            startup_script_source="mavryk-rollup-node-start",
+            config_file="mavryk-rollup-node.conf",
         ),
     ]
 
     return {
-        f"tezos-smart-rollup-node": TezosBinaryPackage(
-            f"tezos-smart-rollup-node",
-            f"Tezos smart rollup node",
+        f"mavryk-smart-rollup-node": MavrykBinaryPackage(
+            f"mavryk-smart-rollup-node",
+            f"Mavryk smart rollup node",
             meta=packages_meta,
             systemd_units=systemd_units,
             additional_native_deps=[
-                "tezos-client",
-                "tezos-node",
-                "tezos-sapling-params",
+                "mavryk-client",
+                "mavryk-node",
+                "mavryk-sapling-params",
             ],
             postinst_steps=daemon_postinst_common,
             dune_filepath="src/bin_smart_rollup_node/main_smart_rollup_node.exe",

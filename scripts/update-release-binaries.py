@@ -7,12 +7,12 @@ import os
 import json
 from subprocess import call
 
-masked_executables = ["octez-proxy-server"]
+masked_executables = ["mavkit-proxy-server"]
 masked_protocols = ["alpha"]
 
 
-def update_formulae_list(octez_executables):
-    formulae = list(map(lambda x: x.replace("octez", "tezos"), octez_executables))
+def update_formulae_list(mavkit_executables):
+    formulae = list(map(lambda x: x.replace("mavkit", "mavryk"), mavkit_executables))
 
     with open(".github/workflows/build-bottles.yml") as f:
         workflow = f.read()
@@ -47,8 +47,8 @@ def update_protocol_list(active_protos):
     os.chdir("..")
 
 
-with open("docker/octez-executables") as f:
-    octez_executables = list(
+with open("docker/mavkit-executables") as f:
+    mavkit_executables = list(
         filter(
             lambda exec: exec and exec not in masked_executables, f.read().split("\n")
         )
@@ -62,4 +62,4 @@ with open("docker/active-protocols") as f:
     )
 
 update_protocol_list(active_protocols)
-update_formulae_list(octez_executables)
+update_formulae_list(mavkit_executables)

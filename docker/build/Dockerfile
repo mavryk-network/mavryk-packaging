@@ -13,13 +13,13 @@ COPY ./build/build-rust.sh /build-rust.sh
 RUN /build-rust.sh
 COPY ./build/build-upx.sh /build-upx.sh
 RUN /build-upx.sh
-ARG OCTEZ_VERSION
-RUN git clone --single-branch --depth 1 --branch "$OCTEZ_VERSION" https://gitlab.com/tezos/tezos.git
-WORKDIR /tezos
+ARG MAVKIT_VERSION
+RUN git clone --single-branch --depth 1 --branch "$MAVKIT_VERSION" https://gitlab.com/mavryk-network/mavryk-protocol.git
+WORKDIR /mavryk
 ENV OPAMYES true
 COPY ./build/build-deps.sh /build-deps.sh
 RUN /build-deps.sh
-COPY ./build/build-tezos.sh /build-tezos.sh
-ARG OCTEZ_EXECUTABLES
-RUN /build-tezos.sh
-RUN upx $OCTEZ_EXECUTABLES
+COPY ./build/build-mavryk.sh /build-mavryk.sh
+ARG MAVKIT_EXECUTABLES
+RUN /build-mavryk.sh
+RUN upx $MAVKIT_EXECUTABLES

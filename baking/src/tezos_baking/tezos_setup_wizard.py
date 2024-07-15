@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: LicenseRef-MIT-OA
 
 """
-A wizard utility to help set up tezos-baker.
+A wizard utility to help set up mavryk-baker.
 
 Asks questions, validates answers, and executes the appropriate steps using the final configuration.
 """
@@ -17,19 +17,19 @@ import json
 from typing import List
 import logging
 
-from tezos_baking.wizard_structure import *
-from tezos_baking.util import *
-from tezos_baking.steps import *
-from tezos_baking.provider import *
-from tezos_baking.validators import Validator
-import tezos_baking.validators as validators
+from mavryk_baking.wizard_structure import *
+from mavryk_baking.util import *
+from mavryk_baking.steps import *
+from mavryk_baking.provider import *
+from mavryk_baking.validators import Validator
+import mavryk_baking.validators as validators
 
 # Global options
 
 modes = {
     "baking": "Set up and start all services for baking: "
-    "tezos-node and tezos-baker.",
-    "node": "Only bootstrap and run the Tezos node.",
+    "mavryk-node and mavryk-baker.",
+    "node": "Only bootstrap and run the Mavryk node.",
 }
 
 systemd_enable = {
@@ -49,20 +49,20 @@ toggle_vote_modes = {
     "on": "Request to continue or restart the subsidy",
 }
 
-TMP_SNAPSHOT_LOCATION = "/tmp/octez_node.snapshot.d/"
+TMP_SNAPSHOT_LOCATION = "/tmp/mavkit_node.snapshot.d/"
 
 
 # Wizard CLI utility
 
 
-welcome_text = """Tezos Setup Wizard
+welcome_text = """Mavryk Setup Wizard
 
 Welcome, this wizard will help you to set up the infrastructure to interact with the
-Tezos blockchain.
+Mavryk blockchain.
 
-In order to run a baking instance, you'll need the following Tezos packages:
- tezos-client, tezos-node, tezos-baker-<proto>.
-If you have installed tezos-baking, these packages are already installed.
+In order to run a baking instance, you'll need the following Mavryk packages:
+ mavryk-client, mavryk-node, mavryk-baker-<proto>.
+If you have installed mavryk-baking, these packages are already installed.
 
 All commands within the service are run under the 'tezos' user.
 
@@ -76,8 +76,8 @@ def fetch_snapshot(url, sha256=None):
     logging.info("Fetching snapshot")
 
     dirname = TMP_SNAPSHOT_LOCATION
-    filename = os.path.join(dirname, "octez_node.snapshot")
-    metadata_file = os.path.join(dirname, "octez_node.snapshot.sha256")
+    filename = os.path.join(dirname, "mavkit_node.snapshot")
+    metadata_file = os.path.join(dirname, "mavkit_node.snapshot.sha256")
 
     # updates or removes the 'metadata_file' containing the snapshot's SHA256
     def dump_metadata(metadata_file=metadata_file, sha256=sha256):
@@ -121,14 +121,14 @@ def fetch_snapshot(url, sha256=None):
         logging.info("Continuing download")
         # that case means that the expected sha256 of snapshot
         # we want to download is the same as the expected
-        # sha256 of the existing octez_node.snapshot file
+        # sha256 of the existing mavkit_node.snapshot file
         # when it will be fully downloaded
         # so that we can safely use `--continue` option here
         download(args="--continue")
     else:
         # all other cases we just dump new metadata
         # (so that we can resume download if we can ensure
-        # that existing octez_node.snapshot chunk belongs
+        # that existing mavkit_node.snapshot chunk belongs
         # to the snapshot we want to download)
         # and start download from scratch
         dump_metadata()
@@ -170,20 +170,20 @@ def is_full_snapshot(snapshot_file, import_mode):
         return True
     if import_mode == "file" or import_mode == "url":
         output = get_proc_output(
-            "sudo -u tezos octez-node snapshot info " + snapshot_file
+            "sudo -u tezos mavkit-node snapshot info " + snapshot_file
         ).stdout
         return re.search(b"at level [0-9]+ in full", output) is not None
     return False
 
 
 def is_non_protocol_testnet(network):
-    return network == "mainnet" or network == "ghostnet"
+    return network == "mainnet" or network == "basenet"
 
 
 # Starting from Nairobi protocol, the corresponding testnet
 # is no longer a named network, so we need to provide the URL
 # of the network configuration instead of the network name
-# in 'octez-node config init' command.
+# in 'mavkit-node config init' command.
 def network_name_or_teztnets_url(network):
     if is_non_protocol_testnet(network):
         return network
@@ -195,11 +195,11 @@ def network_name_or_teztnets_url(network):
 
 network_query = Step(
     id="network",
-    prompt="Which Tezos network would you like to use?\nCurrently supported:",
+    prompt="Which Mavryk network would you like to use?\nCurrently supported:",
     help="The selected network will be used to set up all required services.\n"
-    "The currently supported protocol is PtParisB (used on `paris2net`, `ghostnet, and `mainnet`)\n"
-    "and PsParisC (used on `pariscnet`, is going to be used on `ghostnet`, and `mainnet`).\n"
-    "Keep in mind that you must select the test network (e.g. ghostnet)\n"
+    "The currently supported protocol is PtBoreas (used on `boreasnet`, `basenet, and `mainnet`)\n"
+    "and PtBoreas (used on `boreasnet`, is going to be used on `basenet`, and `mainnet`).\n"
+    "Keep in mind that you must select the test network (e.g. basenet)\n"
     "if you plan on baking with a faucet JSON file.\n",
     options=networks,
     validator=Validator(validators.enum_range(networks)),
@@ -208,9 +208,9 @@ network_query = Step(
 service_mode_query = Step(
     id="mode",
     prompt="Do you want to set up baking or to run the standalone node?",
-    help="By default, tezos-baking provides predefined services for running baking instances "
-    "on different networks.\nSometimes, however, you might want to only run the Tezos node.\n"
-    "When this option is chosen, this wizard will help you bootstrap the Tezos node only.",
+    help="By default, mavryk-baking provides predefined services for running baking instances "
+    "on different networks.\nSometimes, however, you might want to only run the Mavryk node.\n"
+    "When this option is chosen, this wizard will help you bootstrap the Mavryk node only.",
     options=modes,
     validator=Validator(validators.enum_range(modes)),
 )
@@ -227,10 +227,10 @@ systemd_mode_query = Step(
 liquidity_toggle_vote_query = Step(
     id="liquidity_toggle_vote",
     prompt="Would you like to request to end the Liquidity Baking subsidy?",
-    help="Tezos chain offers a Liquidity Baking subsidy mechanism to incentivise exchange\n"
+    help="Mavryk chain offers a Liquidity Baking subsidy mechanism to incentivise exchange\n"
     "between tez and tzBTC. You can ask to end this subsidy, ask to continue it, or abstain.\n"
     "\nYou can read more about this in the here:\n"
-    "https://tezos.gitlab.io/active/liquidity_baking.html",
+    "https://protocol.mavryk.org/active/liquidity_baking.html",
     options=toggle_vote_modes,
     validator=Validator(validators.enum_range(toggle_vote_modes)),
 )
@@ -276,19 +276,18 @@ def get_snapshot_mode_query(config):
 
     return Step(
         id="snapshot_mode",
-        prompt="The Tezos node can take a significant time to bootstrap from scratch.\n"
+        prompt="The Mavryk node can take a significant time to bootstrap from scratch.\n"
         "Bootstrapping from a snapshot is suggested instead.\n"
         "How would you like to proceed?",
-        help="A fully-synced local Tezos node is required for running a baking instance.\n"
-        "By default, the Tezos node service will start to bootstrap from scratch,\n"
+        help="A fully-synced local Mavryk node is required for running a baking instance.\n"
+        "By default, the Mavryk node service will start to bootstrap from scratch,\n"
         "which will take a significant amount of time.\nIn order to avoid this, we suggest "
         "bootstrapping from a snapshot instead.\n\n"
         "Snapshots can be downloaded from the following websites:\n"
-        "Tzinit - https://snapshots.tzinit.org/ \n\n"
-        "Marigold - https://snapshots.tezos.marigold.dev/ \n"
+        "Mavryk Dynamics - https://snapshots.mavryk.network/ \n"
         "We recommend to use rolling snapshots. This is the smallest and the fastest mode\n"
-        "that is sufficient for baking. You can read more about other Tezos node history modes here:\n"
-        "https://tezos.gitlab.io/user/history_modes.html#history-modes",
+        "that is sufficient for baking. You can read more about other Mavryk node history modes here:\n"
+        "https://protocol.mavryk.org/user/history_modes.html#history-modes",
         options=import_modes,
         validator=Validator(validators.enum_range(import_modes)),
     )
@@ -296,7 +295,7 @@ def get_snapshot_mode_query(config):
 
 delete_node_data_options = {
     "no": "Keep the existing data",
-    "yes": "Remove the data under the tezos node data directory",
+    "yes": "Remove the data under the mavryk node data directory",
 }
 
 delete_node_data_query = Step(
@@ -312,7 +311,7 @@ snapshot_file_query = Step(
     id="snapshot_file",
     prompt="Provide the path to the node snapshot file.",
     help="You have indicated wanting to import the snapshot from a file.\n"
-    "You can download the snapshot yourself e.g. from Tzinit or Tezos Giganode Snapshots.",
+    "You can download the snapshot yourself e.g. from Tzinit or Mavryk Giganode Snapshots.",
     default=None,
     validator=Validator([validators.required_field, validators.filepath]),
 )
@@ -345,10 +344,10 @@ snapshot_sha256_query = Step(
 history_mode_query = Step(
     id="history_mode",
     prompt="Which history mode do you want your node to run in?",
-    help="History modes govern how much data a Tezos node stores, and, consequently, how much disk\n"
+    help="History modes govern how much data a Mavryk node stores, and, consequently, how much disk\n"
     "space is required. Rolling mode is the smallest and fastest but still sufficient for baking.\n"
     "You can read more about different nodes history modes here:\n"
-    "https://tezos.gitlab.io/user/history_modes.html",
+    "https://protocol.mavryk.org/user/history_modes.html",
     options=history_modes,
     validator=Validator(validators.enum_range(history_modes)),
 )
@@ -359,7 +358,7 @@ def get_key_mode_query(modes):
         id="key_import_mode",
         prompt="How do you want to import the baker key?",
         help="To register the baker, its secret key needs to be imported to the data "
-        "directory first.\nBy default tezos-baking-<network>.service will use the 'baker' "
+        "directory first.\nBy default mavryk-baking-<network>.service will use the 'baker' "
         "alias\nfor the key that will be used for baking and attesting.\n"
         "If you want to test baking with a faucet file, "
         "make sure you have chosen a test network like " + list(networks.keys())[1],
@@ -401,14 +400,14 @@ def get_stake_tez_query(staked_balance, minimal_frozen_stake):
         f"You have to stake at least {show_tez(str(at_least))}Tz.\n"
         "How much would you like to stake?",
         help="It is not recommended to stake all the balance, since some funds could require to pay the fees.\n"
-        f"For more information, please visit https://tezos.gitlab.io/paris/adaptive_issuance.html#new-staking-mechanism.",
+        f"For more information, please visit https://protocol.mavryk.org/boreas/adaptive_issuance.html#new-staking-mechanism.",
         default=show_tez(str(at_least)),
         validator=Validator([validators.tez_bigger_than(at_least / (10**6))]),
     )
 
 
 class Setup(Setup):
-    # Check if there is already some blockchain data in the octez-node data directory,
+    # Check if there is already some blockchain data in the mavkit-node data directory,
     # and ask the user if it can be overwritten.
     def check_blockchain_data(self):
         logging.info("Checking blockchain data")
@@ -417,21 +416,21 @@ class Setup(Setup):
         try:
             node_dir_contents = set(os.listdir(node_dir))
         except FileNotFoundError:
-            print_and_log("The Tezos node data directory does not exist.")
+            print_and_log("The Mavryk node data directory does not exist.")
             print_and_log("  Creating directory: " + node_dir)
             proc_call("sudo mkdir " + node_dir)
-            proc_call("sudo chown tezos:tezos " + node_dir)
+            proc_call("sudo chown mavryk:mavryk " + node_dir)
 
         # Content expected in a configured and clean node data dir
         node_dir_config = set(["config.json", "version.json"])
 
         # Configure data dir if the config is missing
         if not node_dir_config.issubset(node_dir_contents):
-            print_and_log("The Tezos node data directory has not been configured yet.")
+            print_and_log("The Mavryk node data directory has not been configured yet.")
             print_and_log("  Configuring directory: " + node_dir)
             network = self.config["network"]
             proc_call(
-                "sudo -u tezos octez-node-"
+                "sudo -u tezos mavkit-node-"
                 + self.config["network"]
                 + " config init"
                 + " --network "
@@ -443,9 +442,9 @@ class Setup(Setup):
         diff = node_dir_contents - node_dir_config
         if diff:
             logging.info(
-                "The Tezos node data directory already has some blockchain data"
+                "The Mavryk node data directory already has some blockchain data"
             )
-            print("The Tezos node data directory already has some blockchain data:")
+            print("The Mavryk node data directory already has some blockchain data:")
             print("\n".join(["- " + os.path.join(node_dir, path) for path in diff]))
             self.query_step(delete_node_data_query)
             if self.config["delete_node_data"] == "yes":
@@ -453,7 +452,7 @@ class Setup(Setup):
                 # will re-create some of the files while we go on with the wizard
                 print_and_log("Stopping node service")
                 proc_call(
-                    "sudo systemctl stop tezos-node-"
+                    "sudo systemctl stop mavryk-node-"
                     + self.config["network"]
                     + ".service"
                 )
@@ -461,9 +460,9 @@ class Setup(Setup):
                     try:
                         proc_call("sudo rm -r " + os.path.join(node_dir, path))
                     except:
-                        logging.error("Could not clean the Tezos node data directory.")
+                        logging.error("Could not clean the Mavryk node data directory.")
                         print(
-                            "Could not clean the Tezos node data directory. "
+                            "Could not clean the Mavryk node data directory. "
                             "Please do so manually."
                         )
                         raise OSError(
@@ -644,13 +643,13 @@ block timestamp: {timestamp} ({time_ago})
 
     def get_snapshot_from_provider_url(self, url):
         provider = XtzShotsLike("custom", url)
-        if os.path.basename(provider.metadata_url) == "tezos-snapshots.json":
+        if os.path.basename(provider.metadata_url) == "mavryk-snapshots.json":
             return self.get_snapshot_from_provider(provider)
         else:
             try:
                 return self.get_snapshot_from_provider(provider)
             except InterruptStep:
-                provider.metadata_url = os.path.join(url, "tezos-snapshots.json")
+                provider.metadata_url = os.path.join(url, "mavryk-snapshots.json")
                 return self.get_snapshot_from_provider(provider)
 
     # Importing the snapshot for Node bootstrapping
@@ -661,9 +660,9 @@ block timestamp: {timestamp} ({time_ago})
         if do_import:
             self.query_step(history_mode_query)
 
-            logging.info("Updating history mode octez-node config")
+            logging.info("Updating history mode mavkit-node config")
             proc_call(
-                f"sudo -u tezos octez-node-{self.config['network']} config update "
+                f"sudo -u tezos mavkit-node-{self.config['network']} config update "
                 f"--history-mode {self.config['history_mode']}"
             )
 
@@ -738,9 +737,9 @@ block timestamp: {timestamp} ({time_ago})
             if snapshot_block_hash is not None:
                 block_hash_option = " --block " + snapshot_block_hash
 
-            logging.info("Importing snapshot with the octez-node")
+            logging.info("Importing snapshot with the mavkit-node")
             proc_call(
-                "sudo -u tezos octez-node-"
+                "sudo -u tezos mavkit-node-"
                 + self.config["network"]
                 + " snapshot import "
                 + import_flag
@@ -757,7 +756,7 @@ block timestamp: {timestamp} ({time_ago})
             else:
                 print_and_log("Deleted the temporary snapshot file.")
 
-    # Bootstrapping octez-node
+    # Bootstrapping mavkit-node
     def bootstrap_node(self):
 
         self.import_snapshot()
@@ -790,26 +789,26 @@ block timestamp: {timestamp} ({time_ago})
                 "The node setup is finished. It will take some time for the node to bootstrap.",
                 "You can check the progress by running the following command:",
             )
-            print(f"systemctl status tezos-node-{self.config['network']}.service")
+            print(f"systemctl status mavryk-node-{self.config['network']}.service")
 
             print()
-            print_and_log("Exiting the Tezos Setup Wizard.")
+            print_and_log("Exiting the Mavryk Setup Wizard.")
             sys.exit(0)
 
         print_and_log("Waiting for the node to be bootstrapped...")
 
-        tezos_client_options = self.get_tezos_client_options()
+        mavryk_client_options = self.get_mavryk_client_options()
         proc_call(
-            f"sudo -u tezos {suppress_warning_text} octez-client {tezos_client_options} bootstrapped"
+            f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} bootstrapped"
         )
 
         print()
-        print_and_log("The Tezos node bootstrapped successfully.")
+        print_and_log("The Mavryk node bootstrapped successfully.")
 
     # Importing the baker key
     def import_baker_key(self):
         baker_alias = self.config["baker_alias"]
-        tezos_client_options = self.get_tezos_client_options()
+        mavryk_client_options = self.get_mavryk_client_options()
         replace_baker_key = self.check_baker_account()
 
         if replace_baker_key:
@@ -830,14 +829,14 @@ block timestamp: {timestamp} ({time_ago})
                                 color_green,
                             )
                         )
-                        logging.info("Running octez-client to setup ledger")
+                        logging.info("Running mavkit-client to setup ledger")
                         proc_call(
-                            f"sudo -u tezos {suppress_warning_text} octez-client {tezos_client_options} "
+                            f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
                             f"setup ledger to bake for {baker_alias} --main-hwm {self.get_current_head_level()}"
                         )
                         baker_set_up = True
                     except Exception as e:
-                        print("Something went wrong when calling octez-client:")
+                        print("Something went wrong when calling mavkit-client:")
                         print_and_log(str(e), logging.error)
                         print()
                         print("Please check your input and try again.")
@@ -873,7 +872,7 @@ block timestamp: {timestamp} ({time_ago})
             ).stdout.decode("utf-8")
             return json.loads(output)["level_info"]["cycle"]
 
-        tezos_client_options = self.get_tezos_client_options()
+        mavryk_client_options = self.get_mavryk_client_options()
         baker_alias = self.config["baker_alias"]
         baker_key_hash = self.config["baker_key_hash"]
 
@@ -899,17 +898,17 @@ block timestamp: {timestamp} ({time_ago})
 
                 if self.check_ledger_use():
                     ledger_app = "Wallet"
-                    print(f"Please open the Tezos {ledger_app} app on your ledger.")
+                    print(f"Please open the Mavryk {ledger_app} app on your ledger.")
                     print(
                         color(
-                            "Please note, that if you are using Tezos Wallet app of version 3.0.0 or higher,\n"
-                            'you need to enable "expert mode" in the Tezos Wallet app settings on the Ledger device.',
+                            "Please note, that if you are using Mavryk Wallet app of version 3.0.0 or higher,\n"
+                            'you need to enable "expert mode" in the Mavryk Wallet app settings on the Ledger device.',
                             color_yellow,
                         )
                     )
                     print(
                         color(
-                            f"Waiting for the Tezos {ledger_app} to be opened...",
+                            f"Waiting for the Mavryk {ledger_app} to be opened...",
                             color_green,
                         ),
                     )
@@ -922,16 +921,16 @@ block timestamp: {timestamp} ({time_ago})
                     )
 
                 get_proc_output(
-                    f"sudo -u tezos {suppress_warning_text} octez-client {tezos_client_options} "
+                    f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
                     f"stake {self.config['stake_tez']} for {baker_alias}"
                 )
 
                 if self.check_ledger_use():
                     ledger_app = "Baking"
-                    print(f"Please reopen the Tezos {ledger_app} app on your ledger.")
+                    print(f"Please reopen the Mavryk {ledger_app} app on your ledger.")
                     print(
                         color(
-                            f"Waiting for the Tezos {ledger_app} to be opened...",
+                            f"Waiting for the Mavryk {ledger_app} to be opened...",
                             color_green,
                         ),
                     )
@@ -939,7 +938,7 @@ block timestamp: {timestamp} ({time_ago})
 
     def register_baker(self):
         print()
-        tezos_client_options = self.get_tezos_client_options()
+        mavryk_client_options = self.get_mavryk_client_options()
         baker_alias = self.config["baker_alias"]
 
         if self.check_ledger_use():
@@ -950,7 +949,7 @@ block timestamp: {timestamp} ({time_ago})
                 )
             )
         proc_call(
-            f"sudo -u tezos {suppress_warning_text} octez-client {tezos_client_options} "
+            f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
             f"register key {baker_alias} as delegate"
         )
 
@@ -961,18 +960,18 @@ block timestamp: {timestamp} ({time_ago})
 
         net = self.config["network"]
         logging.info(
-            "Replacing tezos-baking service env with liquidity toggle vote setting"
+            "Replacing mavryk-baking service env with liquidity toggle vote setting"
         )
         replace_systemd_service_env(
-            f"tezos-baking-{net}",
+            f"mavryk-baking-{net}",
             "LIQUIDITY_BAKING_TOGGLE_VOTE",
             f"\"{self.config['liquidity_toggle_vote']}\"",
         )
 
     def baker_registered(self):
-        tezos_client_options = self.get_tezos_client_options()
+        mavryk_client_options = self.get_mavryk_client_options()
         baker_alias = self.config["baker_alias"]
-        _, baker_key_hash = get_key_address(tezos_client_options, baker_alias)
+        _, baker_key_hash = get_key_address(mavryk_client_options, baker_alias)
         try:
             output = get_proc_output(
                 f"curl {self.config['node_rpc_endpoint']}/chains/main/blocks/head/context/delegates/{baker_key_hash}"
@@ -987,7 +986,7 @@ block timestamp: {timestamp} ({time_ago})
 
     def run_setup(self):
 
-        logging.info("Starting the Tezos Setup Wizard.")
+        logging.info("Starting the Mavryk Setup Wizard.")
 
         print(welcome_text)
 
@@ -998,7 +997,7 @@ block timestamp: {timestamp} ({time_ago})
         print()
         self.query_step(systemd_mode_query)
 
-        print_and_log("Trying to bootstrap octez-node")
+        print_and_log("Trying to bootstrap mavkit-node")
         self.bootstrap_node()
 
         # If we continue execution here, it means we need to set up baking as well.
@@ -1014,7 +1013,7 @@ block timestamp: {timestamp} ({time_ago})
                     self.config["baker_key_value"],
                     self.config["baker_key_hash"],
                 ) = get_key_address(
-                    self.get_tezos_client_options(), self.config["baker_alias"]
+                    self.get_mavryk_client_options(), self.config["baker_alias"]
                 )
                 if not self.baker_registered():
                     print_and_log("Registering the baker")
@@ -1031,7 +1030,7 @@ block timestamp: {timestamp} ({time_ago})
                 raise EOFError
             except Exception as e:
                 print_and_log(
-                    "Something went wrong when calling octez-client:", logging.error
+                    "Something went wrong when calling mavkit-client:", logging.error
                 )
                 print_and_log(str(e), logging.error)
                 print()
@@ -1048,7 +1047,7 @@ block timestamp: {timestamp} ({time_ago})
 
         print()
         print(
-            "Congratulations! All required Tezos infrastructure services should now be started."
+            "Congratulations! All required Mavryk infrastructure services should now be started."
         )
         print(
             "You can show logs for all the services using the 'tezos' user by running:"
@@ -1057,14 +1056,14 @@ block timestamp: {timestamp} ({time_ago})
 
         print()
         print("To stop the baking instance, run:")
-        print(f"sudo systemctl stop tezos-baking-{self.config['network']}.service")
+        print(f"sudo systemctl stop mavryk-baking-{self.config['network']}.service")
 
         print()
         print(
             "If you previously enabled the baking service and want to disable it, run:"
         )
-        print(f"sudo systemctl disable tezos-baking-{self.config['network']}.service")
-        logging.info("Exiting the Tezos Setup Wizard.")
+        print(f"sudo systemctl disable mavryk-baking-{self.config['network']}.service")
+        logging.info("Exiting the Mavryk Setup Wizard.")
 
 
 def main():
@@ -1072,46 +1071,46 @@ def main():
     readline.set_completer_delims(" ")
 
     try:
-        setup_logger("tezos-setup.log")
+        setup_logger("mavryk-setup.log")
         setup = Setup()
         setup.run_setup()
     except KeyboardInterrupt as e:
         if "network" in setup.config:
             proc_call(
-                "sudo systemctl stop tezos-baking-"
+                "sudo systemctl stop mavryk-baking-"
                 + setup.config["network"]
                 + ".service"
             )
         logging.info(f"Received keyboard interrupt.")
-        print_and_log("Exiting the Tezos Setup Wizard.")
+        print_and_log("Exiting the Mavryk Setup Wizard.")
         sys.exit(1)
     except EOFError as e:
         if "network" in setup.config:
             proc_call(
-                "sudo systemctl stop tezos-baking-"
+                "sudo systemctl stop mavryk-baking-"
                 + setup.config["network"]
                 + ".service"
             )
         logging.info(f"Reached EOF.")
-        print_and_log("Exiting the Tezos Setup Wizard.")
+        print_and_log("Exiting the Mavryk Setup Wizard.")
         sys.exit(1)
     except Exception as e:
         if "network" in setup.config:
             proc_call(
-                "sudo systemctl stop tezos-baking-"
+                "sudo systemctl stop mavryk-baking-"
                 + setup.config["network"]
                 + ".service"
             )
 
         print_and_log(
-            "Error in the Tezos Setup Wizard, exiting.",
+            "Error in the Mavryk Setup Wizard, exiting.",
             log=logging.error,
             colorcode=color_red,
         )
 
-        log_exception(exception=e, logfile="tezos-setup.log")
+        log_exception(exception=e, logfile="mavryk-setup.log")
 
-        logging.info("Exiting the Tezos Setup Wizard.")
+        logging.info("Exiting the Mavryk Setup Wizard.")
         sys.exit(1)
 
 

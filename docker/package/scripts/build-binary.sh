@@ -11,7 +11,7 @@ export OPAMROOT=$PWD/opamroot
 dune_filepath="$1"
 binary_name="$2"
 
-cd tezos
+cd mavryk
 opam init local ../opam-repository --bare --disable-sandboxing
 opam switch create . --repositories=local --no-install
 
@@ -19,7 +19,7 @@ eval "$(opam env)"
 OPAMASSUMEDEPEXTS=true opam install conf-rust conf-rust-2021
 
 export CFLAGS="-fPIC ${CFLAGS:-}"
-opam install opam/virtual/octez-deps.opam --deps-only --criteria="-notuptodate,-changed,-removed"
+opam install opam/virtual/mavkit-deps.opam --deps-only --criteria="-notuptodate,-changed,-removed"
 
 eval "$(opam env)"
 dune build "$dune_filepath"

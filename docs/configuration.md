@@ -16,31 +16,31 @@ Options can be modified by editing the configuration files.
 
 For example, using the commonly pre-installed `nano` editor:
 ```sh
-sudo nano /etc/default/tezos-node-mainnet
+sudo nano /etc/default/mavryk-node-mainnet
 ```
-can be used to modify the behavior of the `mainnet` tezos node service (and not
+can be used to modify the behavior of the `mainnet` mavryk node service (and not
 only, see below).
 
 Note that if a service is already running it will be necessary to restart it, e.g.
 ```sh
-sudo systemctl restart tezos-node-mainnet.service
+sudo systemctl restart mavryk-node-mainnet.service
 ```
 in order for the changes to take effect.
 
-In case you [set up baking using the `tezos-setup`](./baking.md), running:
+In case you [set up baking using the `mavryk-setup`](./baking.md), running:
 ```sh
-sudo systemctl restart tezos-baking-<network>.service
+sudo systemctl restart mavryk-baking-<network>.service
 ```
 will be sufficient, as all the services involved will be restarted.
-Running again `tezos-setup` and following the setup process is also an option.
+Running again `mavryk-setup` and following the setup process is also an option.
 
 ## Utility node scripts
 
 Installing packages on Ubuntu or Fedora will also install some utility scripts
-for tezos nodes: a `tezos-node-<network>` for every currently supported Tezos `<network>`.
+for mavryk nodes: a `mavryk-node-<network>` for every currently supported Mavryk `<network>`.
 
-Calling these scripts has the same effect as running `tezos-node` with the env
-variables in the `/etc/default/tezos-node-<network>` given to it.
+Calling these scripts has the same effect as running `mavryk-node` with the env
+variables in the `/etc/default/mavryk-node-<network>` given to it.
 
 ## Available options
 
@@ -54,55 +54,55 @@ aware of the change as well.
 
 | Variable                       | Location                        | Description                                                                              | Potentially affected services                                                                |
 | ------------------------------ | ------------------------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `NODE_RPC_SCHEME`              | `tezos-accuser-<proto>`         | Scheme of the node RPC endpoint, e.g. `http`, `https`                                    | `tezos-accuser-<proto>`                                                                      |
-| `NODE_RPC_ADDR`                | `tezos-accuser-<proto>`         | Address of the node RPC endpoint, e.g. `localhost:8732`, `node.example.org:8732`         | `tezos-accuser-<proto>`                                                                      |
-| `TEZOS_CLIENT_DIR`             | `tezos-accuser-<proto>`         | Path to the tezos client data directory, e.g. `/var/lib/tezos/.tezos-client`             | `tezos-accuser-<proto>`                                                                      |
-| `TEZOS_CLIENT_DIR`             | `tezos-baker-<proto>`           | Tezos client data directory, e.g. `/var/lib/tezos/.tezos-client`                         | `tezos-baker-<proto>`                                                                        |
-| `BAKER_ADDRESS_ALIAS`          | `tezos-baker-<proto>`           | Alias of the address to be used for baking, e.g. `baker`                                 | `tezos-baker-<proto>`                                                                        |
-| `LIQUIDITY_BAKING_TOGGLE_VOTE` | `tezos-baker-<proto>`           | Liquidity baking toggle vote to be cast while baking, e.g. `pass`, `on`, `off`           | `tezos-baker-<proto>`                                                                        |
-| `TEZOS_NODE_DIR`               | `tezos-baker-<proto>`           | Path to the tezos node data directory, e.g. `/var/lib/tezos/node`                        | `tezos-baker-<proto>`                                                                        |
-| `NODE_RPC_SCHEME`              | `tezos-baker-<proto>`           | Scheme of the node RPC endpoint, e.g. `http`, `https`                                    | `tezos-baker-<proto>`                                                                        |
-| `NODE_RPC_ADDR`                | `tezos-baker-<proto>`           | Address of the node RPC endpoint, e.g. `localhost:8732`, `node.example.org:8732`         | `tezos-baker-<proto>`                                                                        |
-| `TEZOS_CLIENT_DIR`             | `tezos-baking-custom@<network>` | Path to the tezos client data directory, e.g. `/var/lib/tezos/.tezos-client`             | `tezos-baking-custom@<network>`                                                              |
-| `NODE_RPC_SCHEME`              | `tezos-baking-custom@<network>` | Scheme of the node RPC endpoint, e.g. `http`, `https`                                    | `tezos-baking-custom@<network>`                                                              |
-| `BAKER_ADDRESS_ALIAS`          | `tezos-baking-custom@<network>` | Alias of the address to be used for baking, e.g. `baker`.                                | `tezos-baking-custom@<network>`                                                              |
-| `LIQUIDITY_BAKING_TOGGLE_VOTE` | `tezos-baking-custom@<network>` | Liquidity baking toggle vote to be cast while baking, e.g. `pass`, `on`, `off`           | `tezos-baking-custom@<network>`                                                              |
-| `TEZOS_CLIENT_DIR`             | `tezos-baking-<network>`        | Path to the tezos client data directory, e.g. `/var/lib/tezos/.tezos-client`             | `tezos-baking-<network>`, `tezos-accuser-<proto>@<network>`, `tezos-baker-<proto>@<network>` |
-| `NODE_RPC_SCHEME`              | `tezos-baking-<network>`        | Scheme of the node RPC endpoint, e.g. `http`, `https`                                    | `tezos-baking-<network>`, `tezos-accuser-<proto>@<network>`, `tezos-baker-<proto>@<network>` |
-| `BAKER_ADDRESS_ALIAS`          | `tezos-baking-<network>`        | Alias of the address to be used for baking, e.g. `baker`.                                | `tezos-baking-<network>`, `tezos-accuser-<proto>@<network>`, `tezos-baker-<proto>@<network>` |
-| `LIQUIDITY_BAKING_TOGGLE_VOTE` | `tezos-baking-<network>`        | Liquidity baking toggle vote to be cast while baking, e.g. `pass`, `on`, `off`           | `tezos-baking-<network>`, `tezos-accuser-<proto>@<network>`, `tezos-baker-<proto>@<network>` |
-| `NODE_RPC_ADDR`                | `tezos-node-<network>`          | Address used by this node to serve the RPC, e.g. `127.0.0.1:8732`                        | `tezos-node-<network>`, `tezos-baking-<network>`, `tezos-baker-<proto>@<network>`            |
-| `CERT_PATH`                    | `tezos-node-<network>`          | Path to the TLS certificate, e.g. `/var/lib/tezos/.tls-certificate`                      | `tezos-node-<network>`, `tezos-baking-<network>`, `tezos-baker-<proto>@<network>`            |
-| `KEY_PATH`                     | `tezos-node-<network>`          | Path to the TLS key, e.g. `/var/lib/tezos/.tls-key`                                      | `tezos-node-<network>`, `tezos-baking-<network>`, `tezos-baker-<proto>@<network>`            |
-| `TEZOS_NODE_DIR`               | `tezos-node-<network>`          | Path to the tezos node data directory, e.g. `/var/lib/tezos/node`                        | `tezos-node-<network>`, `tezos-baking-<network>`, `tezos-baker-<proto>@<network>`            |
-| `NETWORK`                      | `tezos-node-<network>`          | Name of the network that this node will run on, e.g. `mainnet`, `ghostnet`               | `tezos-node-<network>`, `tezos-baking-<network>`, `tezos-baker-<proto>@<network>`            |
-| `NODE_RPC_ADDR`                | `tezos-node-custom@<network>`   | Address used by this node to serve the RPC, e.g. `127.0.0.1:8732`                        | `tezos-baking-custom@<network>`, `tezos-node-custom@<network>`                               |
-| `CERT_PATH`                    | `tezos-node-custom@<network>`   | Path to the TLS certificate, e.g. `/var/lib/tezos/.tls-certificate`                      | `tezos-baking-custom@<network>`, `tezos-node-custom@<network>`                               |
-| `KEY_PATH`                     | `tezos-node-custom@<network>`   | Path to the TLS key, e.g. `/var/lib/tezos/.tls-key`                                      | `tezos-baking-custom@<network>`, `tezos-node-custom@<network>`                               |
-| `TEZOS_NODE_DIR`               | `tezos-node-custom@<network>`   | Path to the tezos node data directory, e.g. `/var/lib/tezos/node`                        | `tezos-baking-custom@<network>`, `tezos-node-custom@<network>`                               |
-| `CUSTOM_NODE_CONFIG`           | `tezos-node-custom@<network>`   | Path to the custom configuration file used by this node, e.g. `/var/lib/tezos/node.json` | `tezos-baking-custom@<network>`, `tezos-node-custom@<network>`                               |
-| `RESET_ON_STOP`                | `tezos-node-custom@<network>`   | Whether the node should be reset when the node service is stopped, e.g. `true`           | `tezos-baking-custom@<network>`, `tezos-node-custom@<network>`                               |
-| `TEZOS_CLIENT_DIR`             | `tezos-signer-<mode>`           | Path to the tezos client data directory, e.g. `/var/lib/tezos/.tezos-client`             | `tezos-signer-<mode>`                                                                        |
-| `PIDFILE`                      | `tezos-signer-<mode>`           | File in which to write the signer process id, e.g. `/var/lib/tezos/.signer-pid`          | `tezos-signer-<mode>`                                                                        |
-| `MAGIC_BYTES`                  | `tezos-signer-<mode>`           | Values allowed for the magic bytes.                                                      | `tezos-signer-<mode>`                                                                        |
-| `CHECK_HIGH_WATERMARK`         | `tezos-signer-<mode>`           | Whether to apply the high watermark restriction or not, e.g. `true`                      | `tezos-signer-<mode>`                                                                        |
-| `CERT_PATH`                    | `tezos-signer-http`             | Path to the TLS certificate, e.g. `/var/lib/tezos/.tls-certificate`                      | `tezos-signer-http`                                                                          |
-| `KEY_PATH`                     | `tezos-signer-http`             | Path to the TLS key, e.g. `/var/lib/tezos/.tls-key`                                      | `tezos-signer-http`                                                                          |
-| `ADDRESS`                      | `tezos-signer-http`             | Listening address or hostname for the signer, e.g. `localhost`                           | `tezos-signer-http`                                                                          |
-| `PORT`                         | `tezos-signer-http`             | Listening HTTP port for the signer, e.g. `6732`                                          | `tezos-signer-http`                                                                          |
-| `CERT_PATH`                    | `tezos-signer-https`            | Path to the TLS certificate, e.g. `/var/lib/tezos/.tls-certificate`                      | `tezos-signer-https`                                                                         |
-| `KEY_PATH`                     | `tezos-signer-https`            | Path to the TLS key, e.g. `/var/lib/tezos/.tls-key`                                      | `tezos-signer-https`                                                                         |
-| `ADDRESS`                      | `tezos-signer-https`            | Listening address or hostname for the signer, e.g. `localhost`                           | `tezos-signer-https`                                                                         |
-| `PORT`                         | `tezos-signer-https`            | Listening HTTPS port for the signer, e.g. `443`                                          | `tezos-signer-https`                                                                         |
-| `ADDRESS`                      | `tezos-signer-tcp`              | Listening address or hostname for the signer, e.g. `localhost`                           | `tezos-signer-tcp`                                                                           |
-| `PORT`                         | `tezos-signer-tcp`              | Listening TCP port for the signer, e.g. `7732`                                           | `tezos-signer-tcp`                                                                           |
-| `TIMEOUT`                      | `tezos-signer-tcp`              | Timeout used by the signer to close client connections (in seconds), e.g. `8`            | `tezos-signer-tcp`                                                                           |
-| `SOCKET`                       | `tezos-signer-unix`             | Path to the local socket file, e.g. `/var/lib/tezos/.tezos-signer/socket`                | `tezos-signer-unix`                                                                          |
-| `TEZOS_CLIENT_DIR`             | `tezos-smart-rollup-node-<proto>`  | Path to the tezos client data directory, e.g. `/var/lib/tezos/.tezos-client`             | `tezos-smart-rollup-node-<proto>`                                                               |
-| `NODE_RPC_SCHEME`              | `tezos-smart-rollup-node-<proto>`  | Scheme of the node RPC endpoint, e.g. `http`, `https`                                    | `tezos-smart-rollup-node-<proto>`                                                               |
-| `NODE_RPC_ADDR`                | `tezos-smart-rollup-node-<proto>`  | Address of the node RPC endpoint, e.g. `localhost:8732`, `node.example.org:8732`         | `tezos-smart-rollup-node-<proto>`                                                               |
-| `ROLLUP_NODE_RPC_ENDPOINT`     | `tezos-smart-rollup-node-<proto>`  | Address of this rollup node RPC endpoint, e.g. `127.0.0.1:8472`                          | `tezos-smart-rollup-node-<proto>`                                                               |
-| `ROLLUP_MODE`                  | `tezos-smart-rollup-node-<proto>`  | Rollup mode used by this node, e.g. `accuser`, `observer`, `batcher`                     | `tezos-smart-rollup-node-<proto>`                                                               |
-| `ROLLUP_ALIAS`                 | `tezos-smart-rollup-node-<proto>`  | Alias of the address to be used for rollup, e.g. `rollup`                                | `tezos-smart-rollup-node-<proto>`                                                               |
-| `ROLLUP_OPERATORS`             | `tezos-smart-rollup-node-<proto>`  | Operator address or alias for node operations in non-observer modes                     |`tezos-smart-rollup-node-<proto>`|
-| `ROLLUP_DATA_DIR`| `tezos-smart-rollup-node-<proto>`  | Directory to store rollup data | `tezos-smart-rollup-node-<proto>` |
+| `NODE_RPC_SCHEME`              | `mavryk-accuser-<proto>`         | Scheme of the node RPC endpoint, e.g. `http`, `https`                                    | `mavryk-accuser-<proto>`                                                                      |
+| `NODE_RPC_ADDR`                | `mavryk-accuser-<proto>`         | Address of the node RPC endpoint, e.g. `localhost:8732`, `node.example.org:8732`         | `mavryk-accuser-<proto>`                                                                      |
+| `MAVRYK_CLIENT_DIR`             | `mavryk-accuser-<proto>`         | Path to the mavryk client data directory, e.g. `/var/lib/mavryk/.mavryk-client`             | `mavryk-accuser-<proto>`                                                                      |
+| `MAVRYK_CLIENT_DIR`             | `mavryk-baker-<proto>`           | Mavryk client data directory, e.g. `/var/lib/mavryk/.mavryk-client`                         | `mavryk-baker-<proto>`                                                                        |
+| `BAKER_ADDRESS_ALIAS`          | `mavryk-baker-<proto>`           | Alias of the address to be used for baking, e.g. `baker`                                 | `mavryk-baker-<proto>`                                                                        |
+| `LIQUIDITY_BAKING_TOGGLE_VOTE` | `mavryk-baker-<proto>`           | Liquidity baking toggle vote to be cast while baking, e.g. `pass`, `on`, `off`           | `mavryk-baker-<proto>`                                                                        |
+| `MAVRYK_NODE_DIR`               | `mavryk-baker-<proto>`           | Path to the mavryk node data directory, e.g. `/var/lib/mavryk/node`                        | `mavryk-baker-<proto>`                                                                        |
+| `NODE_RPC_SCHEME`              | `mavryk-baker-<proto>`           | Scheme of the node RPC endpoint, e.g. `http`, `https`                                    | `mavryk-baker-<proto>`                                                                        |
+| `NODE_RPC_ADDR`                | `mavryk-baker-<proto>`           | Address of the node RPC endpoint, e.g. `localhost:8732`, `node.example.org:8732`         | `mavryk-baker-<proto>`                                                                        |
+| `MAVRYK_CLIENT_DIR`             | `mavryk-baking-custom@<network>` | Path to the mavryk client data directory, e.g. `/var/lib/mavryk/.mavryk-client`             | `mavryk-baking-custom@<network>`                                                              |
+| `NODE_RPC_SCHEME`              | `mavryk-baking-custom@<network>` | Scheme of the node RPC endpoint, e.g. `http`, `https`                                    | `mavryk-baking-custom@<network>`                                                              |
+| `BAKER_ADDRESS_ALIAS`          | `mavryk-baking-custom@<network>` | Alias of the address to be used for baking, e.g. `baker`.                                | `mavryk-baking-custom@<network>`                                                              |
+| `LIQUIDITY_BAKING_TOGGLE_VOTE` | `mavryk-baking-custom@<network>` | Liquidity baking toggle vote to be cast while baking, e.g. `pass`, `on`, `off`           | `mavryk-baking-custom@<network>`                                                              |
+| `MAVRYK_CLIENT_DIR`             | `mavryk-baking-<network>`        | Path to the mavryk client data directory, e.g. `/var/lib/mavryk/.mavryk-client`             | `mavryk-baking-<network>`, `mavryk-accuser-<proto>@<network>`, `mavryk-baker-<proto>@<network>` |
+| `NODE_RPC_SCHEME`              | `mavryk-baking-<network>`        | Scheme of the node RPC endpoint, e.g. `http`, `https`                                    | `mavryk-baking-<network>`, `mavryk-accuser-<proto>@<network>`, `mavryk-baker-<proto>@<network>` |
+| `BAKER_ADDRESS_ALIAS`          | `mavryk-baking-<network>`        | Alias of the address to be used for baking, e.g. `baker`.                                | `mavryk-baking-<network>`, `mavryk-accuser-<proto>@<network>`, `mavryk-baker-<proto>@<network>` |
+| `LIQUIDITY_BAKING_TOGGLE_VOTE` | `mavryk-baking-<network>`        | Liquidity baking toggle vote to be cast while baking, e.g. `pass`, `on`, `off`           | `mavryk-baking-<network>`, `mavryk-accuser-<proto>@<network>`, `mavryk-baker-<proto>@<network>` |
+| `NODE_RPC_ADDR`                | `mavryk-node-<network>`          | Address used by this node to serve the RPC, e.g. `127.0.0.1:8732`                        | `mavryk-node-<network>`, `mavryk-baking-<network>`, `mavryk-baker-<proto>@<network>`            |
+| `CERT_PATH`                    | `mavryk-node-<network>`          | Path to the TLS certificate, e.g. `/var/lib/mavryk/.tls-certificate`                      | `mavryk-node-<network>`, `mavryk-baking-<network>`, `mavryk-baker-<proto>@<network>`            |
+| `KEY_PATH`                     | `mavryk-node-<network>`          | Path to the TLS key, e.g. `/var/lib/mavryk/.tls-key`                                      | `mavryk-node-<network>`, `mavryk-baking-<network>`, `mavryk-baker-<proto>@<network>`            |
+| `MAVRYK_NODE_DIR`               | `mavryk-node-<network>`          | Path to the mavryk node data directory, e.g. `/var/lib/mavryk/node`                        | `mavryk-node-<network>`, `mavryk-baking-<network>`, `mavryk-baker-<proto>@<network>`            |
+| `NETWORK`                      | `mavryk-node-<network>`          | Name of the network that this node will run on, e.g. `mainnet`, `basenet`               | `mavryk-node-<network>`, `mavryk-baking-<network>`, `mavryk-baker-<proto>@<network>`            |
+| `NODE_RPC_ADDR`                | `mavryk-node-custom@<network>`   | Address used by this node to serve the RPC, e.g. `127.0.0.1:8732`                        | `mavryk-baking-custom@<network>`, `mavryk-node-custom@<network>`                               |
+| `CERT_PATH`                    | `mavryk-node-custom@<network>`   | Path to the TLS certificate, e.g. `/var/lib/mavryk/.tls-certificate`                      | `mavryk-baking-custom@<network>`, `mavryk-node-custom@<network>`                               |
+| `KEY_PATH`                     | `mavryk-node-custom@<network>`   | Path to the TLS key, e.g. `/var/lib/mavryk/.tls-key`                                      | `mavryk-baking-custom@<network>`, `mavryk-node-custom@<network>`                               |
+| `MAVRYK_NODE_DIR`               | `mavryk-node-custom@<network>`   | Path to the mavryk node data directory, e.g. `/var/lib/mavryk/node`                        | `mavryk-baking-custom@<network>`, `mavryk-node-custom@<network>`                               |
+| `CUSTOM_NODE_CONFIG`           | `mavryk-node-custom@<network>`   | Path to the custom configuration file used by this node, e.g. `/var/lib/mavryk/node.json` | `mavryk-baking-custom@<network>`, `mavryk-node-custom@<network>`                               |
+| `RESET_ON_STOP`                | `mavryk-node-custom@<network>`   | Whether the node should be reset when the node service is stopped, e.g. `true`           | `mavryk-baking-custom@<network>`, `mavryk-node-custom@<network>`                               |
+| `MAVRYK_CLIENT_DIR`             | `mavryk-signer-<mode>`           | Path to the mavryk client data directory, e.g. `/var/lib/mavryk/.mavryk-client`             | `mavryk-signer-<mode>`                                                                        |
+| `PIDFILE`                      | `mavryk-signer-<mode>`           | File in which to write the signer process id, e.g. `/var/lib/mavryk/.signer-pid`          | `mavryk-signer-<mode>`                                                                        |
+| `MAGIC_BYTES`                  | `mavryk-signer-<mode>`           | Values allowed for the magic bytes.                                                      | `mavryk-signer-<mode>`                                                                        |
+| `CHECK_HIGH_WATERMARK`         | `mavryk-signer-<mode>`           | Whether to apply the high watermark restriction or not, e.g. `true`                      | `mavryk-signer-<mode>`                                                                        |
+| `CERT_PATH`                    | `mavryk-signer-http`             | Path to the TLS certificate, e.g. `/var/lib/mavryk/.tls-certificate`                      | `mavryk-signer-http`                                                                          |
+| `KEY_PATH`                     | `mavryk-signer-http`             | Path to the TLS key, e.g. `/var/lib/mavryk/.tls-key`                                      | `mavryk-signer-http`                                                                          |
+| `ADDRESS`                      | `mavryk-signer-http`             | Listening address or hostname for the signer, e.g. `localhost`                           | `mavryk-signer-http`                                                                          |
+| `PORT`                         | `mavryk-signer-http`             | Listening HTTP port for the signer, e.g. `6732`                                          | `mavryk-signer-http`                                                                          |
+| `CERT_PATH`                    | `mavryk-signer-https`            | Path to the TLS certificate, e.g. `/var/lib/mavryk/.tls-certificate`                      | `mavryk-signer-https`                                                                         |
+| `KEY_PATH`                     | `mavryk-signer-https`            | Path to the TLS key, e.g. `/var/lib/mavryk/.tls-key`                                      | `mavryk-signer-https`                                                                         |
+| `ADDRESS`                      | `mavryk-signer-https`            | Listening address or hostname for the signer, e.g. `localhost`                           | `mavryk-signer-https`                                                                         |
+| `PORT`                         | `mavryk-signer-https`            | Listening HTTPS port for the signer, e.g. `443`                                          | `mavryk-signer-https`                                                                         |
+| `ADDRESS`                      | `mavryk-signer-tcp`              | Listening address or hostname for the signer, e.g. `localhost`                           | `mavryk-signer-tcp`                                                                           |
+| `PORT`                         | `mavryk-signer-tcp`              | Listening TCP port for the signer, e.g. `7732`                                           | `mavryk-signer-tcp`                                                                           |
+| `TIMEOUT`                      | `mavryk-signer-tcp`              | Timeout used by the signer to close client connections (in seconds), e.g. `8`            | `mavryk-signer-tcp`                                                                           |
+| `SOCKET`                       | `mavryk-signer-unix`             | Path to the local socket file, e.g. `/var/lib/mavryk/.mavryk-signer/socket`                | `mavryk-signer-unix`                                                                          |
+| `MAVRYK_CLIENT_DIR`             | `mavryk-smart-rollup-node-<proto>`  | Path to the mavryk client data directory, e.g. `/var/lib/mavryk/.mavryk-client`             | `mavryk-smart-rollup-node-<proto>`                                                               |
+| `NODE_RPC_SCHEME`              | `mavryk-smart-rollup-node-<proto>`  | Scheme of the node RPC endpoint, e.g. `http`, `https`                                    | `mavryk-smart-rollup-node-<proto>`                                                               |
+| `NODE_RPC_ADDR`                | `mavryk-smart-rollup-node-<proto>`  | Address of the node RPC endpoint, e.g. `localhost:8732`, `node.example.org:8732`         | `mavryk-smart-rollup-node-<proto>`                                                               |
+| `ROLLUP_NODE_RPC_ENDPOINT`     | `mavryk-smart-rollup-node-<proto>`  | Address of this rollup node RPC endpoint, e.g. `127.0.0.1:8472`                          | `mavryk-smart-rollup-node-<proto>`                                                               |
+| `ROLLUP_MODE`                  | `mavryk-smart-rollup-node-<proto>`  | Rollup mode used by this node, e.g. `accuser`, `observer`, `batcher`                     | `mavryk-smart-rollup-node-<proto>`                                                               |
+| `ROLLUP_ALIAS`                 | `mavryk-smart-rollup-node-<proto>`  | Alias of the address to be used for rollup, e.g. `rollup`                                | `mavryk-smart-rollup-node-<proto>`                                                               |
+| `ROLLUP_OPERATORS`             | `mavryk-smart-rollup-node-<proto>`  | Operator address or alias for node operations in non-observer modes                     |`mavryk-smart-rollup-node-<proto>`|
+| `ROLLUP_DATA_DIR`| `mavryk-smart-rollup-node-<proto>`  | Directory to store rollup data | `mavryk-smart-rollup-node-<proto>` |

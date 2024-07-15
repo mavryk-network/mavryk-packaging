@@ -6,19 +6,17 @@
 with lib;
 
 let
-  octez-baker-pkgs = {
-    "PtParisB" =
-      "${pkgs.octezPackages.octez-baker-PtParisB}/bin/octez-baker-PtParisB";
-    "PsParisC" =
-      "${pkgs.octezPackages.octez-baker-PtParisB}/bin/octez-baker-PsParisC";
+  mavkit-baker-pkgs = {
+    "PtBoreas" =
+      "${pkgs.mavkitPackages.mavkit-baker-PtBoreas}/bin/mavkit-baker-PtBoreas";
   };
-  octez-client = "${pkgs.octezPackages.octez-client}/bin/octez-client";
-  cfg = config.services.octez-baker;
+  mavkit-client = "${pkgs.mavkitPackages.mavkit-client}/bin/mavkit-client";
+  cfg = config.services.mavkit-baker;
   common = import ./common.nix { inherit lib; inherit pkgs; };
   instanceOptions = types.submodule ( {...} : {
     options = common.daemonOptions // {
 
-      enable = mkEnableOption "Octez baker service";
+      enable = mkEnableOption "Mavkit baker service";
 
       bakerSecretKey = mkOption {
         type = types.nullOr types.str;
@@ -33,7 +31,7 @@ let
         type = types.str;
         default = "";
         description = ''
-          Alias for the octez-baker account.
+          Alias for the mavkit-baker account.
         '';
       };
 
@@ -50,7 +48,7 @@ let
   });
 
 in {
-  options.services.octez-baker = {
+  options.services.mavkit-baker = {
     instances = mkOption {
       type = types.attrsOf instanceOptions;
       description = "Configuration options";
@@ -63,17 +61,17 @@ in {
         voting-option = "--liquidity-baking-toggle-vote ${node-cfg.liquidityBakingToggleVote}";
       in concatMapStringsSep "\n" (baseProtocol:
       ''
-        ${octez-baker-pkgs.${baseProtocol}} -d "$STATE_DIRECTORY/client/data" \
+        ${mavkit-baker-pkgs.${baseProtocol}} -d "$STATE_DIRECTORY/client/data" \
         -E "http://localhost:${toString node-cfg.rpcPort}" \
         run with local node "$STATE_DIRECTORY/node/data" ${voting-option} ${node-cfg.bakerAccountAlias} &
       '') node-cfg.baseProtocols;
         baker-prestart-script = node-cfg: if node-cfg.bakerSecretKey != null then ''
-          ${octez-client} -d "$STATE_DIRECTORY/client/data" import secret key "${node-cfg.bakerAccountAlias}" ${node-cfg.bakerSecretKey} --force
+          ${mavkit-client} -d "$STATE_DIRECTORY/client/data" import secret key "${node-cfg.bakerAccountAlias}" ${node-cfg.bakerSecretKey} --force
           '' else "";
     in common.genDaemonConfig {
       instancesCfg = cfg.instances;
       service-name = "baker";
-      service-pkgs = octez-baker-pkgs;
+      service-pkgs = mavkit-baker-pkgs;
       service-start-script = baker-start-script;
       service-prestart-script = baker-prestart-script;
     };

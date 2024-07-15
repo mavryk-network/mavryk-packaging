@@ -6,7 +6,7 @@ from subprocess import CalledProcessError
 from time import sleep
 from typing import List
 
-from tezos_baking.wizard_structure import (
+from mavryk_baking.wizard_structure import (
     get_key_address,
     proc_call,
     replace_systemd_service_env,
@@ -34,11 +34,11 @@ def unit(service_name: str):
 @contextlib.contextmanager
 def account(alias: str):
     # Generate baker key
-    proc_call(f"sudo -u tezos octez-client gen keys {alias} --force")
+    proc_call(f"sudo -u tezos mavkit-client gen keys {alias} --force")
     try:
         yield alias
     finally:
-        proc_call(f"sudo -u tezos octez-client forget address {alias} --force")
+        proc_call(f"sudo -u tezos mavkit-client forget address {alias} --force")
 
 
 def retry(action, name: str, retry_count: int = 20) -> bool:
@@ -74,17 +74,17 @@ def check_active_service(service_name: str) -> bool:
 
 
 def generate_identity(network):
-    if not os.path.exists(f"/var/lib/tezos/{network}/identity.json"):
+    if not os.path.exists(f"/var/lib/mavryk/{network}/identity.json"):
         proc_call(
-            f"sudo -u tezos octez-node identity generate 1 --data-dir /var/lib/tezos/{network}"
+            f"sudo -u tezos mavkit-node identity generate 1 --data-dir /var/lib/mavryk/{network}"
         )
 
 
 def node_service_test(network: str, rpc_endpoint="http://127.0.0.1:8732"):
     generate_identity(network)
-    with unit(f"tezos-node-{network}.service") as _:
-        # checking that service started 'tezos-node' process
-        assert check_running_process("octez-node")
+    with unit(f"mavryk-node-{network}.service") as _:
+        # checking that service started 'mavryk-node' process
+        assert check_running_process("mavkit-node")
         # checking that node is able to respond on RPC requests
         assert retry(url_is_reachable, f"{rpc_endpoint}/chains/main/blocks/head")
 
@@ -92,14 +92,14 @@ def node_service_test(network: str, rpc_endpoint="http://127.0.0.1:8732"):
 def baking_service_test(network: str, protocols: List[str], baker_alias="baker"):
     with account(baker_alias) as _:
         generate_identity(network)
-        with unit(f"tezos-baking-{network}.service") as _:
-            assert check_active_service(f"tezos-node-{network}.service")
-            assert check_running_process("octez-node")
+        with unit(f"mavryk-baking-{network}.service") as _:
+            assert check_active_service(f"mavryk-node-{network}.service")
+            assert check_running_process("mavkit-node")
             for protocol in protocols:
                 assert check_active_service(
-                    f"tezos-baker-{protocol.lower()}@{network}.service"
+                    f"mavryk-baker-{protocol.lower()}@{network}.service"
                 )
-                assert check_running_process(f"octez-baker-{protocol}")
+                assert check_running_process(f"mavkit-baker-{protocol}")
 
 
 signer_unix_socket = '"/tmp/signer-socket"'
@@ -112,40 +112,32 @@ signer_backends = {
 
 
 def signer_service_test(service_type: str):
-    with unit(f"tezos-signer-{service_type}.service") as _:
-        assert check_running_process(f"octez-signer")
+    with unit(f"mavryk-signer-{service_type}.service") as _:
+        assert check_running_process(f"mavkit-signer")
         proc_call(
-            "sudo -u tezos octez-signer -d /var/lib/tezos/signer gen keys remote --force"
+            "sudo -u tezos mavkit-signer -d /var/lib/mavryk/signer gen keys remote --force"
         )
-        remote_key = get_key_address("-d /var/lib/tezos/signer", "remote")[1]
+        remote_key = get_key_address("-d /var/lib/mavryk/signer", "remote")[1]
         proc_call(
-            f"octez-client import secret key remote-signer {signer_backends[service_type]}{remote_key} --force"
+            f"mavkit-client import secret key remote-signer {signer_backends[service_type]}{remote_key} --force"
         )
-        proc_call("octez-client --mode mockup sign bytes 0x1234 for remote-signer")
+        proc_call("mavkit-client --mode mockup sign bytes 0x1234 for remote-signer")
 
 
 def test_node_mainnet_service():
     node_service_test("mainnet")
 
 
-def test_node_paris2net_service():
-    node_service_test("paris2net")
-
-
-def test_baking_paris2net_service():
-    baking_service_test("paris2net", ["PtParisB"])
-
-
 def test_baking_mainnet_service():
-    baking_service_test("mainnet", ["PtParisB"])
+    baking_service_test("mainnet")
 
 
-def test_node_pariscnet_service():
-    node_service_test("pariscnet")
+def test_node_boreasnet_service():
+    node_service_test("boreasnet")
 
 
-def test_baking_pariscnet_service():
-    baking_service_test("pariscnet", ["PsParisC"])
+def test_baking_boreasnet_service():
+    baking_service_test("boreasnet", ["PtBoreas"])
 
 
 def test_http_signer_service():
@@ -157,46 +149,46 @@ def test_tcp_signer_service():
 
 
 def test_standalone_accuser_service():
-    with unit(f"tezos-node-pariscnet.service") as _:
-        with unit(f"tezos-accuser-psparisc.service") as _:
-            assert check_running_process(f"octez-accuser-PsParisC")
+    with unit(f"mavryk-node-boreasnet.service") as _:
+        with unit(f"mavryk-accuser-ptboreas.service") as _:
+            assert check_running_process(f"mavkit-accuser-PtBoreas")
 
 
 def test_unix_signer_service():
-    replace_systemd_service_env("tezos-signer-unix", "SOCKET", signer_unix_socket)
+    replace_systemd_service_env("mavryk-signer-unix", "SOCKET", signer_unix_socket)
     signer_service_test("unix")
 
 
 def test_standalone_baker_service():
     replace_systemd_service_env(
-        "tezos-baker-psparisc",
-        "TEZOS_NODE_DIR",
-        "/var/lib/tezos/node-pariscnet",
+        "mavryk-baker-ptboreas",
+        "MAVRYK_NODE_DIR",
+        "/var/lib/mavryk/node-boreasnet",
     )
     with account("baker") as _:
-        with unit(f"tezos-node-pariscnet.service") as _:
-            with unit(f"tezos-baker-psparisc.service") as _:
-                assert check_active_service(f"tezos-baker-psparisc.service")
-                assert check_running_process(f"octez-baker-PsParisC")
+        with unit(f"mavryk-node-boreasnet.service") as _:
+            with unit(f"mavryk-baker-ptboreas.service") as _:
+                assert check_active_service(f"mavryk-baker-ptboreas.service")
+                assert check_running_process(f"mavkit-baker-PtBoreas")
 
 
 def test_nondefault_node_rpc_endpoint():
     rpc_addr = "127.0.0.1:8735"
-    replace_systemd_service_env("tezos-node-pariscnet", "NODE_RPC_ADDR", rpc_addr)
-    proc_call("cat /etc/default/tezos-node-pariscnet")
+    replace_systemd_service_env("mavryk-node-boreasnet", "NODE_RPC_ADDR", rpc_addr)
+    proc_call("cat /etc/default/mavryk-node-boreasnet")
     try:
-        node_service_test("pariscnet", f"http://{rpc_addr}")
+        node_service_test("boreasnet", f"http://{rpc_addr}")
     finally:
         replace_systemd_service_env(
-            "tezos-node-pariscnet", "NODE_RPC_ADDR", "127.0.0.1:8732"
+            "mavryk-node-boreasnet", "NODE_RPC_ADDR", "127.0.0.1:8732"
         )
 
 
 def test_nondefault_baking_config():
     replace_systemd_service_env(
-        "tezos-baking-pariscnet", "BAKER_ADDRESS_ALIAS", "another_baker"
+        "mavryk-baking-boreasnet", "BAKER_ADDRESS_ALIAS", "another_baker"
     )
     replace_systemd_service_env(
-        "tezos-baking-pariscnet", "LIQUIDITY_BAKING_TOGGLE_VOTE", "on"
+        "mavryk-baking-boreasnet", "LIQUIDITY_BAKING_TOGGLE_VOTE", "on"
     )
-    baking_service_test("pariscnet", ["PsParisC"], "another_baker")
+    baking_service_test("boreasnet", ["PtBoreas"], "another_baker")

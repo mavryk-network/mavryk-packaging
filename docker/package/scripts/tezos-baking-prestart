@@ -3,15 +3,15 @@
 # SPDX-FileCopyrightText: 2022 Oxhead Alpha
 # SPDX-License-Identifier: LicenseRef-MIT-OA
 
-# Note: the 'TEZOS_CLIENT_DIR' env var is expected and used by the client
+# Note: the 'MAVRYK_CLIENT_DIR' env var is expected and used by the client
 
 set -euo pipefail
 
-tezos_client="/usr/bin/octez-client"
+mavryk_client="/usr/bin/mavkit-client"
 
-config="$TEZOS_CLIENT_DIR/config"
+config="$MAVRYK_CLIENT_DIR/config"
 
-mkdir -p "$TEZOS_CLIENT_DIR"
+mkdir -p "$MAVRYK_CLIENT_DIR"
 
-"$tezos_client" --endpoint "$NODE_RPC_SCHEME://$NODE_RPC_ADDR" \
+"$mavryk_client" --endpoint "$NODE_RPC_SCHEME://$NODE_RPC_ADDR" \
                 config "$([[ -f $config ]] && echo "update" || echo "init")"

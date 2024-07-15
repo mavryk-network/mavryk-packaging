@@ -5,11 +5,11 @@
 
 set -euo pipefail
 
-tezos_client="/usr/bin/octez-client"
+mavryk_client="/usr/bin/mavkit-client"
 
-key_type="$("$tezos_client" show address "$BAKER_ADDRESS_ALIAS" -S | grep "Secret Key:" | cut -d':' -f2-2 | xargs)"
+key_type="$("$mavryk_client" show address "$BAKER_ADDRESS_ALIAS" -S | grep "Secret Key:" | cut -d':' -f2-2 | xargs)"
 
 if [[ $key_type == "encrypted" ]]; then
-    systemd-ask-password --keyname="tezos-$BAKER_ADDRESS_ALIAS" --no-output \
+    systemd-ask-password --keyname="mavryk-$BAKER_ADDRESS_ALIAS" --no-output \
         "Enter password for $BAKER_ADDRESS_ALIAS key:"
 fi

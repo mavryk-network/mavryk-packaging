@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: LicenseRef-MIT-OA
 
 # This script takes a directory where the bottles are stored and release tag as its arguments.
-# Run it from the base directory (tezos-packaging).
+# Run it from the base directory (mavryk-packaging).
 
 set -e
 
@@ -11,8 +11,8 @@ if [[ -d ./Formula ]]
 then
     if [[ -d "$1" ]]
     then
-        regex="(tezos-.*)-v.*\.(monterey|arm64_monterey)\.bottle\.tar\.gz"
-        for bottle in "$1"/tezos-*.bottle.tar.gz; do
+        regex="(mavryk-.*)-v.*\.(monterey|arm64_monterey)\.bottle\.tar\.gz"
+        for bottle in "$1"/mavryk-*.bottle.tar.gz; do
             if [[ $bottle =~ $regex ]]; then
                 bottle_hash=$(sha256sum "$bottle" | cut -d " " -f 1)
                 formula_name="${BASH_REMATCH[1]}"
@@ -34,5 +34,5 @@ then
         echo "The passed directory $1 does not exist."
     fi
 else
-    echo "Please run this script from the base directory (tezos-packaging)."
+    echo "Please run this script from the base directory (mavryk-packaging)."
 fi

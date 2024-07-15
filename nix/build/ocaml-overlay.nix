@@ -10,17 +10,17 @@ in
 with opam-nix.lib.${self.system}; let
   zcash-overlay = import ./zcash-overlay.nix;
   hacks = import ./hacks.nix;
-  octezSourcesResolved =
-    self.runCommand "resolve-octez-sources" {} ''
-      cp --no-preserve=all -Lr ${sources.tezos} $out
+  mavkitSourcesResolved =
+    self.runCommand "resolve-mavkit-sources" {} ''
+      cp --no-preserve=all -Lr ${sources.mavryk} $out
     '';
-  octezScope = buildOpamProject' {
+  mavkitScope = buildOpamProject' {
     repos = with sources; [opam-repository];
     recursive = true;
     resolveArgs = { };
-  } octezSourcesResolved { };
+  } mavkitSourcesResolved { };
 in {
-  octezPackages = (octezScope.overrideScope' (pkgs.lib.composeManyExtensions [
+  mavkitPackages = (mavkitScope.overrideScope' (pkgs.lib.composeManyExtensions [
       (_: # Nullify all the ignored protocols so that we don't build them
         builtins.mapAttrs (name: pkg:
           if builtins.any
@@ -32,11 +32,11 @@ in {
       hacks
       zcash-overlay
       (final: prev: {
-        tezos-rust-libs = prev.tezos-rust-libs.overrideAttrs (drv: {
+        mavryk-rust-libs = prev.mavryk-rust-libs.overrideAttrs (drv: {
           postInstall =
             drv.postInstall + (let
               rust-types-h = pkgs.fetchurl {
-                url = "https://gitlab.com/tezos/tezos-rust-libs/-/raw/v1.4/librustzcash/include/rust/types.h";
+                url = "https://gitlab.com/mavryk-network/mavryk-protocol-rust-libs/-/raw/v1.4/librustzcash/include/rust/types.h";
                 sha256 = "sha256-Q2lEV7JfPpFwfS/fcV7HDbBUSIGovasr7/bcANRuMZA=";
               };
             in ''

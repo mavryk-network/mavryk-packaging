@@ -6,7 +6,7 @@ let
   release-binaries = import ./nix/build/release-binaries.nix protocols;
   version = replaceStrings ["refs/tags/"] [""] commonMeta.branchName;
   release-notes = writeTextDir "release-notes.md" ''
-    This release contains assets based on the [${version} release](https://gitlab.com/tezos/tezos/tree/${version}).
+    This release contains assets based on the [${version} release](https://gitlab.com/mavryk-network/mavryk-protocol/tree/${version}).
 
     Binaries that target arm64 architecture have the `-arm64` suffix in their name.
     All the other binaries target x86_64.
@@ -20,7 +20,7 @@ let
       release-binaries)}
   '';
   releaseNoTarball = buildEnv {
-    name = "tezos-release-no-tarball";
+    name = "mavryk-release-no-tarball";
     paths = [ "${binaries}" "${arm-binaries}" LICENSE release-notes ];
   };
   tarballName = "binaries-${commonMeta.version}-${commonMeta.release}.tar.gz";
@@ -31,6 +31,6 @@ let
     "mkdir $out; tar --owner=serokell:1000 --mode='u+rwX' -czhf $out/${armTarballName} -C ${arm-binaries} .";
   LICENSE = writeTextDir "LICENSE" (builtins.readFile commonMeta.licenseFile);
 in buildEnv {
-  name = "tezos-release";
+  name = "mavryk-release";
   paths = [ releaseNoTarball binariesTarball armBinariesTarball ];
 }

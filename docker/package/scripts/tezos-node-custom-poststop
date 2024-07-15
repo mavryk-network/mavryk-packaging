@@ -6,5 +6,5 @@
 set -euo pipefail
 
 if [[ -n ${RESET_ON_STOP} ]]; then
-    rm -rf "$TEZOS_NODE_DIR"
+    rm -rf "$MAVRYK_NODE_DIR"
 fi

@@ -5,18 +5,18 @@
 
 set -euo pipefail
 
-# Note: the 'TEZOS_NODE_DIR' env var is expected and used by the node
-node="/usr/bin/octez-node"
+# Note: the 'MAVRYK_NODE_DIR' env var is expected and used by the node
+node="/usr/bin/mavkit-node"
 
-if [[ ! -d "$TEZOS_NODE_DIR" ]]; then
-    mkdir -p "$TEZOS_NODE_DIR"
+if [[ ! -d "$MAVRYK_NODE_DIR" ]]; then
+    mkdir -p "$MAVRYK_NODE_DIR"
 fi
 
-if [[ -d "$TEZOS_NODE_DIR/store" ]]; then
+if [[ -d "$MAVRYK_NODE_DIR/store" ]]; then
     "$node" upgrade storage
-    rm -rf "$TEZOS_NODE_DIR/lmdb_store_to_remove"
+    rm -rf "$MAVRYK_NODE_DIR/lmdb_store_to_remove"
 fi
 
-if [[ ! -f "$TEZOS_NODE_DIR/identity.json" ]]; then
+if [[ ! -f "$MAVRYK_NODE_DIR/identity.json" ]]; then
     "$node" identity generate
 fi

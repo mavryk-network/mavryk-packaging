@@ -3,11 +3,11 @@
 { nixpkgs, pkgs, ... }:
 let
   inherit (pkgs) system;
-  inherit (pkgs.octezPackages)
-    octez-client octez-admin-client octez-node octez-signer octez-codec
-    octez-accuser-PtParisB octez-baker-PtParisB;
+  inherit (pkgs.mavkitPackages)
+    mavkit-client mavkit-admin-client mavkit-node mavkit-signer mavkit-codec
+    mavkit-accuser-PtBoreas mavkit-baker-PtBoreas;
 in import "${nixpkgs}/nixos/tests/make-test-python.nix" ({ ... }: {
-  name = "tezos-nix-binaries-test";
+  name = "mavryk-nix-binaries-test";
   nodes.machine = { ... }: {
     virtualisation.memorySize = 1024;
     virtualisation.diskSize = 1024;
@@ -19,28 +19,28 @@ in import "${nixpkgs}/nixos/tests/make-test-python.nix" ({ ... }: {
   };
 
   testScript = ''
-    octez_accuser = "${octez-accuser-PtParisB}/bin/octez-accuser-PtParisB"
-    octez_admin_client = "${octez-admin-client}/bin/octez-admin-client"
-    octez_baker = "${octez-baker-PtParisB}/bin/octez-baker-PtParisB"
-    octez_client = (
-        "${octez-client}/bin/octez-client"
+    mavkit_accuser = "${mavkit-accuser-PtBoreas}/bin/mavkit-accuser-PtBoreas"
+    mavkit_admin_client = "${mavkit-admin-client}/bin/mavkit-admin-client"
+    mavkit_baker = "${mavkit-baker-PtBoreas}/bin/mavkit-baker-PtBoreas"
+    mavkit_client = (
+        "${mavkit-client}/bin/mavkit-client"
     )
-    octez_node = "${octez-node}/bin/octez-node"
-    octez_signer = (
-        "${octez-signer}/bin/octez-signer"
+    mavkit_node = "${mavkit-node}/bin/mavkit-node"
+    mavkit_signer = (
+        "${mavkit-signer}/bin/mavkit-signer"
     )
-    octez_codec = "${octez-codec}/bin/octez-codec"
+    mavkit_codec = "${mavkit-codec}/bin/mavkit-codec"
     openssl = "${pkgs.openssl.bin}/bin/openssl"
     host_key = "${./host.key}"
     host_cert = "${./host.cert}"
     binaries = [
-        octez_accuser,
-        octez_admin_client,
-        octez_baker,
-        octez_client,
-        octez_node,
-        octez_signer,
-        octez_codec,
+        mavkit_accuser,
+        mavkit_admin_client,
+        mavkit_baker,
+        mavkit_client,
+        mavkit_node,
+        mavkit_signer,
+        mavkit_codec,
     ]
     ${builtins.readFile ./test_script.py}'';
 }) { inherit pkgs system; }

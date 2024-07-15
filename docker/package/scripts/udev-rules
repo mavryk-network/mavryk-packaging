@@ -37,5 +37,5 @@ EOF
     fi
     udevadm control --reload-rules
     groupadd plugdev --force
-    usermod -aG plugdev tezos &> /dev/null || true
+    usermod -aG plugdev mavryk &> /dev/null || true
 fi

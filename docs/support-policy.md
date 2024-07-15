@@ -4,8 +4,8 @@
    -->
 # Packages support policy
 
-`tezos-packaging` provides packages for Ubuntu, Fedora and macOS for each stable and release-candidate
-version of Octez.
+`mavryk-packaging` provides packages for Ubuntu, Fedora and macOS for each stable and release-candidate
+version of Mavkit.
 
 This document describes which versions of the aforementioned OSes are targeted
 by our packages.
@@ -44,7 +44,7 @@ There are packages for `x86_64` and `aarch64` architectures.
 
 ## macOS brew formulae
 
-Brew formulae provided by `tezos-packaging` aim to support all maintained macOS versions, currently:
+Brew formulae provided by `mavryk-packaging` aim to support all maintained macOS versions, currently:
 * macOS 12 (Monterey)
 * macOS 13 (Ventura)
 

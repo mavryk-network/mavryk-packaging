@@ -12,20 +12,20 @@ mkdir -p $bottle_dir
 mkdir -p ./Formula
 
 # Generate a dummy formula
-formula_name="tezos-hash-test"
+formula_name="mavryk-hash-test"
 
 cat >./Formula/$formula_name.rb <<EOL
-class TezosHashTest < Formula
-  homepage "https://github.com/serokell/tezos-packaging"
+class MavrykHashTest < Formula
+  homepage "https://github.com/mavryk-network/mavryk-packaging"
 
-  url "https://github.com/serokell/tezos-packaging", :tag => "v0.0", :shallow => false
+  url "https://github.com/mavryk-network/mavryk-packaging", :tag => "v0.0", :shallow => false
 
   version "v0.0-1"
 
   desc "Dummy formula to test automated bottle hash insertion"
 
   bottle do
-    root_url "https://github.com/serokell/tezos-packaging/releases/download/#{TezosHashTest.version}/"
+    root_url "https://github.com/mavryk-network/mavryk-packaging/releases/download/#{MavrykHashTest.version}/"
   end
 
   def install
@@ -45,17 +45,17 @@ dd if=/dev/urandom of=$bottle_dir/$monterey_bottle count=2000 status=none
 monterey_hash="$(sha256sum $bottle_dir/$monterey_bottle | cut -d " " -f 1)"
 
 expected_formula=$(cat << EOF
-class TezosHashTest < Formula
-  homepage "https://github.com/serokell/tezos-packaging"
+class MavrykHashTest < Formula
+  homepage "https://github.com/mavryk-network/mavryk-packaging"
 
-  url "https://github.com/serokell/tezos-packaging", :tag => "v0.0", :shallow => false
+  url "https://github.com/mavryk-network/mavryk-packaging", :tag => "v0.0", :shallow => false
 
   version "v0.0-1"
 
   desc "Dummy formula to test automated bottle hash insertion"
 
   bottle do
-    root_url "https://github.com/serokell/tezos-packaging/releases/download/#{TezosHashTest.version}/"
+    root_url "https://github.com/mavryk-network/mavryk-packaging/releases/download/#{MavrykHashTest.version}/"
     sha256 cellar: :any, monterey: "$monterey_hash"
   end
 

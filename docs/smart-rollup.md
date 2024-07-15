@@ -7,7 +7,7 @@
 
 At first you should originate rollup with the provided alias for some implicit account:
 ```
-sudo -u tezos tezos-client originate smart rollup <ROLLUP_ALIAS> from <IMPLICIT_ACCOUNT_ALIAS> of kind <SMART_ROLLUP_KIND> of type <ROLLUP_PARAMETER_TYPE> with kernel <KERNEL>
+sudo -u tezos mavryk-client originate smart rollup <ROLLUP_ALIAS> from <IMPLICIT_ACCOUNT_ALIAS> of kind <SMART_ROLLUP_KIND> of type <ROLLUP_PARAMETER_TYPE> with kernel <KERNEL>
 ```
 Here:
 * `ROLLUP_ALIAS` - Name for a new smart rollup
@@ -16,12 +16,12 @@ Here:
 * `ROLLUP_PARAMETER_TYPE` - The interface of smart rollup (with entrypoints and signatures)
 * `KERNEL` - The kernel of smart rollup that PVM can interpret
 
-For more information on smart rollup origination, please check [official documentation](https://tezos.gitlab.io/alpha/smart_rollups.html#origination).
+For more information on smart rollup origination, please check [official documentation](https://protocol.mavryk.org/alpha/smart_rollups.html#origination).
 
 You can use the following command this way:
 
 ```
-octez-client originate smart rollup "my-rollup" \
+mavkit-client originate smart rollup "my-rollup" \
   from "bob" \
   of kind wasm_2_0_0 \
   of type unit \
@@ -30,12 +30,12 @@ octez-client originate smart rollup "my-rollup" \
 
 For more extended step-by-step example, please proceed to this [tutorial](https://www.marigold.dev/post/originating-a-smart-rollup).
 
-After that, with the active `tezos-node` service available with the provided uri, run the following command
+After that, with the active `mavryk-node` service available with the provided uri, run the following command
 ```
-systemctl start tezos-smart-rollup-node.service
+systemctl start mavryk-smart-rollup-node.service
 ```
 
-For further details, see [the upstream documentation on smart rollups](http://tezos.gitlab.io/active/smart_rollups.html).
+For further details, see [the upstream documentation on smart rollups](http://protocol.mavryk.org/active/smart_rollups.html).
 
 ## Options and defaults
 

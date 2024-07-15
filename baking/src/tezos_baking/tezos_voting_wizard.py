@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: LicenseRef-MIT-OA
 
 """
-A wizard utility to help with voting on the Tezos protocol.
+A wizard utility to help with voting on the Mavryk protocol.
 
 Asks questions, validates answers, and executes the appropriate steps using the final configuration.
 """
@@ -13,11 +13,11 @@ import readline
 import logging
 import re
 
-from tezos_baking.wizard_structure import *
-from tezos_baking.util import *
-from tezos_baking.steps import *
-from tezos_baking.validators import Validator
-import tezos_baking.validators as validators
+from mavryk_baking.wizard_structure import *
+from mavryk_baking.util import *
+from mavryk_baking.steps import *
+from mavryk_baking.validators import Validator
+import mavryk_baking.validators as validators
 
 # Global options
 
@@ -28,11 +28,11 @@ ballot_outcomes = {
 }
 
 public_nodes = {
-    "https://rpc.tzbeta.net": "by Tezos Foundation",
+    "https://rpc.tzbeta.net": "by Mavryk Foundation",
     "https://mainnet.api.tez.ie": "by ECAD Labs",
     "https://mainnet.smartpy.io": "by SmartPy",
     "https://teznode.letzbake.com": "by LetzBake!",
-    "https://mainnet-tezos.giganode.io": "by GigaNode",
+    "https://mainnet-mavryk.giganode.io": "by GigaNode",
 }
 
 # Command line argument parsing
@@ -43,7 +43,7 @@ parser.add_argument(
     default="mainnet",
     help="Name of the network to vote on. Is 'mainnet' by default, "
     "but can be a testnet or the (part after @) name of any custom instance. "
-    "For example, to use the tezos-baking-custom@voting service, input 'voting'. "
+    "For example, to use the mavryk-baking-custom@voting service, input 'voting'. "
     "You need to already have set up the custom network using systemd services.",
 )
 
@@ -52,9 +52,9 @@ parsed_args = parser.parse_args()
 
 # Wizard CLI utility
 
-welcome_text = """Tezos Voting Wizard
+welcome_text = """Mavryk Voting Wizard
 
-Welcome, this wizard will help you vote in the Tezos protocol amendment process.
+Welcome, this wizard will help you vote in the Mavryk protocol amendment process.
 Please note that to vote on mainnet, the minimum requirement is to have access
 to a key that has voting rights, preferably through a connected ledger device.
 
@@ -65,22 +65,22 @@ Type in 'exit' to quit.
 """
 
 
-# we don't need any data here, just a confirmation that a Tezos app is open
+# we don't need any data here, just a confirmation that a Mavryk app is open
 # `app_name` here can only be `"Wallet"` or `"Baking"`
 def wait_for_ledger_app(app_name, client_dir):
     logging.info(f"Waiting for the ledger {app_name} app to be opened")
-    print(f"Please make sure the Tezos {app_name} app is open on your ledger.")
+    print(f"Please make sure the Mavryk {app_name} app is open on your ledger.")
     print(
         color(
-            f"Waiting for the Tezos {app_name} app to be opened...",
+            f"Waiting for the Mavryk {app_name} app to be opened...",
             color_green,
         )
     )
-    search_string = b"Found a Tezos " + bytes(app_name, "utf8")
+    search_string = b"Found a Mavryk " + bytes(app_name, "utf8")
     output = b""
     while re.search(search_string, output) is None:
         output = get_proc_output(
-            f"sudo -u tezos {suppress_warning_text} octez-client --base-dir {client_dir} list connected ledgers"
+            f"sudo -u tezos {suppress_warning_text} mavkit-client --base-dir {client_dir} list connected ledgers"
         ).stdout
         proc_call("sleep 1")
 
@@ -97,7 +97,7 @@ new_proposal_query = Step(
 
 # We define this step as a function since the corresponding step requires that we get the
 # proposal hashes off the chain.
-# octez-client supports submitting up to 20 proposal hashes at a time, but it seems like this
+# mavkit-client supports submitting up to 20 proposal hashes at a time, but it seems like this
 # isn't recommended for use with Ledger, so we leave it at one hash pro query for now.
 def get_proposal_period_hash(hashes):
 
@@ -148,7 +148,7 @@ def get_node_rpc_endpoint_query(network, default=None):
         prompt="Provide the node's RPC address."
         if not relevant_nodes
         else "Choose one of the public nodes or provide the node's RPC address.",
-        help="The node's RPC address will be used by octez-client to vote. If you have baking set up\n"
+        help="The node's RPC address will be used by mavkit-client to vote. If you have baking set up\n"
         "through systemd services, the address is usually 'http://localhost:8732' by default.",
         default="1" if relevant_nodes and default is None else default,
         options=relevant_nodes,
@@ -167,7 +167,7 @@ def get_node_rpc_endpoint_query(network, default=None):
 baker_alias_query = Step(
     id="baker_alias",
     prompt="Provide the baker's alias.",
-    help="The baker's alias will be used by octez-client to vote. If you have baking set up\n"
+    help="The baker's alias will be used by mavkit-client to vote. If you have baking set up\n"
     "through systemd services, the address is usually 'baker' by default.",
     default=None,
     validator=Validator([validators.required_field]),
@@ -178,7 +178,7 @@ def get_key_mode_query(modes):
     return Step(
         id="key_import_mode",
         prompt="How do you want to import the voter key?",
-        help="Tezos Voting Wizard will use the 'baker' alias for the key\n"
+        help="Mavryk Voting Wizard will use the 'baker' alias for the key\n"
         "that will be used for voting. You will only need to import the key\n"
         "once unless you'll want to change the key.",
         options=modes,
@@ -190,11 +190,11 @@ class Setup(Setup):
     def check_baking_service(self):
         net = self.config["network"]
         try:
-            proc_call(f"systemctl is-active --quiet tezos-baking-{net}.service")
+            proc_call(f"systemctl is-active --quiet mavryk-baking-{net}.service")
             self.config["is_local_baking_setup"] = True
         except:
             print(f"No local baking services for {net} running on this machine.")
-            print("If there should be, you can run 'tezos-setup' to set it up.")
+            print("If there should be, you can run 'mavryk-setup' to set it up.")
             print()
             self.config["is_local_baking_setup"] = False
         finally:
@@ -225,22 +225,22 @@ class Setup(Setup):
         self.check_baking_service()
         if self.config.get("is_local_baking_setup", False):
             self.fill_baking_config()
-            self.config["tezos_client_options"] = self.get_tezos_client_options()
+            self.config["mavryk_client_options"] = self.get_mavryk_client_options()
 
             value, _ = get_key_address(
-                self.config["tezos_client_options"], self.config["baker_alias"]
+                self.config["mavryk_client_options"], self.config["baker_alias"]
             )
             self.config["baker_key_value"] = value
 
             collected = self.check_data_correctness()
         else:
 
-            network_dir = "/var/lib/tezos/client-" + self.config["network"]
+            network_dir = "/var/lib/mavryk/client-" + self.config["network"]
 
             logging.info("Creating the network dir")
             proc_call(f"sudo -u tezos mkdir -p {network_dir}")
 
-            print("With no tezos-baking.service running, this wizard will use")
+            print("With no mavryk-baking.service running, this wizard will use")
             print(f"the default directory for this network: {network_dir}")
 
             self.config["client_data_dir"] = network_dir
@@ -277,10 +277,10 @@ class Setup(Setup):
         if "baker_alias" not in self.config:
             self.config["baker_alias"] = "baker"
 
-        self.config["tezos_client_options"] = self.get_tezos_client_options()
+        self.config["mavryk_client_options"] = self.get_mavryk_client_options()
 
         baker_key_value = get_key_address(
-            self.config["tezos_client_options"], self.config["baker_alias"]
+            self.config["mavryk_client_options"], self.config["baker_alias"]
         )
 
         if baker_key_value is not None:
@@ -301,10 +301,10 @@ class Setup(Setup):
 
     def fill_voting_period_info(self):
         logging.info("Filling in voting period info")
-        logging.info("Getting voting period from octez-client")
+        logging.info("Getting voting period from mavkit-client")
         voting_proc = get_proc_output(
-            f"sudo -u tezos {suppress_warning_text} octez-client "
-            f"{self.config['tezos_client_options']} show voting period"
+            f"sudo -u tezos {suppress_warning_text} mavkit-client "
+            f"{self.config['mavryk_client_options']} show voting period"
         )
         if voting_proc.returncode == 0:
             info = voting_proc.stdout
@@ -338,7 +338,7 @@ class Setup(Setup):
                 )
             )
         result = get_proc_output(
-            f"sudo -u tezos {suppress_warning_text} octez-client {self.config['tezos_client_options']} "
+            f"sudo -u tezos {suppress_warning_text} mavkit-client {self.config['mavryk_client_options']} "
             f"submit proposals for {self.config['baker_alias']} {hash_to_submit}"
         )
 
@@ -382,9 +382,9 @@ class Setup(Setup):
             # No other "legitimate" proposal error ('empty_proposal', 'unexpected_proposal')
             # should be possible with the wizard, so we just raise an error with the whole output.
             else:
-                logging.error("Something went wrong when calling octez-client")
+                logging.error("Something went wrong when calling mavkit-client")
                 print(
-                    "Something went wrong when calling octez-client. Please consult the logs."
+                    "Something went wrong when calling mavkit-client. Please consult the logs."
                 )
                 raise OSError(result.stderr.decode())
 
@@ -408,14 +408,14 @@ class Setup(Setup):
                 )
             )
         result = get_proc_output(
-            f"sudo -u tezos {suppress_warning_text} octez-client {self.config['tezos_client_options']} "
+            f"sudo -u tezos {suppress_warning_text} mavkit-client {self.config['mavryk_client_options']} "
             f"submit ballot for {self.config['baker_alias']} {self.config['proposal_hashes'][0]} "
             f"{self.config['ballot_outcome']}"
         )
 
         if result.returncode != 0:
             # handle the 'unauthorized ballot' error
-            # Unfortunately, despite the error's description text, octez-client seems to use this error
+            # Unfortunately, despite the error's description text, mavkit-client seems to use this error
             # both when the baker has already voted and when the baker was not in the voting listings
             # in the first place, so it's difficult to distinguish between the two cases.
             if re.search(b"Unauthorized ballot", result.stderr) is not None:
@@ -447,9 +447,9 @@ class Setup(Setup):
             # No other "legitimate" voting error ('invalid_proposal', 'unexpected_ballot')
             # should be possible with the wizard, so we just raise an error with the whole output.
             else:
-                logging.error("Something went wrong when calling octez-client")
+                logging.error("Something went wrong when calling mavkit-client")
                 print(
-                    "Something went wrong when calling octez-client. Please consult the logs."
+                    "Something went wrong when calling mavkit-client. Please consult the logs."
                 )
                 raise OSError(result.stderr.decode())
 
@@ -461,13 +461,13 @@ class Setup(Setup):
 
         self.collect_baking_info()
 
-        self.config["tezos_client_options"] = self.get_tezos_client_options()
+        self.config["mavryk_client_options"] = self.get_mavryk_client_options()
 
-        # if a ledger is used for baking, ask to open Tezos Wallet app on it before proceeding
+        # if a ledger is used for baking, ask to open Mavryk Wallet app on it before proceeding
         if self.check_ledger_use():
             wait_for_ledger_app("Wallet", self.config["client_data_dir"])
 
-        # process 'tezos-client show voting period'
+        # process 'mavryk-client show voting period'
         self.fill_voting_period_info()
 
         print_and_log(
@@ -489,19 +489,19 @@ class Setup(Setup):
             self.process_voting_period()
         else:
             print_and_log("Voting isn't possible at the moment.")
-            print_and_log("Exiting the Tezos Voting Wizard.")
+            print_and_log("Exiting the Mavryk Voting Wizard.")
 
-        # if a ledger was used for baking on this machine, ask to open Tezos Baking app on it,
-        # then restart the relevant baking service (due to issue: tezos/#4486)
+        # if a ledger was used for baking on this machine, ask to open Mavryk Baking app on it,
+        # then restart the relevant baking service (due to issue: mavryk/#4486)
         if self.config.get("is_local_baking_setup", False) and self.check_ledger_use():
             wait_for_ledger_app("Baking", self.config["client_data_dir"])
             net = self.config["network"]
             print_and_log(f"Restarting local {net} baking setup")
-            proc_call(f"sudo systemctl restart tezos-baking-{net}.service")
+            proc_call(f"sudo systemctl restart mavryk-baking-{net}.service")
 
         print()
         print("Thank you for voting!")
-        logging.info("Exiting the Tezos Voting Wizard.")
+        logging.info("Exiting the Mavryk Voting Wizard.")
 
 
 def main():
@@ -509,31 +509,31 @@ def main():
     readline.set_completer_delims(" ")
 
     try:
-        setup_logger("tezos-vote.log")
-        logging.info("Starting the Tezos Voting Wizard.")
+        setup_logger("mavryk-vote.log")
+        logging.info("Starting the Mavryk Voting Wizard.")
         setup = Setup()
         setup.run_voting()
     except KeyboardInterrupt:
-        print("Exiting the Tezos Voting Wizard.")
+        print("Exiting the Mavryk Voting Wizard.")
         logging.info(f"Received keyboard interrupt.")
-        logging.info("Exiting the Tezos Voting Wizard.")
+        logging.info("Exiting the Mavryk Voting Wizard.")
         sys.exit(1)
     except EOFError:
-        print("Exiting the Tezos Voting Wizard.")
+        print("Exiting the Mavryk Voting Wizard.")
         logging.error(f"Reached EOF.")
-        logging.info("Exiting the Tezos Voting Wizard.")
+        logging.info("Exiting the Mavryk Voting Wizard.")
         sys.exit(1)
     except Exception as e:
 
         print_and_log(
-            "Error in the Tezos Voting Wizard, exiting.",
+            "Error in the Mavryk Voting Wizard, exiting.",
             log=logging.error,
             colorcode=color_red,
         )
 
-        log_exception(exception=e, logfile="tezos-vote.log")
+        log_exception(exception=e, logfile="mavryk-vote.log")
 
-        logging.info("Exiting the Tezos Voting Wizard.")
+        logging.info("Exiting the Mavryk Voting Wizard.")
         sys.exit(1)
 
 
