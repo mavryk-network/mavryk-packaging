@@ -12,7 +12,7 @@ class MavrykSaplingParams < Formula
 
   bottle do
     root_url "https://github.com/mavryk-network/mavryk-packaging/releases/download/#{MavrykSaplingParams.version}/"
-    sha256 cellar: :any, mojave: "4e89932b0626cffe80214ba45342280c340b34c58ebbf7c3e0185a6d4662732d"
+    sha256 cellar: :any, mojave: "30abe593dcd85e2f244647df8d227e6e4a2af8836d66e9267d69f39258179b16"
     sha256 cellar: :any, catalina: "5f7a5687d67051eafcfb7cb5ac542143a325a135403daeca6595602bfd400441"
   end
 
