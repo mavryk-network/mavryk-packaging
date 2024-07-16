@@ -45,7 +45,7 @@ Formulae with `mavryk-node` background services are, for example:
 The formulae with `mavryk-signer` background services are instead:
 * `mavryk-signer-http`
 * `mavryk-signer-https`
-* `tesos-signer-tcp`
+* `mavryk-signer-tcp`
 * `mavryk-signer-unix`
 
 To start the service: `brew services start <formula>`.
