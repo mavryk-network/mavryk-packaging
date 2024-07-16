@@ -37,7 +37,7 @@ subprocess.run(
 
 opam_repository_tag = (
     subprocess.run(
-        ". ./mavryk/scripts/version.sh; echo $opam_repository_tag",
+        ". ./mavryk-protocol/scripts/version.sh; echo $opam_repository_tag",
         stdout=subprocess.PIPE,
         shell=True,
     )

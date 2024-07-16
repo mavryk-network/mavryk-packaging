@@ -28,8 +28,8 @@ networks_protos = {
 }
 
 protocol_numbers = {
-    "PtAtLas": "018",
-    "PtBoreas": "020",
+    "PtAtLas": "001",
+    "PtBoreas": "002",
 }
 
 signer_units = [

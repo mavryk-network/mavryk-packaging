@@ -11,7 +11,7 @@ class MavrykSmartRollupNode < Formula
   end
   homepage "https://gitlab.com/mavryk-network/mavryk-protocol"
 
-  url "https://gitlab.com/mavryk-network/mavryk-protocol.git", :tag => "boreas", :shallow => false
+  url "https://gitlab.com/mavryk-network/mavryk-protocol.git", :tag => "mavkit-v20.1", :shallow => false
 
   version "v20.1-2"
 

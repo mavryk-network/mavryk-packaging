@@ -297,7 +297,7 @@ class MavrykBinaryPackage(AbstractPackage):
             binary_name = self.name.replace("mavryk", "mavkit")
             shutil.copy(f"{binaries_dir}/{binary_name}", binary_name)
         else:
-            shutil.copytree(f"{cwd}/../sources/mavryk", "mavryk")
+            shutil.copytree(f"{cwd}/../sources/mavryk-protocol", "mavryk-protocol")
             shutil.copytree(f"{cwd}/../sources/opam-repository", "opam-repository")
             shutil.copy(f"{cwd}/scripts/build-binary.sh", "build-binary.sh")
 

@@ -9,7 +9,7 @@ class MavrykBakerPtboreas < Formula
   end
   homepage "https://gitlab.com/mavryk-network/mavryk-protocol"
 
-  url "https://gitlab.com/mavryk-network/mavryk-protocol.git", :tag => "boreas", :shallow => false
+  url "https://gitlab.com/mavryk-network/mavryk-protocol.git", :tag => "mavkit-v20.1", :shallow => false
 
   version "v20.1-2"
 
@@ -89,8 +89,8 @@ class MavrykBakerPtboreas < Formula
     File.write("mavryk-baker-PtBoreas-start", startup_contents)
     bin.install "mavryk-baker-PtBoreas-start"
     make_deps
-    install_template "src/proto_020_PtBoreas/bin_baker/main_baker_020_PtBoreas.exe",
-                     "_build/default/src/proto_020_PtBoreas/bin_baker/main_baker_020_PtBoreas.exe",
+    install_template "src/proto_002_PtBoreas/bin_baker/main_baker_002_PtBoreas.exe",
+                     "_build/default/src/proto_002_PtBoreas/bin_baker/main_baker_002_PtBoreas.exe",
                      "mavkit-baker-PtBoreas"
   end
 

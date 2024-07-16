@@ -11,7 +11,7 @@ export OPAMROOT=$PWD/opamroot
 dune_filepath="$1"
 binary_name="$2"
 
-cd mavryk
+cd mavryk-protocol
 opam init local ../opam-repository --bare --disable-sandboxing
 opam switch create . --repositories=local --no-install
 
