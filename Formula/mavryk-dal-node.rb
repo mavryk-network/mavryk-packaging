@@ -43,7 +43,7 @@ class MavrykDalNode < Formula
     arch = RUBY_PLATFORM.include?("arm64") ? "arm64" : "x86_64"
     system "rustup-init", "--default-toolchain", "1.71.1", "-y"
     system "opam", "init", "--bare", "--debug", "--auto-setup", "--disable-sandboxing"
-    system ["source .cargo/env",  "make build-deps"].join(" && ")
+    system [". .cargo/env",  "make build-deps"].join(" && ")
   end
 
   def install_template(dune_path, exec_path, name)
