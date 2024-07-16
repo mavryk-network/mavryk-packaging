@@ -21,7 +21,7 @@ RUN /build-rust.sh
 COPY ./build/build-upx.sh /build-upx.sh
 RUN /build-upx.sh
 ARG MAVKIT_VERSION
-RUN git clone --single-branch --depth 1 --branch "$MAVKIT_VERSION" https://gitlab.com/mavryk-network/mavryk-protocol.git
+RUN git clone --single-branch --depth 1 --branch "$MAVKIT_VERSION" https://gitlab.com/mavryk-network/mavryk-protocol.git mavryk
 WORKDIR /mavryk
 ENV OPAMYES true
 COPY ./build/build-deps.sh /build-deps.sh
