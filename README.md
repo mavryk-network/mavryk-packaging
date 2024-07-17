@@ -4,7 +4,7 @@
    - SPDX-License-Identifier: LicenseRef-MIT-OA
    -->
 
-# Mavryk packaging
+# Mavryk packaging 
 
 [![Build status](https://badge.buildkite.com/e899e9e54babcd14139e3bd4381bad39b5d680e08e7b7766d4.svg?branch=master)](https://buildkite.com/mavryk-network/mavryk-packaging)
 
