@@ -243,7 +243,7 @@ compatible_snapshot_version = 7
 default_providers = [
     TzInit("tzinit"),
     Marigold(
-        "marigold.dev", "https://snapshots.mavryk.network/api/mavryk-snapshots.json"
+        "mavrykdynamics.com", "https://snapshots.mavryk.network/api/mavryk-snapshots.json"
     ),
 ]
 

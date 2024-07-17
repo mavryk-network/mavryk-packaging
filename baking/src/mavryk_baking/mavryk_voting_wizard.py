@@ -28,11 +28,7 @@ ballot_outcomes = {
 }
 
 public_nodes = {
-    "https://rpc.tzbeta.net": "by Mavryk Foundation",
-    "https://mainnet.api.tez.ie": "by ECAD Labs",
-    "https://mainnet.smartpy.io": "by SmartPy",
-    "https://teznode.letzbake.com": "by LetzBake!",
-    "https://mainnet-mavryk.giganode.io": "by GigaNode",
+    "https://mainnet.rpc.mavryk.network": "by Mavryk Dynamics",
 }
 
 # Command line argument parsing

@@ -148,7 +148,7 @@ If you want to sign resulted source packages automatically, you can provide sign
 export MAVKIT_VERSION="v17.3"
 cd .. && ./docker/package.py --os ubuntu --type source -d focal jammy -p mavryk-client -s <signer_info>
 ```
-For example, `signer_info` can be the following: `Tristan Allaire <tristan.allaire@alarch.fr>`
+For example, `signer_info` can be the following: `Tristan Allaire <tristan@mavryk.io>`
 
 If you want to do it manually, you should update `*.changes` files with the proper signer info run the following:
 ```
@@ -266,7 +266,7 @@ If you want to sign resulted source packages automatically, you can provide sign
 export MAVKIT_VERSION="v17.3"
 cd .. && ./docker/package.py --os fedora --type source -p mavryk-client -s <signer_info>
 ```
-For example, `signer_info` can be the following: `Tristan Allaire <tristan.allaire@alarch.fr>`
+For example, `signer_info` can be the following: `Tristan Allaire <tristan@mavryk.io>`
 
 If you want to sign source packages manually, run:
 ```

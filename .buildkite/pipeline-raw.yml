@@ -217,7 +217,7 @@ steps:
    depends_on:
    - "auto-release"
    env:
-    MIRROR_REPO: "git@github.com:mavryk-network/mavryk-packaging-stable.git"
+    MIRROR_REPO: "git@github.com:mavryk-network/homebrew-mavryk-packaging-stable.git"
    commands: &update_mirror
    - git pull origin "$BUILDKITE_BRANCH:$BUILDKITE_BRANCH"
    - git push --mirror "$$MIRROR_REPO"
@@ -230,5 +230,5 @@ steps:
    depends_on:
    - "auto-release"
    env:
-    MIRROR_REPO: "git@github.com:mavryk-network/mavryk-packaging-rc.git"
+    MIRROR_REPO: "git@github.com:mavryk-network/homebrew-mavryk-packaging-rc.git"
    commands: *update_mirror
