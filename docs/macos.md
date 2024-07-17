@@ -10,12 +10,12 @@ one for the latest release candidate of Mavkit.
 
 In order to use latest stable version run the following:
 ```
-brew tap mavryk-network/mavryk-packaging-stable https://github.com/mavryk-network/mavryk-packaging-stable.git
+brew tap mavryk-network/mavryk-packaging-stable
 ```
 
 In order to use the latest release candidate version run the following:
 ```
-brew tap mavryk-network/mavryk-packaging-rc https://github.com/mavryk-network/mavryk-packaging-rc.git
+brew tap mavryk-network/mavryk-packaging-rc
 ```
 
 Once the desired tap is selected, you can install the chosen package, e.g.:

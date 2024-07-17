@@ -11,7 +11,7 @@ class MavrykClient < Formula
 
   url "https://gitlab.com/mavryk-network/mavryk-protocol.git", :tag => "mavkit-v20.1", :shallow => false
 
-  version "v20.1-2"
+  version "v20.1-rc1"
 
   build_dependencies = %w[pkg-config coreutils autoconf rsync wget rustup-init cmake opam opam]
   build_dependencies.each do |dependency|
