@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: LicenseRef-MIT-TQ
 
-# zcash-params required for building some of the tezos binaries
+# zcash-params required for building some of the mavryk binaries
 # and for running tests
 { pkgs, ... }:
 with pkgs;

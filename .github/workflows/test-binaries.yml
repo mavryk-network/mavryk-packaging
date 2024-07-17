@@ -1,4 +1,4 @@
-name: Test Tezos binaries
+name: Test Mavryk binaries
 
 on:
   schedule:

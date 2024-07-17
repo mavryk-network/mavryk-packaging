@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+# SPDX-FileCopyrightText: 2020 TQ Tezos <https://tqtezos.com/>
+#
+# SPDX-License-Identifier: LicenseRef-MIT-TQ
+
+set -euo pipefail
+
+# Note: the 'MAVRYK_CLIENT_DIR' env var is expected and used by the baker
+
+# $PROTOCOL should be defined in the system unit environment
+baker="/usr/bin/mavkit-baker-$PROTOCOL"
+mavryk_client="/usr/bin/mavkit-client"
+
+baker_config="$MAVRYK_CLIENT_DIR/config"
+mkdir -p "$MAVRYK_CLIENT_DIR"
+
+if [ ! -f "$baker_config" ]; then
+    "$baker" --endpoint "$NODE_RPC_SCHEME://$NODE_RPC_ADDR" \
+             config init --output "$baker_config" >/dev/null 2>&1
+else
+    "$baker" --endpoint "$NODE_RPC_SCHEME://$NODE_RPC_ADDR" \
+             config update >/dev/null 2>&1
+fi
+
+vote_args=(--liquidity-baking-toggle-vote "$LIQUIDITY_BAKING_TOGGLE_VOTE")
+
+launch_baker() {
+    if [[ -n ${1-} ]]; then
+        key_type="$("$mavryk_client" show address "$BAKER_ADDRESS_ALIAS" -S | grep "Secret Key:" | cut -d':' -f2-2 | xargs)"
+    fi
+    if [[ ${key_type:-} == "encrypted" ]]; then
+        password="$(systemd-ask-password --keyname="mavryk-$BAKER_ADDRESS_ALIAS" --accept-cached \
+            "Enter password for $BAKER_ADDRESS_ALIAS key:")"
+        "$baker" --endpoint "$NODE_RPC_SCHEME://$NODE_RPC_ADDR" \
+            run with local node "$MAVRYK_NODE_DIR" "${vote_args[@]}" "$@" <<< "$password" &
+    else
+        "$baker" --endpoint "$NODE_RPC_SCHEME://$NODE_RPC_ADDR" \
+            run with local node "$MAVRYK_NODE_DIR" "${vote_args[@]}" "$@" &
+    fi
+}
+
+if [[ -z "$BAKER_ADDRESS_ALIAS" ]]; then
+    launch_baker "$@"
+else
+    launch_baker "$BAKER_ADDRESS_ALIAS" "$@"
+fi

@@ -2,7 +2,7 @@
 
 ## Reporting Issues
 
-Please [open an issue](https://github.com/serokell/tezos-packaging/issues/new/choose)
+Please [open an issue](https://github.com/mavryk-network/mavryk-packaging/issues/new/choose)
 if you find a bug or have a feature request.
 Before submitting a bug report or feature request, check to make sure it hasn't already been submitted
 
@@ -19,9 +19,9 @@ otherwise improve our project, pull requests are most welcome.
 
 <!-- TODO #634: check and update these instructions -->
 
-- The Octez revision used is located in the [`meta.json`](../meta.json) and [`flake.lock`](../flake.lock) file.
-  You can update these to the latest available revision with the [`update-tezos.sh` script](../scripts/update-tezos.sh)
-- Used tezos protocols can be changed by [`proto`](../scripts/proto) script.
+- The Mavkit revision used is located in the [`meta.json`](../meta.json) and [`flake.lock`](../flake.lock) file.
+  You can update these to the latest available revision with the [`update-mavryk.sh` script](../scripts/update-mavryk.sh)
+- Used mavryk protocols can be changed by [`proto`](../scripts/proto) script.
   This script requires `jq` and `moreutils` to be installed.
   Currently used protocols are displayed in [`protocols.json`](../protocols.json).
   - To add a new protocol, `./proto activate ...`.

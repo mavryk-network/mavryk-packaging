@@ -6,8 +6,8 @@
 
 set -e
 
-git config user.name "serokell-bot" # necessary for pushing
-git config user.email "tezos-packaging@serokell.io"
+git config user.name "MavrykCowbot" # necessary for pushing
+git config user.email "info@mavryk.io"
 
 # Try to sign and push signed commits, retry in case of collision
 while : ; do
@@ -21,7 +21,7 @@ while : ; do
     echo "Found unsigned commits"
     # Rebase through all commits in the current branch and sign them, if some of the commits are already
     # signed, a signature will be overridden
-    if ! git rebase --exec 'git commit --amend -n --gpg-sign="tezos-packaging@serokell.io" --no-edit' \
+    if ! git rebase --exec 'git commit --amend -n --gpg-sign="info@mavryk.io" --no-edit' \
       "origin/$BUILDKITE_PIPELINE_DEFAULT_BRANCH"; then
       git rebase --abort
       exit 1

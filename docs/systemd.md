@@ -2,13 +2,13 @@
    - SPDX-FileCopyrightText: 2021 Oxhead Alpha
    - SPDX-License-Identifier: LicenseRef-MIT-OA
    -->
-# Systemd units with Tezos binaries
+# Systemd units with Mavryk binaries
 
 <a name="ubuntu-and-fedora"></a>
 ## Systemd units on Ubuntu and Fedora
 
-`tezos-node`, `tezos-accuser-<proto>`, `tezos-baker-<proto>`,
-and `tezos-signer` packages have systemd files included to the
+`mavryk-node`, `mavryk-accuser-<proto>`, `mavryk-baker-<proto>`,
+and `mavryk-signer` packages have systemd files included to the
 Ubuntu and Fedora packages.
 
 Once you've installed one of these packages, you can run the service
@@ -25,7 +25,7 @@ Each service has its configuration file located in `/etc/default`.
 These can be edited to modify the options and behavior of the services, see
 [the dedicated documentation](./configuration.md) for more information.
 
-Files created by the services will be located in `/var/lib/tezos/` by default.
+Files created by the services will be located in `/var/lib/mavryk/` by default.
 
 <a name="generic-linux"></a>
 ## Systemd units on other Linux systems
@@ -36,15 +36,15 @@ binaries from scratch.
 For this you'll need a `.service` file to define each systemd service.
 The easiest way to get one is to generate one with `docker` by running [`gen_systemd_service_file.py`](../gen_systemd_service_file.py).
 
-First you'll need to set the `OCTEZ_VERSION` env variable, e.g.:
+First you'll need to set the `MAVKIT_VERSION` env variable, e.g.:
 ```sh
-export OCTEZ_VERSION="v14.1"
+export MAVKIT_VERSION="v14.1"
 ```
 Then you can use the script, specifying the binary name as an argument, e.g.:
 ```
-./gen_systemd_service_file.py tezos-node
+./gen_systemd_service_file.py mavryk-node
 # or
-./gen_systemd_service_file.py tezos-baker-PsParisC
+./gen_systemd_service_file.py mavryk-baker-PtBoreas
 ```
 After that you'll have `.service` files in the current directory.
 
@@ -58,28 +58,27 @@ dinamically, you can find the remaining options needed in
 
 ## Multiple similar systemd services
 
-It's possible to run multiple similar services, e.g. two `tezos-node`s that run different
+It's possible to run multiple similar services, e.g. two `mavryk-node`s that run different
 networks.
 
-`tezos-node` packages provide multiple services out of the box:
-- `tezos-node-pariscnet`
-- `tezos-node-paris2net`
-- `tezos-node-ghostnet`
-- `tezos-node-mainnet`
+`mavryk-node` packages provide multiple services out of the box:
+- `mavryk-node-boreasnet`
+- `mavryk-node-basenet`
+- `mavryk-node-mainnet`
 
 which run on the respective networks.
 
 In order to start it run:
 ```
-systemctl start tezos-node-<network>
+systemctl start mavryk-node-<network>
 ```
 
-Also, there are `tezos-node-<network>` binary aliases that are equivalent to
-running `tezos-node` with [the service options](./configuration.md) given.
+Also, there are `mavryk-node-<network>` binary aliases that are equivalent to
+running `mavryk-node` with [the service options](./configuration.md) given.
 
 In addition to node services where the config is predefined to a specific network
-(e.g. `tezos-node-mainnet` or `tezos-node-paris2net`), it's possible to run
-`tezos-node-custom` service.
+(e.g. `mavryk-node-mainnet` or `mavryk-node-boreasnet`), it's possible to run
+`mavryk-node-custom` service.
 
 Another case for running multiple similar systemd services is when one wants to have
 multiple daemons that target different protocols.
@@ -88,9 +87,9 @@ have different service files. The only thing that needs to be changed is [the co
 One should provide desired node address, data directory for daemon files and node directory
 (however, this is the case only for baker daemon).
 
-`tezos-signer` package provides four services one for each mode in which signing daemon can run:
-* Over TCP socket (`tezos-signer-tcp.service`).
-* Over UNIX socker (`tezos-signer-unix.service`).
-* Over HTTP (`tezos-signer-http.service`).
-* Over HTTPS (`tezos-signer-https.service`)
+`mavryk-signer` package provides four services one for each mode in which signing daemon can run:
+* Over TCP socket (`mavryk-signer-tcp.service`).
+* Over UNIX socker (`mavryk-signer-unix.service`).
+* Over HTTP (`mavryk-signer-http.service`).
+* Over HTTPS (`mavryk-signer-https.service`)
 Each signer service has [dedicated config files](./configuration.md) as well.

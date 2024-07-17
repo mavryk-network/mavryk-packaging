@@ -10,13 +10,13 @@
 
 1) [Vagrant](https://www.vagrantup.com/).
 2) [`libvirt`](https://libvirt.org/) and [`qemu`](https://www.qemu.org/).
-3) `.deb` packages with Octez binaries and systemd services to test.
+3) `.deb` packages with Mavkit binaries and systemd services to test.
 
 ## Getting `.deb` packages
 
 The easiest way to get `.deb` packages with systemd services for testing
-is to download static Octez binaries and build `.deb` packages using them
-instead of compiling Octez from scratch for each package.
+is to download static Mavkit binaries and build `.deb` packages using them
+instead of compiling Mavkit from scratch for each package.
 Refer to [this doc](../../docker/README.md#packages-from-statically-linked-binaries)
 for building instructions.
 

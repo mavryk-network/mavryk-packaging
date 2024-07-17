@@ -20,14 +20,14 @@ def upload_fedora(args: Arguments):
     with open("./docker/supported_versions.json") as f:
         fedora_versions = json.loads(f.read()).get("fedora")
 
-    octez_version = os.getenv("OCTEZ_VERSION", None)
+    mavkit_version = os.getenv("MAVKIT_VERSION", None)
 
     if args.test:
-        copr_project = "@Serokell/Tezos-test"
-    elif re.search("v.*-rc[0-9]*", octez_version):
-        copr_project = "@Serokell/Tezos-rc"
+        copr_project = "@MavrykDynamics/Mavryk-test"
+    elif re.search("v.*-rc[0-9]*", mavkit_version):
+        copr_project = "@MavrykDynamics/Mavryk-rc"
     else:
-        copr_project = "@Serokell/Tezos"
+        copr_project = "@MavrykDynamics/Mavryk"
 
     source_packages_path = args.directory
 

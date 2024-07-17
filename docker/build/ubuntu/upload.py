@@ -36,34 +36,34 @@ passive_ftp = 1
 default_host_main	=
 allowed_distributions	= (?!UNRELEASED)
 
-[tezos-serokell]
+[mavryk-mavrykdynamics]
 fqdn      = ppa.launchpad.net
 method    = ftp
-incoming  = ~serokell/ubuntu/tezos
+incoming  = ~mavrykdynamics/ubuntu/mavryk
 login     = anonymous
 
-[tezos-rc-serokell]
+[mavryk-rc-mavrykdynamics]
 fqdn        = ppa.launchpad.net
 method      = ftp
-incoming    = ~serokell/ubuntu/tezos-rc
+incoming    = ~mavrykdynamics/ubuntu/mavryk-rc
 login       = anonymous
 
-[tezos-test-serokell]
+[mavryk-test-mavrykdynamics]
 fqdn        = ppa.launchpad.net
 method      = ftp
-incoming    = ~serokell/ubuntu/tezos-test
+incoming    = ~mavrykdynamics/ubuntu/mavryk-test
 login       = anonymous
     """
         )
 
-    octez_version = os.getenv("OCTEZ_VERSION", None)
+    mavkit_version = os.getenv("MAVKIT_VERSION", None)
 
     if args.test:
-        launchpad_ppa = "tezos-test-serokell"
-    elif re.search("v.*-rc[0-9]*", octez_version):
-        launchpad_ppa = "tezos-rc-serokell"
+        launchpad_ppa = "mavryk-test-mavrykdynamics"
+    elif re.search("v.*-rc[0-9]*", mavkit_version):
+        launchpad_ppa = "mavryk-rc-mavrykdynamics"
     else:
-        launchpad_ppa = "tezos-serokell"
+        launchpad_ppa = "mavryk-mavrykdynamics"
 
     source_packages_path = args.directory
 

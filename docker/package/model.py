@@ -253,7 +253,7 @@ override_dh_systemd_start:
     return rules_contents
 
 
-class TezosBinaryPackage(AbstractPackage):
+class MavrykBinaryPackage(AbstractPackage):
     def __init__(
         self,
         name: str,
@@ -294,10 +294,10 @@ class TezosBinaryPackage(AbstractPackage):
 
         # We'll be using the pre-built binaries as source.
         if binaries_dir:
-            binary_name = self.name.replace("tezos", "octez")
+            binary_name = self.name.replace("mavryk", "mavkit")
             shutil.copy(f"{binaries_dir}/{binary_name}", binary_name)
         else:
-            shutil.copytree(f"{cwd}/../sources/tezos", "tezos")
+            shutil.copytree(f"{cwd}/../sources/mavryk-protocol", "mavryk-protocol")
             shutil.copytree(f"{cwd}/../sources/opam-repository", "opam-repository")
             shutil.copy(f"{cwd}/scripts/build-binary.sh", "build-binary.sh")
 
@@ -315,7 +315,7 @@ Priority: optional
 Maintainer: {self.meta.maintainer}
 Build-Depends: debhelper (>=9), {"dh-systemd (>= 1.5), " if ubuntu_version != "jammy" else ""} autotools-dev, {str_build_deps}
 Standards-Version: 3.9.6
-Homepage: https://gitlab.com/tezos/tezos/
+Homepage: https://gitlab.com/mavryk-network/mavryk-protocol/
 
 Package: {self.name.lower()}
 Architecture: amd64 arm64
@@ -326,7 +326,7 @@ Description: {self.desc}
             f.write(file_contents)
 
     def gen_spec_file(self, build_deps, run_deps, out):
-        binary_name = self.name.replace("tezos", "octez")
+        binary_name = self.name.replace("mavryk", "mavkit")
         build_requires = " ".join(build_deps)
         requires = " ".join(run_deps)
         str_additional_native_deps = ", ".join(
@@ -378,7 +378,7 @@ Summary: {self.desc}
 License: MIT
 BuildArch: x86_64 aarch64
 Source0: {self.name}-{version}.tar.gz
-Source1: https://gitlab.com/tezos/tezos/tree/v{self.meta.version}/
+Source1: https://gitlab.com/mavryk-network/mavryk-protocol/tree/v{self.meta.version}/
 BuildRequires: {build_requires} {systemd_deps}
 Requires: {requires}, {str_additional_native_deps}
 %description
@@ -407,7 +407,7 @@ ln -s %{{_bindir}}/{binary_name} %{{buildroot}}/%{{_bindir}}/{self.name}
             f.write(file_contents)
 
     def gen_buildfile(self, out, ubuntu_version, binaries_dir=None):
-        binary_name = self.name.replace("tezos", "octez")
+        binary_name = self.name.replace("mavryk", "mavkit")
         makefile_contents = f"""
 .PHONY: install
 
@@ -465,16 +465,16 @@ set -e
                 "-q",
                 "-O",
                 out,
-                f"https://gitlab.com/tezos/tezos/-/raw/{self.meta.license_version}/LICENSES/MIT.txt",
+                f"https://gitlab.com/mavryk-network/mavryk-protocol/-/raw/{self.meta.license_version}/LICENSES/MIT.txt",
             ],
             check=True,
         )
 
 
-class TezosSaplingParamsPackage(AbstractPackage):
+class MavrykSaplingParamsPackage(AbstractPackage):
     def __init__(self, meta: PackagesMeta, params_revision: str):
-        self.name = "tezos-sapling-params"
-        self.desc = "Sapling params required in the runtime by the Tezos binaries"
+        self.name = "mavryk-sapling-params"
+        self.desc = "Sapling params required in the runtime by the Mavryk binaries"
         self.systemd_units = []
         self.targetProto = None
         self.meta = meta
@@ -508,7 +508,7 @@ Priority: optional
 Maintainer: {self.meta.maintainer}
 Build-Depends: debhelper (>=9), {"dh-systemd (>= 1.5), " if ubuntu_version != "jammy" else ""} autotools-dev, wget
 Standards-Version: 3.9.6
-Homepage: https://gitlab.com/tezos/tezos/
+Homepage: https://gitlab.com/mavryk-network/mavryk-protocol/
 
 Package: {self.name.lower()}
 Architecture: amd64 arm64
@@ -556,9 +556,9 @@ install -m 0755 sapling-output.params %{{buildroot}}/%{{_datadir}}/zcash-params
 
 DATADIR=/usr/share/zcash-params/
 
-tezos-sapling-params:
+mavryk-sapling-params:
 
-install: tezos-sapling-params
+install: mavryk-sapling-params
 	mkdir -p $(DESTDIR)$(DATADIR)
 	cp $(CURDIR)/sapling-spend.params $(DESTDIR)$(DATADIR)
 	cp $(CURDIR)/sapling-output.params $(DESTDIR)$(DATADIR)
@@ -579,9 +579,9 @@ install: tezos-sapling-params
         shutil.copy(f"{os.path.dirname(__file__)}/../../LICENSE", out)
 
 
-class TezosBakingServicesPackage(AbstractPackage):
+class MavrykBakingServicesPackage(AbstractPackage):
 
-    # Sometimes we need to update the tezos-baking package in between
+    # Sometimes we need to update the mavryk-baking package in between
     # native releases, so we append an extra letter to the version of
     # the package.
     # This should be reset to "" whenever the native version is bumped.
@@ -600,13 +600,13 @@ class TezosBakingServicesPackage(AbstractPackage):
                     description=description,
                 ),
                 Service(
-                    exec_start="/usr/bin/tezos-baking-start",
+                    exec_start="/usr/bin/mavryk-baking-start",
                     user="tezos",
-                    state_directory="tezos",
+                    state_directory="mavryk",
                     environment_files=environment_files,
                     exec_start_pre=[
                         "+/usr/bin/setfacl -m u:tezos:rwx /run/systemd/ask-password",
-                        "/usr/bin/tezos-baking-prestart",
+                        "/usr/bin/mavryk-baking-prestart",
                     ],
                     exec_stop_post=[
                         "+/usr/bin/setfacl -x u:tezos /run/systemd/ask-password"
@@ -619,8 +619,8 @@ class TezosBakingServicesPackage(AbstractPackage):
             ),
             suffix=suffix,
             config_file=config_file,
-            startup_script="tezos-baking-start",
-            prestart_script="tezos-baking-prestart",
+            startup_script="mavryk-baking-start",
+            prestart_script="mavryk-baking-prestart",
         )
 
     def __init__(
@@ -630,8 +630,8 @@ class TezosBakingServicesPackage(AbstractPackage):
         meta: PackagesMeta,
         additional_native_deps: List[str],
     ):
-        self.name = "tezos-baking"
-        self.desc = "Package that provides systemd services that orchestrate other services from Tezos packages"
+        self.name = "mavryk-baking"
+        self.desc = "Package that provides systemd services that orchestrate other services from Mavryk packages"
         self.meta = deepcopy(meta)
         self.additional_native_deps = additional_native_deps
         self.meta.version = self.meta.version + self.letter_version
@@ -642,37 +642,37 @@ class TezosBakingServicesPackage(AbstractPackage):
                 self.target_protos.add(proto)
         self.systemd_units = []
         for network in target_networks:
-            requires = [f"tezos-node-{network}.service"]
+            requires = [f"mavryk-node-{network}.service"]
             for proto in network_protos[network]:
-                requires.append(f"tezos-baker-{proto.lower()}@{network}.service")
+                requires.append(f"mavryk-baker-{proto.lower()}@{network}.service")
             self.systemd_units.append(
                 self.__gen_baking_systemd_unit(
                     requires,
-                    f"Tezos baking instance for {network}",
+                    f"Mavryk baking instance for {network}",
                     [
-                        f"/etc/default/tezos-baking-{network}",
-                        f"/etc/default/tezos-node-{network}",
+                        f"/etc/default/mavryk-baking-{network}",
+                        f"/etc/default/mavryk-node-{network}",
                     ],
-                    "tezos-baking.conf",
+                    "mavryk-baking.conf",
                     network,
                 )
             )
-        custom_requires = ["tezos-node-custom@%i.service"]
+        custom_requires = ["mavryk-node-custom@%i.service"]
         for network in target_networks:
             for proto in network_protos[network]:
-                custom_requires.append(f"tezos-baker-{proto.lower()}@custom@%i.service")
+                custom_requires.append(f"mavryk-baker-{proto.lower()}@custom@%i.service")
         custom_unit = self.__gen_baking_systemd_unit(
             custom_requires,
-            f"Tezos baking instance for custom network",
+            f"Mavryk baking instance for custom network",
             [
-                f"/etc/default/tezos-baking-custom@%i",
-                f"/etc/default/tezos-node-custom@%i",
+                f"/etc/default/mavryk-baking-custom@%i",
+                f"/etc/default/mavryk-node-custom@%i",
             ],
-            "tezos-baking-custom.conf",
+            "mavryk-baking-custom.conf",
             "custom",
         )
         custom_unit.service_file.service.exec_stop_post.append(
-            "/usr/bin/tezos-baking-custom-poststop %i"
+            "/usr/bin/mavryk-baking-custom-poststop %i"
         )
         custom_unit.instances = []
         self.systemd_units.append(custom_unit)
@@ -695,7 +695,7 @@ Priority: optional
 Maintainer: {self.meta.maintainer}
 Build-Depends: debhelper (>=11), {"dh-systemd (>= 1.5), " if ubuntu_version != "jammy" else ""} python3-all, autotools-dev, dh-python, python3-setuptools
 Standards-Version: 3.9.6
-Homepage: https://gitlab.com/tezos/tezos/
+Homepage: https://gitlab.com/mavryk-network/mavryk-protocol/
 X-Python3-Version: >= 3.8
 
 Package: {self.name.lower()}
@@ -725,7 +725,7 @@ Summary: {self.desc}
 License: MIT
 BuildArch: x86_64 aarch64
 Source0: {self.name}-{version}.tar.gz
-Source1: https://gitlab.com/tezos/tezos/tree/v{self.meta.version}/
+Source1: https://gitlab.com/mavryk-network/mavryk-protocol/tree/v{self.meta.version}/
 BuildRequires: {systemd_deps}, python3-devel, python3-setuptools, python3-wheel, python3-tox-current-env
 Requires: {run_deps}
 %description
@@ -743,16 +743,16 @@ Maintainer: {self.meta.maintainer}
 %install
 %pyproject_install
 
-%pyproject_save_files tezos_baking
+%pyproject_save_files mavryk_baking
 
 %check
 %tox
 
 {systemd_install}
 %files
-%{{_bindir}}/tezos-setup
-%{{_bindir}}/tezos-vote
-%{{python3_sitelib}}/tezos_baking*
+%{{_bindir}}/mavryk-setup
+%{{_bindir}}/mavryk-vote
+%{{python3_sitelib}}/mavryk_baking*
 %license LICENSE
 {systemd_files}
 {systemd_macros}

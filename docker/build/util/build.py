@@ -65,7 +65,7 @@ class Arguments:
     os: str
     image: str
     cmd_args: str
-    octez_version: str
+    mavkit_version: str
     output_dir: Path
     distributions: List[str]
     docker_volumes: List[str]
@@ -81,14 +81,14 @@ def run_build(args: Arguments) -> List[str]:
 
     target_os = args.os
 
-    octez_version = args.octez_version
+    mavkit_version = args.mavkit_version
 
     # prebuild docker image before using containers
     check_call(
         f"""
     {virtualisation_engine}
-    build -t tezos-{target_os}-{image}
-    -f docker/package/Dockerfile-{target_os} --build-arg OCTEZ_VERSION={octez_version} --build-arg dist={image} .
+    build -t mavryk-{target_os}-{image}
+    -f docker/package/Dockerfile-{target_os} --build-arg MAVKIT_VERSION={mavkit_version} --build-arg dist={image} .
     """
     )
 
@@ -105,9 +105,9 @@ def run_build(args: Arguments) -> List[str]:
     {virtualisation_engine}
     create {" ".join(["-v " + v for v in docker_volumes])}
     {container_create_args}
-    --env OCTEZ_VERSION={octez_version}
+    --env MAVKIT_VERSION={mavkit_version}
     --env OPAMSOLVERTIMEOUT=900
-    -t tezos-{target_os}-{image} {cmd_args}
+    -t mavryk-{target_os}-{image} {cmd_args}
     """
     ).stdout.strip()
 
@@ -118,7 +118,7 @@ def run_build(args: Arguments) -> List[str]:
     call(
         f"""
     {virtualisation_engine} cp
-    {container_id}:/tezos-packaging/docker/{container_output_dir}/. {args.output_dir}
+    {container_id}:/mavryk-packaging/docker/{container_output_dir}/. {args.output_dir}
     """
     )
 

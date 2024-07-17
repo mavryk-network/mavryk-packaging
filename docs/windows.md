@@ -5,10 +5,10 @@
 
 # Ubuntu packages on WSL
 
-Octez binaries do not support Windows systems natively, however it's possible to
+Mavkit binaries do not support Windows systems natively, however it's possible to
 use Linux binaries with the [Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/).
 
-The simplest option with `tezos-packaging` is to use [Ubuntu on WSL](https://ubuntu.com/wsl)
+The simplest option with `mavryk-packaging` is to use [Ubuntu on WSL](https://ubuntu.com/wsl)
 by following these [step-by-step instructions](https://ubuntu.com/tutorials/install-ubuntu-on-wsl2-on-windows-11-with-gui-support#1-overview).
 
 Once this setup is complete, you can add the launchpad PPA and install packages
@@ -26,7 +26,7 @@ about connecting usb devices to WSL.
 
 ## Systemd units on WSL
 
-Ubuntu packages include services to manage `tezos` software more effectively,
+Ubuntu packages include services to manage `mavryk` software more effectively,
 which are necessary for the [baking](./baking.md) and [voting](./voting.md)
 wizards.
 These services are using `systemd` and you can read more in [the dedicated doc](./systemd.md#ubuntu-and-fedora).

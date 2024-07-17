@@ -24,22 +24,22 @@ RUN apt-get -y install cargo opam
 ENV USER dockerbuilder
 RUN useradd dockerbuilder
 
-ENV HOME /tezos-packaging
+ENV HOME /mavryk-packaging
 
-ARG OCTEZ_VERSION
-WORKDIR /tezos-packaging/docker/sources
-COPY docker/fetch_tezos_sources.py .
-RUN python3 fetch_tezos_sources.py
+ARG MAVKIT_VERSION
+WORKDIR /mavryk-packaging/docker/sources
+COPY docker/fetch_mavryk_sources.py .
+RUN python3 fetch_mavryk_sources.py
 
-WORKDIR /tezos-packaging/docker
-COPY meta.json /tezos-packaging/meta.json
-COPY protocols.json /tezos-packaging/protocols.json
-COPY docker/package/*.py /tezos-packaging/docker/package/
-COPY docker/package/defaults /tezos-packaging/docker/package/defaults
-COPY docker/package/scripts /tezos-packaging/docker/package/scripts
-COPY baking /tezos-packaging/docker/package/baking
+WORKDIR /mavryk-packaging/docker
+COPY meta.json /mavryk-packaging/meta.json
+COPY protocols.json /mavryk-packaging/protocols.json
+COPY docker/package/*.py /mavryk-packaging/docker/package/
+COPY docker/package/defaults /mavryk-packaging/docker/package/defaults
+COPY docker/package/scripts /mavryk-packaging/docker/package/scripts
+COPY baking /mavryk-packaging/docker/package/baking
 # Uncomment once patches are needed once again
-# COPY docker/package/patches /tezos-packaging/docker/package/patches
-COPY LICENSE /tezos-packaging/LICENSE
+# COPY docker/package/patches /mavryk-packaging/docker/package/patches
+COPY LICENSE /mavryk-packaging/LICENSE
 
 ENTRYPOINT ["builder", "-m", "package.package_generator"]

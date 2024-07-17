@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# SPDX-FileCopyrightText: 2022 Oxhead Alpha
+# SPDX-License-Identifier: LicenseRef-MIT-OA
+
+# Note: the 'MAVRYK_CLIENT_DIR' env var is expected and used by the client
+
+set -euo pipefail
+
+mavryk_client="/usr/bin/mavkit-client"
+
+config="$MAVRYK_CLIENT_DIR/config"
+
+mkdir -p "$MAVRYK_CLIENT_DIR"
+
+"$mavryk_client" --endpoint "$NODE_RPC_SCHEME://$NODE_RPC_ADDR" \
+                config "$([[ -f $config ]] && echo "update" || echo "init")"

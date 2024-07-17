@@ -19,12 +19,12 @@ set -euo pipefail
 retval="0"
 
 # we don't bottle meta-formulas that contain only services
-formulae=("tezos-smart-rollup-wasm-debugger" "tezos-smart-rollup-node" "tezos-dac-client" "tezos-dac-node" "tezos-dal-node" "tezos-signer" "tezos-codec" "tezos-client" "tezos-admin-client" "tezos-node" "tezos-accuser-PsParisC" "tezos-baker-PsParisC" "tezos-accuser-PtParisB" "tezos-baker-PtParisB")
+formulae=("mavryk-smart-rollup-wasm-debugger" "mavryk-smart-rollup-node" "mavryk-dac-client" "mavryk-dac-node" "mavryk-dal-node" "mavryk-signer" "mavryk-codec" "mavryk-client" "mavryk-admin-client" "mavryk-node" "mavryk-accuser-PtBoreas" "mavryk-baker-PtBoreas")
 
-# tezos-sapling-params is used as a dependency for some of the formulas
+# mavryk-sapling-params is used as a dependency for some of the formulas
 # so we handle it separately.
 # We don't build the bottle for it because it is never updated over time.
-brew install --formula ./Formula/tezos-sapling-params.rb
+brew install --formula ./Formula/mavryk-sapling-params.rb
 
 for f in "${formulae[@]}"; do
   # check if the formula doesn't already have a bottle in its respective release
@@ -46,6 +46,6 @@ for f in "${formulae[@]}"; do
   fi
 done
 
-brew uninstall ./Formula/tezos-sapling-params.rb
+brew uninstall ./Formula/mavryk-sapling-params.rb
 
 exit "$retval"

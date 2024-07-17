@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: LicenseRef-MIT-OA
 
 # This script takes the new tag as its argument.
-# Run it from the base directory (tezos-packaging).
+# Run it from the base directory (mavryk-packaging).
 
 if [[ -d ./Formula ]]
 then
@@ -11,7 +11,7 @@ then
     if [[ $1 =~ $regex ]]; then
         tag="${BASH_REMATCH[0]}"
         version="${BASH_REMATCH[1]}"
-        find ./Formula -type f \( -name 'tezos-*.rb' ! -name 'tezos-sapling-params.rb' \) \
+        find ./Formula -type f \( -name 'mavryk-*.rb' ! -name 'mavryk-sapling-params.rb' \) \
             -exec sed -i "s/version \"v.*\"/version \"$tag\"/g" {} \; \
             -exec sed -i "s/:tag => \".*\"/:tag => \"$version\"/g" {} \; \
             -exec sed -i "/catalina/d" {} \; \
@@ -22,5 +22,5 @@ then
         echo "The argument does not look like a tag, which should have a form of 'v*-[0-9]*'"
     fi
 else
-    echo "Please run this script from the base directory (tezos-packaging)."
+    echo "Please run this script from the base directory (mavryk-packaging)."
 fi

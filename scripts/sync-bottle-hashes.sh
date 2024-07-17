@@ -12,8 +12,8 @@ if [ -z "$1" ] || [ -z "$2" ]; then
     exit 1
 fi
 
-git config user.name "serokell-bot" # necessary for pushing
-git config user.email "tezos-packaging@serokell.io"
+git config user.name "MavrykCowbot" # necessary for pushing
+git config user.email "info@mavryk.io"
 git fetch --all
 
 branch_name="auto/update-brew-formulae-$1"
@@ -34,7 +34,7 @@ while : ; do
     ! git push || break
 done
 
-pr_body="Problem: we have built brew bottles for the new Octez release, but their hashes
+pr_body="Problem: we have built brew bottles for the new Mavkit release, but their hashes
 aren't in the formulae yet.
 
 Solution: added the hashes.

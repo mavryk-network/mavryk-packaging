@@ -36,7 +36,7 @@ def build_ubuntu(args=None) -> List[str]:
     if args.binaries_dir:
         binaries_dir_name = os.path.basename(args.binaries_dir)
         docker_volumes.append(
-            f"{args.binaries_dir}:/tezos-packaging/docker/{binaries_dir_name}"
+            f"{args.binaries_dir}:/mavryk-packaging/docker/{binaries_dir_name}"
         )
     else:
         binaries_dir_name = None
@@ -44,7 +44,7 @@ def build_ubuntu(args=None) -> List[str]:
     if args.sources_dir:
         sources_dir_name = os.path.basename(args.sources_dir)
         docker_volumes.append(
-            f"{args.sources_dir}:/tezos-packaging/docker/{sources_dir_name}"
+            f"{args.sources_dir}:/mavryk-packaging/docker/{sources_dir_name}"
         )
     else:
         sources_dir_name = None
@@ -60,10 +60,10 @@ def build_ubuntu(args=None) -> List[str]:
     else:
         distributions = ubuntu_versions
 
-    octez_version = os.getenv("OCTEZ_VERSION", None)
+    mavkit_version = os.getenv("MAVKIT_VERSION", None)
 
-    if not octez_version:
-        raise Exception("Environment variable OCTEZ_VERSION is not set.")
+    if not mavkit_version:
+        raise Exception("Environment variable MAVKIT_VERSION is not set.")
 
     if args.sources_dir and args.launchpad_sources:
         raise Exception(
@@ -77,7 +77,7 @@ def build_ubuntu(args=None) -> List[str]:
     packages_to_build = get_packages_to_build(args.packages)
 
     if not args.build_sapling_package:
-        packages_to_build.pop("tezos-sapling-params", None)
+        packages_to_build.pop("mavryk-sapling-params", None)
 
     output_dir = args.output_dir
 
@@ -91,7 +91,7 @@ def build_ubuntu(args=None) -> List[str]:
             Arguments(
                 os=target_os,
                 image=image,
-                octez_version=octez_version,
+                mavkit_version=mavkit_version,
                 output_dir=output_dir,
                 distributions=distros,
                 docker_volumes=docker_volumes,
@@ -117,7 +117,7 @@ def build_ubuntu(args=None) -> List[str]:
         if sources_dir_name is None:
             sources_dir_name = "origs"
             docker_volumes.append(
-                f"{args.output_dir}:/tezos-packaging/docker/{sources_dir_name}/"
+                f"{args.output_dir}:/mavryk-packaging/docker/{sources_dir_name}/"
             )
 
     return list(map(lambda x: os.path.join(args.output_dir, x), artifacts))

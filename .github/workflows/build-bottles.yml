@@ -17,7 +17,7 @@ jobs:
       matrix:
         os: [ { id: macos-12, name: "monterey" } ]
         # we don't bottle meta-formulas that contain only services
-        formula: [tezos-smart-rollup-wasm-debugger, tezos-smart-rollup-node, tezos-dac-client, tezos-dac-node, tezos-dal-node, tezos-signer, tezos-codec, tezos-client, tezos-admin-client, tezos-node, tezos-accuser-PsParisC, tezos-baker-PsParisC, tezos-accuser-PtParisB, tezos-baker-PtParisB]
+        formula: [mavryk-smart-rollup-wasm-debugger, mavryk-smart-rollup-node, mavryk-dac-client, mavryk-dac-node, mavryk-dal-node, mavryk-signer, mavryk-codec, mavryk-client, mavryk-admin-client, mavryk-node, mavryk-accuser-PtBoreas, mavryk-baker-PtBoreas]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,12 +38,12 @@ jobs:
         continue-on-error: true
         run: gh release view "${{ env.tag }}" | grep "${{ matrix.formula }}.*\.${{ matrix.os.name }}.bottle.tar.gz"
 
-        # tezos-sapling-params is used as a dependency for some of the formulas
+        # mavryk-sapling-params is used as a dependency for some of the formulas
         # so we handle it separately.
         # We don't build the bottle for it because it is never updated over time.
-      - name: Build tezos-sapling-params
+      - name: Build mavryk-sapling-params
         if: steps.check-built.outcome == 'failure'
-        run: brew install --formula ./Formula/tezos-sapling-params.rb
+        run: brew install --formula ./Formula/mavryk-sapling-params.rb
 
       - name: Build the bottle
         if: steps.check-built.outcome == 'failure'
@@ -79,10 +79,10 @@ jobs:
         run: brew install coreutils
 
        # Since using the tag that triggered the pipeline isn't very resilient, we use the version
-       # from the tezos-client formula, which hopefully will stay the most up-to-date.
+       # from the mavryk-client formula, which hopefully will stay the most up-to-date.
       - id: extract-tag
         name: Extract the right version from the formula
-        run: echo "tag=$(sed -n 's/^\s\+version \"\(.*\)\"/\1/p' ./Formula/tezos-client.rb)" >> $GITHUB_ENV
+        run: echo "tag=$(sed -n 's/^\s\+version \"\(.*\)\"/\1/p' ./Formula/mavryk-client.rb)" >> $GITHUB_ENV
 
        # It's possible we have had to rerun the building workflow, skipping some jobs and
        # erasing the previously built bottles, so we use the release to download them all

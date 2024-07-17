@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+# SPDX-FileCopyrightText: 2021 Oxhead Alpha
+# SPDX-License-Identifier: LicenseRef-MIT-OA
+
+set -euo pipefail
+
+# Note: the 'MAVRYK_NODE_DIR' env var is expected and used by the node
+node="/usr/bin/mavkit-node"
+# default location of the config file
+config_file="$MAVRYK_NODE_DIR/config.json"
+
+mkdir -p "$MAVRYK_NODE_DIR"
+# CUSTOM_NODE_CONFIG can be provided in the mavryk-node-custom.service environment
+if [[ -z "${CUSTOM_NODE_CONFIG:-}" ]]; then
+    if [[ ! -f "$config_file" ]]; then
+        echo "Configuring the node..."
+        "$node" config init \
+                --rpc-addr "$NODE_RPC_ADDR" \
+                ${NETWORK:+"--network=$NETWORK"} \
+                "$@"
+    else
+        echo "Updating the node configuration..."
+        "$node" config update \
+                --rpc-addr "$NODE_RPC_ADDR" \
+                ${NETWORK:+"--network=$NETWORK"} \
+                "$@"
+    fi
+    node_run_args=("--config-file" "$config_file")
+else
+    echo "Run using custom node config file"
+    config_file="$CUSTOM_NODE_CONFIG"
+    node_run_args=("--config-file" "$config_file" --rpc-addr "$NODE_RPC_ADDR")
+fi
+
+ if [[ -z "$CERT_PATH" || -z "$KEY_PATH" ]]; then
+     rpc_endpoint="http://$NODE_RPC_ADDR"
+ else
+     rpc_endpoint="https://$NODE_RPC_ADDR"
+ fi
+
+ # Marking service as active only once the node starts responding to RPC queries
+ (while ! curl -s "$rpc_endpoint/chains/main/blocks/head" &> /dev/null; do sleep 1; done; systemd-notify --ready) &
+
+# Launching the node
+if [[ -z "$CERT_PATH" || -z "$KEY_PATH" ]]; then
+    exec "$node" run "${node_run_args[@]}"
+else
+    exec "$node" run "${node_run_args[@]}" --rpc-tls="$CERT_PATH","$KEY_PATH"
+fi

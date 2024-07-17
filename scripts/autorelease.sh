@@ -19,11 +19,11 @@ trap finish EXIT
 
 assets_dir=$TEMPDIR/assets
 
-# Build tezos-release
+# Build mavryk-release
 nix-build . -A release -o "$TEMPDIR"/"$project" \
           --arg docker-binaries ./binaries/docker --arg docker-arm-binaries ./arm-binaries/docker
 mkdir -p "$assets_dir"
-# Move archive with binaries and tezos license to assets
+# Move archive with binaries and mavryk license to assets
 shopt -s extglob
 cp -L "$TEMPDIR"/"$project"/!(*.md) "$assets_dir"
 # Iterate over assets, calculate sha256sum and sign them in order

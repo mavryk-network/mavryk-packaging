@@ -4,9 +4,9 @@
 
 set -e
 
-dpkg -i ./out/tezos-client*~focal_amd64.deb
-dpkg -i ./out/tezos-baker*~focal_amd64.deb
-dpkg -i ./out/tezos-accuser*~focal_amd64.deb
-dpkg -i ./out/tezos-node*~focal_amd64.deb
-dpkg -i ./out/tezos-signer*~focal_amd64.deb
-dpkg -i ./out/tezos-baking*~focal_amd64.deb
+dpkg -i ./out/mavryk-client*~focal_amd64.deb
+dpkg -i ./out/mavryk-baker*~focal_amd64.deb
+dpkg -i ./out/mavryk-accuser*~focal_amd64.deb
+dpkg -i ./out/mavryk-node*~focal_amd64.deb
+dpkg -i ./out/mavryk-signer*~focal_amd64.deb
+dpkg -i ./out/mavryk-baking*~focal_amd64.deb

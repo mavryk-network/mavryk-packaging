@@ -3,7 +3,7 @@
    - SPDX-License-Identifier: LicenseRef-MIT-OA
    -->
 
-# Building and packaging tezos using docker
+# Building and packaging mavryk using docker
 
 The following scripts can be used with `podman` instead of `docker`
 as a virtualisation engine. In order to use `podman` you should
@@ -15,11 +15,11 @@ set environment variable `USE_PODMAN="True"`.
 
 Static binaries building using custom alpine image.
 
-[`docker-static-build.sh`](docker-static-build.sh) will build tezos binaries
+[`docker-static-build.sh`](docker-static-build.sh) will build mavryk binaries
 image defined in [Dockerfile](build/Dockerfile). In order to build them you should specify
-`OCTEZ_VERSION` env variable and run the script:
+`MAVKIT_VERSION` env variable and run the script:
 ```
-export OCTEZ_VERSION="v17.3"
+export MAVKIT_VERSION="v17.3"
 ./docker-static-build.sh
 ```
 After that, directory will contain built static binaries.
@@ -30,10 +30,10 @@ one can build native binaries for current architecture or build `aarch64` binari
 `x86_64` machine.
 
 In order to build only specific binaries, or experimental/dev ones, you should specify
-`OCTEZ_EXECUTABLES` env variable:
+`MAVKIT_EXECUTABLES` env variable:
 ```
-export OCTEZ_VERSION="v17.3"
-export OCTEZ_EXECUTABLES="octez-smart-rollup-wasm-debugger octez-protocol-compiler octez-dal-node"
+export MAVKIT_VERSION="v17.3"
+export MAVKIT_EXECUTABLES="mavkit-smart-rollup-wasm-debugger mavkit-protocol-compiler mavkit-dal-node"
 ./docker-static-build.sh
 ```
 
@@ -42,13 +42,13 @@ export OCTEZ_EXECUTABLES="octez-smart-rollup-wasm-debugger octez-protocol-compil
 Docker image defined in [`Dockerfile.aarch64`](build/Dockerfile.aarch64) uses qemu for
 compilation on `aarch64`. In particular it uses `qemu-aarch64-static` binary from
 [qemu-user-static repo](https://github.com/multiarch/qemu-user-static/).
-In order to be able to compile tezos using `aarch64` emulator you'll need to run:
+In order to be able to compile mavryk using `aarch64` emulator you'll need to run:
 ```
 docker run --rm --privileged multiarch/qemu-user-static:register --reset
 ```
 This command will register qemu emulator in `binfmt_misc`.
 
-Once this is done you should run the following command to build `aarch64` static tezos binaries:
+Once this is done you should run the following command to build `aarch64` static mavryk binaries:
 ```
 ./docker-static-build.sh aarch64
 ```
@@ -59,12 +59,12 @@ It's possible to create packages (ubuntu/debian & fedora) using already
 built binaries. This means that the build step of the package will be reduced
 to copying the binaries instead of building again from scratch.
 
-Using Ubuntu/Debian and assuming all Tezos binaries are located in the `binaries` directory:
+Using Ubuntu/Debian and assuming all Mavryk binaries are located in the `binaries` directory:
 ```sh
 cd .. && ./docker/package.py --os ubuntu --type binary --binaries-dir binaries
 ```
 
-Using Fedora and assuming all Tezos binaries are located in the `binaries` directory:
+Using Fedora and assuming all Mavryk binaries are located in the `binaries` directory:
 ```sh
 cd .. && ./docker/package.py --os fedora --type binary --binaries-dir binaries
 ```
@@ -79,7 +79,7 @@ We provide a way to build both binary and source native Ubuntu packages.
 will build source or binary packages depending on the passed argument (`source` and `binary` respectively).
 This script builds packages inside docker image defined in [Dockerfile-ubuntu](package/Dockerfile-ubuntu).
 This script uses [another script](package/package_generator.py), which generates meta information for
-tezos packages based on information defined in [meta.json](../meta.json) and current tezos
+mavryk packages based on information defined in [meta.json](../meta.json) and current mavryk
 version defined in [meta.json](../meta.json) and build native ubuntu packages.
 
 To see all available options, run:
@@ -89,30 +89,30 @@ To see all available options, run:
 
 ### `.deb` packages
 
-In order to build binary `.deb` packages specify `OCTEZ_VERSION` and
+In order to build binary `.deb` packages specify `MAVKIT_VERSION` and
 run the following command:
 ```
-export OCTEZ_VERSION="v17.3"
+export MAVKIT_VERSION="v17.3"
 cd .. && ./docker/package.py --os ubuntu --type binary
 ```
 
 
 It is also possible to specify packages to build with `-p` or `--packages` option. In order to do that run the following:
 ```
-# cd .. && ./docker/package.py -os ubuntu --type binary --packages <tezos-binary-1> <tezos-binary-2>
+# cd .. && ./docker/package.py -os ubuntu --type binary --packages <mavryk-binary-1> <mavryk-binary-2>
 # Example for baker
-export OCTEZ_VERSION="v17.3"
-cd .. && ./docker/package.py --os ubuntu --type binary -p tezos-client tezos-node
+export MAVKIT_VERSION="v17.3"
+cd .. && ./docker/package.py --os ubuntu --type binary -p mavryk-client mavryk-node
 ```
 
 In order to choose specific ubuntu distribution to build for (see [support policy](../docs/support-policy.md)),
 use `-d` or `--distributions` option:
 ```
-export OCTEZ_VERSION="v17.3"
-cd .. && ./docker/package.py --os ubuntu --type binary -d focal jammy -p tezos-client tezos-node
+export MAVKIT_VERSION="v17.3"
+cd .. && ./docker/package.py --os ubuntu --type binary -d focal jammy -p mavryk-client mavryk-node
 ```
 
-The build can take some time due to the fact that we build tezos and its dependencies
+The build can take some time due to the fact that we build mavryk and its dependencies
 from scratch for each package individually.
 
 Once the build is completed the packages will be located in `../out` directory.
@@ -126,10 +126,10 @@ sudo apt install <path to deb file>
 
 In order to build source packages run the following commands:
 ```
-export OCTEZ_VERSION="v17.3"
+export MAVKIT_VERSION="v17.3"
 cd .. && ./docker/package.py --os ubuntu --type source
 # you can also build single source package
-cd .. && ./docker/package.py --os ubuntu --type source --packages tezos-client
+cd .. && ./docker/package.py --os ubuntu --type source --packages mavryk-client
 ```
 
 Once the packages build is complete `../out` directory will contain files required
@@ -145,10 +145,10 @@ the submitter info and signed.
 
 If you want to sign resulted source packages automatically, you can provide signer identity through `--gpg-sign` or `-s` option:
 ```
-export OCTEZ_VERSION="v17.3"
-cd .. && ./docker/package.py --os ubuntu --type source -d focal jammy -p tezos-client -s <signer_info>
+export MAVKIT_VERSION="v17.3"
+cd .. && ./docker/package.py --os ubuntu --type source -d focal jammy -p mavryk-client -s <signer_info>
 ```
-For example, `signer_info` can be the following: `Roman Melnikov <roman.melnikov@serokell.io>`
+For example, `signer_info` can be the following: `Tristan Allaire <tristan.allaire@alarch.fr>`
 
 If you want to do it manually, you should update `*.changes` files with the proper signer info run the following:
 ```
@@ -165,25 +165,25 @@ Sample config can be found [here](./package/.dput.cf). Put the contents of this 
 into `~/.dput.cf`. In case you already have a config, add the following piece
 to it for the further convenience:
 ```
-[tezos-serokell]
+[mavryk-mavrykdynamics]
 fqdn        = ppa.launchpad.net
 method      = ftp
-incoming    = ~serokell/ubuntu/tezos
+incoming    = ~mavrykdynamics/ubuntu/mavryk
 login       = anonymous
 
-[tezos-rc-serokell]
+[mavryk-rc-mavrykdynamics]
 fqdn        = ppa.launchpad.net
 method      = ftp
-incoming    = ~serokell/ubuntu/tezos-rc
+incoming    = ~mavrykdynamics/ubuntu/mavryk-rc
 login       = anonymous
 ```
 
 Signed files now can be submitted to Launchpad PPA. In order to do that run the following
 command for each `.changes` file:
 ```
-dput tezos-serokell ../out/<package>.changes
-# or tezos-rc-serokell in case the corresponding upstream version is release-candidate
-dput tezos-rc-serokell ../out/<package>.changes
+dput mavryk-mavrykdynamics ../out/<package>.changes
+# or mavryk-rc-mavrykdynamics in case the corresponding upstream version is release-candidate
+dput mavryk-rc-mavrykdynamics ../out/<package>.changes
 ```
 
 #### Updating release in scope of the same upstream version
@@ -191,14 +191,14 @@ dput tezos-rc-serokell ../out/<package>.changes
 In case you're uploading the same version of the package but with a different
 release number, you'll highly likely have to use the same source archive (`.orig.tar.gz` archive)
 that was used for the first release in the scope of the same version, it can be downloaded from
-the launchpad package details (e.g. https://launchpad.net/~serokell/+archive/ubuntu/tezos/+sourcefiles/tezos-client/2:7.4-0ubuntu2/tezos-client_7.4.orig.tar.gz).
+the launchpad package details (e.g. https://launchpad.net/~mavrykdynamics/+archive/ubuntu/mavryk/+sourcefiles/mavryk-client/2:7.4-0ubuntu2/mavryk-client_7.4.orig.tar.gz).
 Otherwise, Launchpad will prohibit the build of the new release.
 
 In order to build new proper source package using existing source archive run the following:
 ```
-cd .. && ./docker/package.py --os ubuntu --type source -p tezos-client --sources-dir <path to dir with source archives> -s <signer_info>
+cd .. && ./docker/package.py --os ubuntu --type source -p mavryk-client --sources-dir <path to dir with source archives> -s <signer_info>
 ```
-If the directory contains the correctly named archive (e.g. `tezos-client_15.1a.orig.tar.gz`), it will be used by the build script.
+If the directory contains the correctly named archive (e.g. `mavryk-client_15.1a.orig.tar.gz`), it will be used by the build script.
 After that, the resulting source package can be uploaded to the Launchpad using the commands
 described previously.
 
@@ -216,29 +216,29 @@ To see all available options, run:
 
 ### `.rpm` packages
 
-In order to build binary `.rpm` packages specify `OCTEZ_VERSION` and
+In order to build binary `.rpm` packages specify `MAVKIT_VERSION` and
 run the following command:
 ```
-export OCTEZ_VERSION="v17.3"
+export MAVKIT_VERSION="v17.3"
 cd .. && ./docker/package.py --os fedora --type binary
 ```
 
 It is also possible to specify packages to build with `-p` or `--packages` option. In order to do that run the following:
 ```
-# cd .. && ./docker/package.py --os fedora --type binary --packages <tezos-binary-1> <tezos-binary-2>
+# cd .. && ./docker/package.py --os fedora --type binary --packages <mavryk-binary-1> <mavryk-binary-2>
 # Example for baker
-export OCTEZ_VERSION="v17.3"
-cd .. && ./docker/package.py --os fedora --type binary -p tezos-client tezos-node
+export MAVKIT_VERSION="v17.3"
+cd .. && ./docker/package.py --os fedora --type binary -p mavryk-client mavryk-node
 ```
 
 In order to build packages for specific Fedora distribution (see [support policy](../docs/support-policy.md)),
 use `-d` or `--distributions` option:
 ```
-export OCTEZ_VERSION="v17.3"
-cd .. && ./docker/package.py --os fedora -d 38 --type binary -p tezos-baking
+export MAVKIT_VERSION="v17.3"
+cd .. && ./docker/package.py --os fedora -d 38 --type binary -p mavryk-baking
 ```
 
-The build can take some time due to the fact that we build tezos and its dependencies
+The build can take some time due to the fact that we build mavryk and its dependencies
 from scratch for each package individually.
 
 Once the build is completed the packages will be located in `../out` directory.
@@ -255,18 +255,18 @@ sudo dnf install <path to rpm file>
 
 In order to build source packages run the following commands:
 ```
-export OCTEZ_VERSION="v17.3"
+export MAVKIT_VERSION="v17.3"
 cd .. && ./docker/package.py --os fedora --type source
 # you can also build single source package
-cd .. && ./docker/package.py --os fedora --type source -p tezos-client
+cd .. && ./docker/package.py --os fedora --type source -p mavryk-client
 ```
 
 If you want to sign resulted source packages automatically, you can provide signer identity through `--gpg-sign` or `-s` option:
 ```
-export OCTEZ_VERSION="v17.3"
-cd .. && ./docker/package.py --os fedora --type source -p tezos-client -s <signer_info>
+export MAVKIT_VERSION="v17.3"
+cd .. && ./docker/package.py --os fedora --type source -p mavryk-client -s <signer_info>
 ```
-For example, `signer_info` can be the following: `Roman Melnikov <roman.melnikov@serokell.io>`
+For example, `signer_info` can be the following: `Tristan Allaire <tristan.allaire@alarch.fr>`
 
 If you want to sign source packages manually, run:
 ```
@@ -279,7 +279,7 @@ Read more about setting up `copr-cli` [here](https://developer.fedoraproject.org
 
 In order to submit source package for building run the following command:
 ```
-copr-cli build @Serokell/Tezos --nowait <path to '.src.rpm' file>
-# or @Serokell/Tezos-rc in case the corresponding upstream version is release-candidate
-copr-cli build @Serokell/Tezos-rc --nowait <path to '.src.rpm' file>
+copr-cli build @MavrykDynamics/Mavryk --nowait <path to '.src.rpm' file>
+# or @MavrykDynamics/Mavryk-rc in case the corresponding upstream version is release-candidate
+copr-cli build @MavrykDynamics/Mavryk-rc --nowait <path to '.src.rpm' file>
 ```

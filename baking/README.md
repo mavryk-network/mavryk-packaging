@@ -3,11 +3,11 @@
    - SPDX-License-Identifier: LicenseRef-MIT-OA
    -->
 
-# `tezos-baking` package
+# `mavryk-baking` package
 
 ## Building
 
 To build and install package, run:
 ```bash
-python3 -m pip install . tezos-baking
+python3 -m pip install . mavryk-baking
 ```

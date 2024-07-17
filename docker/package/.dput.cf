@@ -17,14 +17,14 @@ passive_ftp		= 1
 default_host_main	=
 allowed_distributions	= (?!UNRELEASED)
 
-[tezos-serokell]
+[mavryk-mavrykdynamics]
 fqdn			= ppa.launchpad.net
 method			= ftp
-incoming		= ~serokell/ubuntu/tezos
+incoming		= ~mavrykdynamics/ubuntu/mavryk
 login			= anonymous
 
-[tezos-rc-serokell]
+[mavryk-rc-mavrykdynamics]
 fqdn			= ppa.launchpad.net
 method			= ftp
-incoming		= ~serokell/ubuntu/tezos-rc
+incoming		= ~mavrykdynamics/ubuntu/mavryk-rc
 login			= anonymous

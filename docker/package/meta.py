@@ -29,7 +29,7 @@ meta_json_contents = json.load(
     open(f"{os.path.dirname(__file__)}/../../meta.json", "r")
 )
 
-tag = os.environ.get("OCTEZ_VERSION", meta_json_contents["tezos_ref"])
+tag = os.environ.get("MAVKIT_VERSION", meta_json_contents["mavryk_ref"])
 for i, c in enumerate(tag):
     if c.isdigit():
         digit_index = i
@@ -42,5 +42,5 @@ packages_meta = PackagesMeta(
     ubuntu_epoch=2,
     fedora_epoch=1,
     maintainer=meta_json_contents["maintainer"],
-    license_version=os.getenv("TEZOS_LICENSE_VERSION", tag),
+    license_version=os.getenv("MAVRYK_LICENSE_VERSION", tag),
 )

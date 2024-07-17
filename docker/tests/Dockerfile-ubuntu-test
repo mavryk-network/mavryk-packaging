@@ -4,16 +4,16 @@
 ARG dist
 FROM ubuntu:${dist}
 
-WORKDIR /tezos-packaging/docker
+WORKDIR /mavryk-packaging/docker
 
 RUN apt update -y
 RUN apt install -y python3-all python3-setuptools software-properties-common
 
 ARG repo
-RUN add-apt-repository -yu ppa:serokell/${repo}
+RUN add-apt-repository -yu ppa:mavrykdynamics/${repo}
 
 ENV IS_RELEASED=${repo}
 
-COPY docker/tests/test-ubuntu-binaries.py /tezos-packaging/docker/tests/test-ubuntu-binaries.py
-COPY docker/tests/binaries.json /tezos-packaging/binaries.json
-CMD [ "python3", "/tezos-packaging/docker/tests/test-ubuntu-binaries.py"]
+COPY docker/tests/test-ubuntu-binaries.py /mavryk-packaging/docker/tests/test-ubuntu-binaries.py
+COPY docker/tests/binaries.json /mavryk-packaging/binaries.json
+CMD [ "python3", "/mavryk-packaging/docker/tests/test-ubuntu-binaries.py"]

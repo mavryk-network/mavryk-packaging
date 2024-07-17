@@ -1,11 +1,11 @@
 ## Description
 
-This PR introduces a new <!-- insert new version here --> release in tezos-packaging.
+This PR introduces a new <!-- insert new version here --> release in mavryk-packaging.
 
 <!-- Depending on the type of the release some of the points below can be omitted.
 
 E.g. in case we introduce a new changes to our native packages, it's not necessary to bump
-used Tezos sources, create a new release in this repository and update brew formulas.
+used Mavryk sources, create a new release in this repository and update brew formulas.
 -->
 
 <!-- List issues which are going to be resolved in the new packages from this
@@ -19,12 +19,12 @@ Follows #
 
 ### Changes related to the creation of a release (conditional)
 
-- [ ] I updated release number in [meta.json](/serokell/tezos-packaging/tree/master/meta.json).
-- [ ] If the native release version was updated, I reset the `letter_version` in [model.py](/serokell/tezos-packaging/tree/master/docker/package/model.py).
+- [ ] I updated release number in [meta.json](/mavryk-network/mavryk-packaging/tree/master/meta.json).
+- [ ] If the native release version was updated, I reset the `letter_version` in [model.py](/mavryk-network/mavryk-packaging/tree/master/docker/package/model.py).
 
-#### In case the new Tezos release provides a new protocol and corresponding testnet
+#### In case the new Mavryk release provides a new protocol and corresponding testnet
 
-- [ ] I supported new protocol in [protocols.json](/serokell/tezos-packaging/tree/master/protocols.json).
+- [ ] I supported new protocol in [protocols.json](/mavryk-network/mavryk-packaging/tree/master/protocols.json).
 - [ ] I supported new protocol and testnet in native packaging.
 - [ ] I supported new protocol and testnet in brew formulas.
 - [ ] I added tests for the new protocol and testnet.
@@ -41,5 +41,5 @@ and checking unfinished points in the merged release PR using this template.
 
 #### Update documentation
 
-- [ ] I updated [README.md](/serokell/tezos-packaging/tree/master/README.md).
-- [ ] I updated [baking doc](/serokell/tezos-packaging/tree/master/docs/baking.md).
+- [ ] I updated [README.md](/mavryk-network/mavryk-packaging/tree/master/README.md).
+- [ ] I updated [baking doc](/mavryk-network/mavryk-packaging/tree/master/docs/baking.md).

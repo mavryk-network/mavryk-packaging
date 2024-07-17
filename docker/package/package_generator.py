@@ -9,7 +9,7 @@ import urllib.request
 from .fedora import build_fedora_package
 from .ubuntu import build_ubuntu_package
 from .packages import packages as all_packages
-from .model import TezosBinaryPackage
+from .model import MavrykBinaryPackage
 
 # fixed output dir in container
 output_dir = "out"
@@ -143,7 +143,7 @@ def build_fedora(args):
     for package in packages:
         run_deps = (
             get_fedora_run_deps(binaries_dir)
-            if isinstance(package, TezosBinaryPackage)
+            if isinstance(package, MavrykBinaryPackage)
             else []
         )
         build_fedora_package(
@@ -206,7 +206,7 @@ def build_ubuntu(args):
                     )
                 elif getattr(package, "letter_version", None) is None:
                     # We throw an error if the source is missing, unless the package is
-                    # tezos-baking, for which we don't need new sources.
+                    # mavryk-baking, for which we don't need new sources.
                     errors.append(
                         f"ERROR: supplied source dir does not contain source archive for {package.name}"
                     )
@@ -215,13 +215,13 @@ def build_ubuntu(args):
                 if getattr(package, "letter_version", None) is None:
                     version = package.meta.version
                     repo = (
-                        "tezos-rc" if "rc" in version or "beta" in version else "tezos"
+                        "mavryk-rc" if "rc" in version or "beta" in version else "mavryk"
                     )
                     name = package.name.lower()
                     # distributions list is always unempty at this point
                     # and sources archive is the same for all distributions
                     dist = distributions[0]
-                    url = f"https://launchpad.net/~serokell/+archive/ubuntu/{repo}/+sourcefiles/{name}/2:{version}-0ubuntu1~{dist}/{name}_{version}.orig.tar.gz"
+                    url = f"https://launchpad.net/~mavrykdynamics/+archive/ubuntu/{repo}/+sourcefiles/{name}/2:{version}-0ubuntu1~{dist}/{name}_{version}.orig.tar.gz"
                     source_archive = f"{name}_{package.meta.version}.orig.tar.gz"
                     try:
                         urllib.request.urlretrieve(
@@ -247,7 +247,7 @@ def build_ubuntu(args):
     for package in packages:
         run_deps = (
             get_ubuntu_run_deps(binaries_dir)
-            if isinstance(package, TezosBinaryPackage)
+            if isinstance(package, MavrykBinaryPackage)
             else []
         )
         common_deps = build_deps + run_deps

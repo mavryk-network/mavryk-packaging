@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from typing import List
 
-# There are more possible fields, but only these are used by tezos services
+# There are more possible fields, but only these are used by mavryk services
 @dataclass
 class Service:
     exec_start: str
