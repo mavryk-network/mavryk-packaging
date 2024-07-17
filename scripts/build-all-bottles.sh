@@ -46,6 +46,6 @@ for f in "${formulae[@]}"; do
   fi
 done
 
-brew uninstall ./Formula/mavryk-sapling-params.rb
+brew uninstall mavryk-sapling-params.rb
 
 exit "$retval"
