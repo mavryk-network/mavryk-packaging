@@ -36,7 +36,7 @@ in {
           postInstall =
             drv.postInstall + (let
               rust-types-h = pkgs.fetchurl {
-                url = "https://gitlab.com/mavryk-network/mavryk-protocol-rust-libs/-/raw/v1.4/librustzcash/include/rust/types.h";
+                url = "https://gitlab.com/tezos/tezos-rust-libs/-/raw/v1.4/librustzcash/include/rust/types.h";
                 sha256 = "sha256-Q2lEV7JfPpFwfS/fcV7HDbBUSIGovasr7/bcANRuMZA=";
               };
             in ''
