@@ -26,8 +26,8 @@ class MavrykCodec < Formula
 
   bottle do
     root_url "https://github.com/mavryk-network/mavryk-packaging/releases/download/#{MavrykCodec.version}/"
+    sha256 cellar: :any, arm64_sonoma: "69789ec51c494f878bb4051dcc74d0d5eb2c8f50adb4a62209b98c013d574d72"
     sha256 cellar: :any, monterey: "3323a7f425b05a83ec34e96cea95cfb1f68d21d23dd3d9dbb6878b72dbacc718"
-    sha256 cellar: :any, arm64_sonoma: "07b240fa18167f8dc41036ba84913c64549e98e984b65dc2a082e5caf09449aa"
   end
 
   def make_deps
