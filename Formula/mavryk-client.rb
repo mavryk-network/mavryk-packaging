@@ -27,7 +27,7 @@ class MavrykClient < Formula
   bottle do
     root_url "https://github.com/mavryk-network/mavryk-packaging/releases/download/#{MavrykClient.version}/"
     sha256 cellar: :any, monterey: "369247c4fb2a2458f56354023027e670d11cfb5b848486781c0e590242d86a83"
-    sha256 cellar: :any, arm64_monterey: "a3201a98ab7cd523502f02efba1593fbefbf0c7b9af7744fbb4c1865716ab895"
+    sha256 cellar: :any, arm64_sonoma: "a3201a98ab7cd523502f02efba1593fbefbf0c7b9af7744fbb4c1865716ab895"
   end
 
   def make_deps

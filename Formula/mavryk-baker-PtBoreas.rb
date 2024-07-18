@@ -27,7 +27,7 @@ class MavrykBakerPtboreas < Formula
   bottle do
     root_url "https://github.com/mavryk-network/mavryk-packaging/releases/download/#{MavrykBakerPtboreas.version}/"
     sha256 cellar: :any, monterey: "88983b11846d56d8087d600905b568511215a0653beaa2769adebe5aa79ad894"
-    sha256 cellar: :any, arm64_monterey: "26c3728058c9ad6a020b75056ce96f72f9bda99150a7e2b3ff615a0efe8b915d"
+    sha256 cellar: :any, arm64_sonoma: "26c3728058c9ad6a020b75056ce96f72f9bda99150a7e2b3ff615a0efe8b915d"
   end
 
   def make_deps
