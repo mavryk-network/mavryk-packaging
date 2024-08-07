@@ -9,9 +9,9 @@ class MavrykDalNode < Formula
   end
   homepage "https://gitlab.com/mavryk-network/mavryk-protocol"
 
-  url "https://gitlab.com/mavryk-network/mavryk-protocol.git", :tag => "mavkit-v20.1", :shallow => false
+  url "https://gitlab.com/mavryk-network/mavryk-protocol.git", :tag => "v20.2-rc1-mavryk", :shallow => false
 
-  version "v20.1-rc1"
+  version "v20.2-rc1"
 
   build_dependencies = %w[pkg-config coreutils autoconf rsync wget rustup-init cmake opam]
   build_dependencies.each do |dependency|
@@ -26,8 +26,8 @@ class MavrykDalNode < Formula
 
   bottle do
     root_url "https://github.com/mavryk-network/mavryk-packaging/releases/download/#{MavrykDalNode.version}/"
+    sha256 cellar: :any, arm64_sonoma: "c4916b1430d7c512a22eaad976a31313f399e79466342faaf0e3b3438f115441"
     sha256 cellar: :any, monterey: "07d1ea35af52627449bfa7f7f1ccf49bd0bbbe7e90e01c4dc24af40588100196"
-    sha256 cellar: :any, arm64_monterey: "770f533ac621f03552efc9a729b37629993e37d68622d41676c394994b79b43c"
   end
 
   def make_deps

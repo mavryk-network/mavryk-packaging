@@ -9,9 +9,9 @@ class MavrykDacClient < Formula
   end
   homepage "https://gitlab.com/mavryk-network/mavryk-protocol"
 
-  url "https://gitlab.com/mavryk-network/mavryk-protocol.git", :tag => "mavkit-v20.1", :shallow => false
+  url "https://gitlab.com/mavryk-network/mavryk-protocol.git", :tag => "v20.2-rc1-mavryk", :shallow => false
 
-  version "v20.1-rc1"
+  version "v20.2-rc1"
 
   build_dependencies = %w[pkg-config coreutils autoconf rsync wget rustup-init cmake opam]
   build_dependencies.each do |dependency|
@@ -26,8 +26,8 @@ class MavrykDacClient < Formula
 
   bottle do
     root_url "https://github.com/mavryk-network/mavryk-packaging/releases/download/#{MavrykDacClient.version}/"
+    sha256 cellar: :any, arm64_sonoma: "f0892805dc31f4f55580cacc71640a670396e2fa2627a0ad1324a7a4705751a6"
     sha256 cellar: :any, monterey: "48ac0e3f066fc0dd9e9940c5aa6cbd7f0f16458ca98be774b18f5c12d1f6c6ec"
-    sha256 cellar: :any, arm64_monterey: "273099adbd8d4844e3837628281ed3efac0db982951ba4e805000e946ae78640"
   end
 
   def make_deps

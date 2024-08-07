@@ -137,7 +137,7 @@ steps:
    agents:
      queue: "arm64-darwin"
    commands:
-   - nix develop .#autorelease-macos -c ./scripts/build-all-bottles.sh "arm64_monterey"
+   - nix develop .#autorelease-macos -c ./scripts/build-all-bottles.sh "arm64_sonoma"
    artifact_paths:
      - '*.bottle.*'
    retry:

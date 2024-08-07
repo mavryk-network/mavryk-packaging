@@ -11,9 +11,9 @@ class MavrykSmartRollupNode < Formula
   end
   homepage "https://gitlab.com/mavryk-network/mavryk-protocol"
 
-  url "https://gitlab.com/mavryk-network/mavryk-protocol.git", :tag => "mavkit-v20.1", :shallow => false
+  url "https://gitlab.com/mavryk-network/mavryk-protocol.git", :tag => "v20.2-rc1-mavryk", :shallow => false
 
-  version "v20.1-rc1"
+  version "v20.2-rc1"
 
   build_dependencies = %w[pkg-config coreutils autoconf rsync wget rustup-init cmake opam]
   build_dependencies.each do |dependency|
@@ -28,8 +28,8 @@ class MavrykSmartRollupNode < Formula
 
   bottle do
     root_url "https://github.com/mavryk-network/mavryk-packaging/releases/download/#{MavrykSmartRollupNode.version}/"
+    sha256 cellar: :any, arm64_sonoma: "9aa370cead9f66be6e860b6213d2cb77b5f4ec6dfc587fc51ec246f810ee1732"
     sha256 cellar: :any, monterey: "0419e3c9d463e3d782d6f6aec028f73a14efc42c8a1e6896b2e14e15c8615c2f"
-    sha256 cellar: :any, arm64_monterey: "3174dc24fa7bab5db2bbce24dbb383398f177b12007b86c8673b5387909627ca"
   end
 
   def make_deps

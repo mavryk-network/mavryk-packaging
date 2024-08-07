@@ -10,9 +10,9 @@ class MavrykSmartRollupWasmDebugger < Formula
   end
   homepage "https://gitlab.com/mavryk-network/mavryk-protocol"
 
-  url "https://gitlab.com/mavryk-network/mavryk-protocol.git", :tag => "mavkit-v20.1", :shallow => false
+  url "https://gitlab.com/mavryk-network/mavryk-protocol.git", :tag => "v20.2-rc1-mavryk", :shallow => false
 
-  version "v20.1-rc1"
+  version "v20.2-rc1"
 
   build_dependencies = %w[pkg-config coreutils autoconf rsync wget rustup-init cmake opam]
   build_dependencies.each do |dependency|
@@ -27,8 +27,8 @@ class MavrykSmartRollupWasmDebugger < Formula
 
   bottle do
     root_url "https://github.com/mavryk-network/mavryk-packaging/releases/download/#{MavrykSmartRollupWasmDebugger.version}/"
+    sha256 cellar: :any, arm64_sonoma: "f728cf79fdc54a689713a084c2025bd02871fbf32083b1bee5032b36f1b5a202"
     sha256 cellar: :any, monterey: "279af5023ff33a9290073b7827992408d880ba56375cd413319c7037f6ad2b32"
-    sha256 cellar: :any, arm64_monterey: "3c5330dca54d0975b88abf07ef1032f864f14d87b50af8615131c12f66f5cf19"
   end
 
   def make_deps

@@ -3,7 +3,7 @@
 
 class MavrykSignerTcp < Formula
   url "file:///dev/null"
-  version "v20.1-rc1"
+  version "v20.2-rc1"
 
   depends_on "mavryk-signer"
 
