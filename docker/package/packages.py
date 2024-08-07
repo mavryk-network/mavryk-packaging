@@ -126,8 +126,8 @@ signer_units = [
 ]
 
 postinst_steps_common = """
-if [ -z $(getent passwd mavryk) ]; then
-    useradd -r -s /bin/false -m -d /var/lib/mavryk mavryk
+if [ -z $(getent passwd tezos) ]; then
+    useradd -r -s /bin/false -m -d /var/lib/mavryk tezos
     chmod 0755 /var/lib/mavryk
 fi
 """

@@ -122,7 +122,7 @@ Download the snapshot for the desired network. We recommend to use rolling snaps
 the smallest and the fastest mode that is sufficient for baking (you can read more about other
 `mavryk-node` history modes [here](https://protocol.mavryk.org/user/history_modes.html#history-modes)).
 
-All commands within the service are run under the `mavryk` user.
+All commands within the service are run under the `tezos` user.
 
 The `mavryk-node` package provides `mavryk-node-<network>` aliases that are equivalent to
 running `mavryk-node` with [the service options](./configuration.md).
@@ -224,7 +224,7 @@ Once services have started, you can check their logs via `journalctl`:
 ```
 journalctl -f _UID=$(id tezos -u)
 ```
-This command will show logs for all services that are using the `mavryk` user.
+This command will show logs for all services that are using the `tezos` user.
 
 You'll see the following messages in the logs in case everything has started
 successfully:

@@ -419,7 +419,7 @@ class Setup(Setup):
             print_and_log("The Mavryk node data directory does not exist.")
             print_and_log("  Creating directory: " + node_dir)
             proc_call("sudo mkdir " + node_dir)
-            proc_call("sudo chown mavryk:mavryk " + node_dir)
+            proc_call("sudo chown tezos:tezos " + node_dir)
 
         # Content expected in a configured and clean node data dir
         node_dir_config = set(["config.json", "version.json"])
