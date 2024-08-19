@@ -19,7 +19,7 @@ from collections import ChainMap
 networks = {
     "mainnet": "mainnet",
     "basenet": "basenet",
-    "boreasnet": "https://testnets.mavryk.network/boreasnet",
+    "boreasnet": "https://testnets.mavryk.network/basenet",
 }
 networks_protos = {
     "mainnet": ["PtBoreas"],
