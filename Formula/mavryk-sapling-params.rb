@@ -4,7 +4,7 @@
 class MavrykSaplingParams < Formula
   homepage "https://github.com/mavryk-network/mavryk-packaging"
   
-  url "https://gitlab.com/tezos/opam-repository.git", :tag => "v9.4", :shallow => false
+  url "https://gitlab.com/mavryk-network/opam-repository.git", :tag => "v9.4", :shallow => false
 
   version "v20.2-rc1"
 

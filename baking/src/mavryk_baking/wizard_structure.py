@@ -43,7 +43,7 @@ def get_data_dir(network):
 def get_key_address(mavryk_client_options, key_alias):
     logging.info("Getting the secret key address")
     address = get_proc_output(
-        f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
+        f"sudo -u mavryk {suppress_warning_text} mavkit-client {mavryk_client_options} "
         f"show address {key_alias} --show-secret"
     )
     if address.returncode == 0:
@@ -68,7 +68,7 @@ def wait_for_ledger_app(ledger_app, client_dir):
     try:
         while re.search(f"Found a Mavryk {ledger_app}".encode(), output) is None:
             output = get_proc_output(
-                f"sudo -u tezos {suppress_warning_text} mavkit-client --base-dir {client_dir} list connected ledgers"
+                f"sudo -u mavryk {suppress_warning_text} mavkit-client --base-dir {client_dir} list connected ledgers"
             ).stdout
             proc_call("sleep 1")
     except KeyboardInterrupt:
@@ -205,7 +205,7 @@ class Setup:
         self.config["mavryk_client_options"] = self.get_mavryk_client_options()
         logging.info("Updating mavkit-node config")
         proc_call(
-            f"sudo -u tezos {suppress_warning_text} mavkit-client "
+            f"sudo -u mavryk {suppress_warning_text} mavkit-client "
             f"{self.config['mavryk_client_options']} config update"
         )
 
@@ -280,7 +280,7 @@ class Setup:
                     self.query_step(secret_key_query)
                     logging.info("Importing secret key")
                     proc_call(
-                        f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
+                        f"sudo -u mavryk {suppress_warning_text} mavkit-client {mavryk_client_options} "
                         f"import secret key {baker_alias} {self.config['secret_key']} --force"
                     )
                 elif self.config["key_import_mode"] == "remote":
@@ -289,18 +289,18 @@ class Setup:
                     mavryk_client_options = self.get_mavryk_client_options()
                     logging.info("Importing remote secret key")
                     proc_call(
-                        f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
+                        f"sudo -u mavryk {suppress_warning_text} mavkit-client {mavryk_client_options} "
                         f"import secret key {baker_alias} remote:{self.config['remote_key']} --force"
                     )
                 elif self.config["key_import_mode"] == "generate-fresh-key":
                     logging.info("Generating secret key")
                     proc_call(
-                        f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
+                        f"sudo -u mavryk {suppress_warning_text} mavkit-client {mavryk_client_options} "
                         f"gen keys {baker_alias} --force"
                     )
                     print("Newly generated baker key:")
                     proc_call(
-                        f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
+                        f"sudo -u mavryk {suppress_warning_text} mavkit-client {mavryk_client_options} "
                         f"show address {baker_alias}"
                     )
                     network = self.config["network"]
@@ -314,7 +314,7 @@ class Setup:
                     try:
                         while True:
                             result = get_proc_output(
-                                f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
+                                f"sudo -u mavryk {suppress_warning_text} mavkit-client {mavryk_client_options} "
                                 f"register key {baker_alias} as delegate"
                             )
                             if result.returncode == 0:
@@ -331,7 +331,7 @@ class Setup:
                     logging.info("Importing json faucet file")
                     json_tmp_path = shutil.copy(self.config["json_filepath"], "/tmp/")
                     proc_call(
-                        f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
+                        f"sudo -u mavryk {suppress_warning_text} mavkit-client {mavryk_client_options} "
                         f"activate account {baker_alias} with {json_tmp_path} --force"
                     )
                     try:
@@ -408,7 +408,7 @@ class Setup:
                     )
                     logging.info("Importing secret key")
                     proc_call(
-                        f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
+                        f"sudo -u mavryk {suppress_warning_text} mavkit-client {mavryk_client_options} "
                         f"import secret key {baker_alias} {baker_ledger_url} --force"
                     )
 

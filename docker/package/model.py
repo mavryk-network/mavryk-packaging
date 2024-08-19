@@ -488,7 +488,7 @@ class MavrykSaplingParamsPackage(AbstractPackage):
                 "wget",
                 "-P",
                 out_dir,
-                f"https://gitlab.com/tezos/opam-repository/-/raw/{self.params_revision}/zcash-params/sapling-spend.params",
+                f"https://gitlab.com/mavryk-network/opam-repository/-/raw/{self.params_revision}/zcash-params/sapling-spend.params",
             ]
         )
         subprocess.run(
@@ -496,7 +496,7 @@ class MavrykSaplingParamsPackage(AbstractPackage):
                 "wget",
                 "-P",
                 out_dir,
-                f"https://gitlab.com/tezos/opam-repository/-/raw/{self.params_revision}/zcash-params/sapling-output.params",
+                f"https://gitlab.com/mavryk-network/opam-repository/-/raw/{self.params_revision}/zcash-params/sapling-output.params",
             ]
         )
 
@@ -601,15 +601,15 @@ class MavrykBakingServicesPackage(AbstractPackage):
                 ),
                 Service(
                     exec_start="/usr/bin/mavryk-baking-start",
-                    user="tezos",
+                    user="mavryk",
                     state_directory="mavryk",
                     environment_files=environment_files,
                     exec_start_pre=[
-                        "+/usr/bin/setfacl -m u:tezos:rwx /run/systemd/ask-password",
+                        "+/usr/bin/setfacl -m u:mavryk:rwx /run/systemd/ask-password",
                         "/usr/bin/mavryk-baking-prestart",
                     ],
                     exec_stop_post=[
-                        "+/usr/bin/setfacl -x u:tezos /run/systemd/ask-password"
+                        "+/usr/bin/setfacl -x u:mavryk /run/systemd/ask-password"
                     ],
                     remain_after_exit=True,
                     type_="oneshot",

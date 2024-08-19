@@ -44,7 +44,7 @@ signer_units = [
                 exec_start="/usr/bin/mavryk-signer-start launch socket signer "
                 + " --address ${ADDRESS} --port ${PORT} --timeout ${TIMEOUT}",
                 state_directory="mavryk",
-                user="tezos",
+                user="mavryk",
             ),
             Install(wanted_by=["multi-user.target"]),
         ),
@@ -64,7 +64,7 @@ signer_units = [
                 exec_start="/usr/bin/mavryk-signer-start launch local signer "
                 + "--socket ${SOCKET}",
                 state_directory="mavryk",
-                user="tezos",
+                user="mavryk",
             ),
             Install(wanted_by=["multi-user.target"]),
         ),
@@ -84,7 +84,7 @@ signer_units = [
                 exec_start="/usr/bin/mavryk-signer-start launch http signer "
                 + "--address ${ADDRESS} --port ${PORT}",
                 state_directory="mavryk",
-                user="tezos",
+                user="mavryk",
             ),
             Install(wanted_by=["multi-user.target"]),
         ),
@@ -109,7 +109,7 @@ signer_units = [
                 exec_start="/usr/bin/mavryk-signer-start launch https signer "
                 + "${CERT_PATH} ${KEY_PATH} --address ${ADDRESS} --port ${PORT}",
                 state_directory="mavryk",
-                user="tezos",
+                user="mavryk",
             ),
             Install(wanted_by=["multi-user.target"]),
         ),
@@ -126,8 +126,8 @@ signer_units = [
 ]
 
 postinst_steps_common = """
-if [ -z $(getent passwd tezos) ]; then
-    useradd -r -s /bin/false -m -d /var/lib/mavryk tezos
+if [ -z $(getent passwd mavryk) ]; then
+    useradd -r -s /bin/false -m -d /var/lib/mavryk mavryk
     chmod 0755 /var/lib/mavryk
 fi
 """
@@ -230,7 +230,7 @@ def mk_node_unit(
             exec_start_pre=["/usr/bin/mavryk-node-prestart"],
             timeout_start_sec="2400s",
             state_directory="mavryk",
-            user="tezos",
+            user="mavryk",
             type_="notify",
             notify_access="all",
         ),
@@ -273,7 +273,7 @@ for network, network_config in networks.items():
     node_postinst_steps += f"""
 mkdir -p /var/lib/mavryk/node-{network}
 [ ! -f /var/lib/mavryk/node-{network}/config.json ] && mavkit-node config init --data-dir /var/lib/mavryk/node-{network} --network {network_config}
-chown -R tezos:tezos /var/lib/mavryk/node-{network}
+chown -R mavryk:mavryk /var/lib/mavryk/node-{network}
 """
 
 # Add custom config service
@@ -340,7 +340,7 @@ daemon_postinst_common = (
     postinst_steps_common
     + """
 mkdir -p /var/lib/mavryk/.mavryk-client
-chown -R tezos:tezos /var/lib/mavryk/.mavryk-client
+chown -R mavryk:mavryk /var/lib/mavryk/.mavryk-client
 """
 )
 
@@ -361,12 +361,12 @@ for proto in active_protocols:
             environment_files=[f"/etc/default/mavryk-baker-{proto}"],
             environment=[f"PROTOCOL={proto}"],
             exec_start_pre=[
-                "+/usr/bin/setfacl -m u:tezos:rwx /run/systemd/ask-password"
+                "+/usr/bin/setfacl -m u:mavryk:rwx /run/systemd/ask-password"
             ],
             exec_start=baker_startup_script,
-            exec_stop_post=["+/usr/bin/setfacl -x u:tezos /run/systemd/ask-password"],
+            exec_stop_post=["+/usr/bin/setfacl -x u:mavryk /run/systemd/ask-password"],
             state_directory="mavryk",
-            user="tezos",
+            user="mavryk",
             type_="forking",
             keyring_mode="shared",
         ),
@@ -391,7 +391,7 @@ for proto in active_protocols:
             environment=[f"PROTOCOL={proto}"],
             exec_start=baker_startup_script,
             state_directory="mavryk",
-            user="tezos",
+            user="mavryk",
             restart="on-failure",
             type_="forking",
             keyring_mode="shared",
@@ -405,7 +405,7 @@ for proto in active_protocols:
             environment=[f"PROTOCOL={proto}"],
             exec_start=accuser_startup_script,
             state_directory="mavryk",
-            user="tezos",
+            user="mavryk",
         ),
         Install(wanted_by=["multi-user.target"]),
     )
@@ -425,7 +425,7 @@ for proto in active_protocols:
             environment=[f"PROTOCOL={proto}"],
             exec_start=accuser_startup_script,
             state_directory="mavryk",
-            user="tezos",
+            user="mavryk",
             restart="on-failure",
         ),
         Install(wanted_by=["multi-user.target"]),
@@ -494,7 +494,7 @@ packages.append(
     {
         "mavryk-sapling-params": MavrykSaplingParamsPackage(
             meta=packages_meta,
-            params_revision="95911b0639ff01807b8fd7b9e36d508e657d80a8",
+            params_revision="3ef5c6bed966e0e5b15ec7152bb32dbd85ff7e3b",
         )
     }
 )
@@ -521,12 +521,12 @@ def mk_rollup_node():
         Service(
             environment_files=[f"/etc/default/mavryk-smart-rollup-node"],
             exec_start_pre=[
-                "+/usr/bin/setfacl -m u:tezos:rwx /run/systemd/ask-password"
+                "+/usr/bin/setfacl -m u:mavryk:rwx /run/systemd/ask-password"
             ],
             exec_start=startup_script,
-            exec_stop_post=["+/usr/bin/setfacl -x u:tezos /run/systemd/ask-password"],
+            exec_stop_post=["+/usr/bin/setfacl -x u:mavryk /run/systemd/ask-password"],
             state_directory="mavryk",
-            user="tezos",
+            user="mavryk",
             type_="simple",
             keyring_mode="shared",
         ),

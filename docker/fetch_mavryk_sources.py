@@ -30,8 +30,8 @@ subprocess.run(
     [
         "git",
         "clone",
-        "https://gitlab.com/tezos/opam-repository.git",
-        "opam-repository-tezos",
+        "https://gitlab.com/mavryk-network/opam-repository.git",
+        "opam-repository-mavryk",
     ]
 )
 
@@ -45,13 +45,13 @@ opam_repository_tag = (
     .strip()
 )
 
-os.chdir("opam-repository-tezos")
+os.chdir("opam-repository-mavryk")
 subprocess.run(["git", "checkout", opam_repository_tag])
 subprocess.run(["rm", "-rf", ".git"])
 subprocess.run(["rm", "-r", "zcash-params"])
 subprocess.run(["scripts/create_opam_repo.sh"])
 subprocess.run(["mv", "opam-repository", ".."])
 os.chdir("..")
-subprocess.run(["rm", "-rf", "opam-repository-tezos"])
+subprocess.run(["rm", "-rf", "opam-repository-mavryk"])
 os.chdir("opam-repository")
 subprocess.run(["opam", "admin", "cache"])

@@ -34,11 +34,11 @@ def unit(service_name: str):
 @contextlib.contextmanager
 def account(alias: str):
     # Generate baker key
-    proc_call(f"sudo -u tezos mavkit-client gen keys {alias} --force")
+    proc_call(f"sudo -u mavryk mavkit-client gen keys {alias} --force")
     try:
         yield alias
     finally:
-        proc_call(f"sudo -u tezos mavkit-client forget address {alias} --force")
+        proc_call(f"sudo -u mavryk mavkit-client forget address {alias} --force")
 
 
 def retry(action, name: str, retry_count: int = 20) -> bool:
@@ -76,7 +76,7 @@ def check_active_service(service_name: str) -> bool:
 def generate_identity(network):
     if not os.path.exists(f"/var/lib/mavryk/{network}/identity.json"):
         proc_call(
-            f"sudo -u tezos mavkit-node identity generate 1 --data-dir /var/lib/mavryk/{network}"
+            f"sudo -u mavryk mavkit-node identity generate 1 --data-dir /var/lib/mavryk/{network}"
         )
 
 
@@ -115,7 +115,7 @@ def signer_service_test(service_type: str):
     with unit(f"mavryk-signer-{service_type}.service") as _:
         assert check_running_process(f"mavkit-signer")
         proc_call(
-            "sudo -u tezos mavkit-signer -d /var/lib/mavryk/signer gen keys remote --force"
+            "sudo -u mavryk mavkit-signer -d /var/lib/mavryk/signer gen keys remote --force"
         )
         remote_key = get_key_address("-d /var/lib/mavryk/signer", "remote")[1]
         proc_call(

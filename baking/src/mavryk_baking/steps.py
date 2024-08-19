@@ -169,13 +169,13 @@ def ledger_urls_info(ledgers_derivations, node_endpoint, client_dir):
     for ledger_url, derivations_paths in ledgers_derivations.items():
         for derivation_path in derivations_paths:
             output = get_proc_output(
-                f"sudo -u tezos {suppress_warning_text} mavkit-client --base-dir {client_dir} "
+                f"sudo -u mavryk {suppress_warning_text} mavkit-client --base-dir {client_dir} "
                 f"show ledger {ledger_url + derivation_path}"
             ).stdout
             addr = re.search(address_regex, output).group(0).decode()
             balance = (
                 get_proc_output(
-                    f"sudo -u tezos {suppress_warning_text} mavkit-client --base-dir {client_dir} "
+                    f"sudo -u mavryk {suppress_warning_text} mavkit-client --base-dir {client_dir} "
                     f"--endpoint {node_endpoint} get balance for {addr}"
                 )
                 .stdout.decode()

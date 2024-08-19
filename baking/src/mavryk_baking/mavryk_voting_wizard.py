@@ -54,7 +54,7 @@ Welcome, this wizard will help you vote in the Mavryk protocol amendment process
 Please note that to vote on mainnet, the minimum requirement is to have access
 to a key that has voting rights, preferably through a connected ledger device.
 
-All commands within the service are run under the 'tezos' user.
+All commands within the service are run under the 'mavryk' user.
 
 To access help and possible options for each question, type in 'help' or '?'.
 Type in 'exit' to quit.
@@ -76,7 +76,7 @@ def wait_for_ledger_app(app_name, client_dir):
     output = b""
     while re.search(search_string, output) is None:
         output = get_proc_output(
-            f"sudo -u tezos {suppress_warning_text} mavkit-client --base-dir {client_dir} list connected ledgers"
+            f"sudo -u mavryk {suppress_warning_text} mavkit-client --base-dir {client_dir} list connected ledgers"
         ).stdout
         proc_call("sleep 1")
 
@@ -234,7 +234,7 @@ class Setup(Setup):
             network_dir = "/var/lib/mavryk/client-" + self.config["network"]
 
             logging.info("Creating the network dir")
-            proc_call(f"sudo -u tezos mkdir -p {network_dir}")
+            proc_call(f"sudo -u mavryk mkdir -p {network_dir}")
 
             print("With no mavryk-baking.service running, this wizard will use")
             print(f"the default directory for this network: {network_dir}")
@@ -299,7 +299,7 @@ class Setup(Setup):
         logging.info("Filling in voting period info")
         logging.info("Getting voting period from mavkit-client")
         voting_proc = get_proc_output(
-            f"sudo -u tezos {suppress_warning_text} mavkit-client "
+            f"sudo -u mavryk {suppress_warning_text} mavkit-client "
             f"{self.config['mavryk_client_options']} show voting period"
         )
         if voting_proc.returncode == 0:
@@ -334,7 +334,7 @@ class Setup(Setup):
                 )
             )
         result = get_proc_output(
-            f"sudo -u tezos {suppress_warning_text} mavkit-client {self.config['mavryk_client_options']} "
+            f"sudo -u mavryk {suppress_warning_text} mavkit-client {self.config['mavryk_client_options']} "
             f"submit proposals for {self.config['baker_alias']} {hash_to_submit}"
         )
 
@@ -404,7 +404,7 @@ class Setup(Setup):
                 )
             )
         result = get_proc_output(
-            f"sudo -u tezos {suppress_warning_text} mavkit-client {self.config['mavryk_client_options']} "
+            f"sudo -u mavryk {suppress_warning_text} mavkit-client {self.config['mavryk_client_options']} "
             f"submit ballot for {self.config['baker_alias']} {self.config['proposal_hashes'][0]} "
             f"{self.config['ballot_outcome']}"
         )

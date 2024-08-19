@@ -7,7 +7,7 @@
 
 At first you should originate rollup with the provided alias for some implicit account:
 ```
-sudo -u tezos mavryk-client originate smart rollup <ROLLUP_ALIAS> from <IMPLICIT_ACCOUNT_ALIAS> of kind <SMART_ROLLUP_KIND> of type <ROLLUP_PARAMETER_TYPE> with kernel <KERNEL>
+sudo -u mavryk mavryk-client originate smart rollup <ROLLUP_ALIAS> from <IMPLICIT_ACCOUNT_ALIAS> of kind <SMART_ROLLUP_KIND> of type <ROLLUP_PARAMETER_TYPE> with kernel <KERNEL>
 ```
 Here:
 * `ROLLUP_ALIAS` - Name for a new smart rollup

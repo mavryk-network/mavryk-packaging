@@ -64,7 +64,7 @@ In order to run a baking instance, you'll need the following Mavryk packages:
  mavryk-client, mavryk-node, mavryk-baker-<proto>.
 If you have installed mavryk-baking, these packages are already installed.
 
-All commands within the service are run under the 'tezos' user.
+All commands within the service are run under the 'mavryk' user.
 
 To access help and possible options for each question, type in 'help' or '?'.
 Type in 'exit' to quit.
@@ -170,7 +170,7 @@ def is_full_snapshot(snapshot_file, import_mode):
         return True
     if import_mode == "file" or import_mode == "url":
         output = get_proc_output(
-            "sudo -u tezos mavkit-node snapshot info " + snapshot_file
+            "sudo -u mavryk mavkit-node snapshot info " + snapshot_file
         ).stdout
         return re.search(b"at level [0-9]+ in full", output) is not None
     return False
@@ -419,7 +419,7 @@ class Setup(Setup):
             print_and_log("The Mavryk node data directory does not exist.")
             print_and_log("  Creating directory: " + node_dir)
             proc_call("sudo mkdir " + node_dir)
-            proc_call("sudo chown tezos:tezos " + node_dir)
+            proc_call("sudo chown mavryk:mavryk " + node_dir)
 
         # Content expected in a configured and clean node data dir
         node_dir_config = set(["config.json", "version.json"])
@@ -430,7 +430,7 @@ class Setup(Setup):
             print_and_log("  Configuring directory: " + node_dir)
             network = self.config["network"]
             proc_call(
-                "sudo -u tezos mavkit-node-"
+                "sudo -u mavryk mavkit-node-"
                 + self.config["network"]
                 + " config init"
                 + " --network "
@@ -662,7 +662,7 @@ block timestamp: {timestamp} ({time_ago})
 
             logging.info("Updating history mode mavkit-node config")
             proc_call(
-                f"sudo -u tezos mavkit-node-{self.config['network']} config update "
+                f"sudo -u mavryk mavkit-node-{self.config['network']} config update "
                 f"--history-mode {self.config['history_mode']}"
             )
 
@@ -739,7 +739,7 @@ block timestamp: {timestamp} ({time_ago})
 
             logging.info("Importing snapshot with the mavkit-node")
             proc_call(
-                "sudo -u tezos mavkit-node-"
+                "sudo -u mavryk mavkit-node-"
                 + self.config["network"]
                 + " snapshot import "
                 + import_flag
@@ -799,7 +799,7 @@ block timestamp: {timestamp} ({time_ago})
 
         mavryk_client_options = self.get_mavryk_client_options()
         proc_call(
-            f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} bootstrapped"
+            f"sudo -u mavryk {suppress_warning_text} mavkit-client {mavryk_client_options} bootstrapped"
         )
 
         print()
@@ -831,7 +831,7 @@ block timestamp: {timestamp} ({time_ago})
                         )
                         logging.info("Running mavkit-client to setup ledger")
                         proc_call(
-                            f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
+                            f"sudo -u mavryk {suppress_warning_text} mavkit-client {mavryk_client_options} "
                             f"setup ledger to bake for {baker_alias} --main-hwm {self.get_current_head_level()}"
                         )
                         baker_set_up = True
@@ -921,7 +921,7 @@ block timestamp: {timestamp} ({time_ago})
                     )
 
                 get_proc_output(
-                    f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
+                    f"sudo -u mavryk {suppress_warning_text} mavkit-client {mavryk_client_options} "
                     f"stake {self.config['stake_tez']} for {baker_alias}"
                 )
 
@@ -949,7 +949,7 @@ block timestamp: {timestamp} ({time_ago})
                 )
             )
         proc_call(
-            f"sudo -u tezos {suppress_warning_text} mavkit-client {mavryk_client_options} "
+            f"sudo -u mavryk {suppress_warning_text} mavkit-client {mavryk_client_options} "
             f"register key {baker_alias} as delegate"
         )
 
@@ -1050,9 +1050,9 @@ block timestamp: {timestamp} ({time_ago})
             "Congratulations! All required Mavryk infrastructure services should now be started."
         )
         print(
-            "You can show logs for all the services using the 'tezos' user by running:"
+            "You can show logs for all the services using the 'mavryk' user by running:"
         )
-        print("journalctl -f _UID=$(id tezos -u)")
+        print("journalctl -f _UID=$(id mavryk -u)")
 
         print()
         print("To stop the baking instance, run:")

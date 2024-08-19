@@ -24,7 +24,7 @@ git clone https://gitlab.com/morley-framework/local-chain
 1) Generate a pair of keys associated with `baker` alias:
 
     ```bash
-    sudo -u tezos mavryk-client gen keys baker
+    sudo -u mavryk mavryk-client gen keys baker
     ```
 
     If you want to use your ledger device for voting, you should import its encrypted private key instead:
@@ -32,13 +32,13 @@ git clone https://gitlab.com/morley-framework/local-chain
     First, run this command:
 
     ```
-    sudo -u tezos mavryk-client list connected ledgers
+    sudo -u mavryk mavryk-client list connected ledgers
     ```
 
     This will display some instructions to import the Ledger encrypted private key. Then run
 
     ```
-    sudo -u tezos mavryk-client import secret key baker ledger://XXXXXXXXXX
+    sudo -u mavryk mavryk-client import secret key baker ledger://XXXXXXXXXX
     ```
 
     And confirm providing the public key using the prompt on the ledger device.
@@ -87,7 +87,7 @@ git clone https://gitlab.com/morley-framework/local-chain
 6) Register `baker` key as delegate once `mavryk-node` is up and running:
 
     ```bash
-    sudo -u tezos mavryk-client register key baker as delegate
+    sudo -u mavryk mavryk-client register key baker as delegate
     ```
 
 7) After that `voting.py` will start going through the voting cycle.

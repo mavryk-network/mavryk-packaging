@@ -122,14 +122,14 @@ Download the snapshot for the desired network. We recommend to use rolling snaps
 the smallest and the fastest mode that is sufficient for baking (you can read more about other
 `mavryk-node` history modes [here](https://protocol.mavryk.org/user/history_modes.html#history-modes)).
 
-All commands within the service are run under the `tezos` user.
+All commands within the service are run under the `mavryk` user.
 
 The `mavryk-node` package provides `mavryk-node-<network>` aliases that are equivalent to
 running `mavryk-node` with [the service options](./configuration.md).
 
 In order to import the snapshot, run the following command:
 ```
-sudo -u tezos mavryk-node-<network> snapshot import <path to the snapshot file>
+sudo -u mavryk mavryk-node-<network> snapshot import <path to the snapshot file>
 ```
 
 ## Setting up baker key
@@ -146,7 +146,7 @@ some additional time to completely bootstrap.
 In order to check whether the node is bootstrapped and wait in case it isn't,
 you can use `mavryk-client`:
 ```
-sudo -u tezos mavryk-client bootstrapped
+sudo -u mavryk mavryk-client bootstrapped
 ```
 
 By default `mavryk-baking-<network>.service` will use the `baker` alias for the
@@ -172,26 +172,26 @@ the key:
 Open the Mavryk Baking app on your ledger and run the following
 to import the key:
 ```
-sudo -u tezos mavryk-client import secret key baker <ledger-url>
+sudo -u mavryk mavryk-client import secret key baker <ledger-url>
 ```
 Apart from importing the key, you'll also need to set it up for baking. Open the Mavryk
 Baking app on your ledger and run the following:
 ```
-sudo -u tezos mavryk-client setup ledger to bake for baker
+sudo -u mavryk mavryk-client setup ledger to bake for baker
 ```
 
 2) You know either the unencrypted or password-encrypted secret key for your address.
 
 In order to import such a key, run:
 ```
-sudo -u tezos mavryk-client import secret key baker <secret-key>
+sudo -u mavryk mavryk-client import secret key baker <secret-key>
 ```
 
 1) Alternatively, you can generate a fresh baker key and fill it using faucet from https://teztnets.com.
 
 In order to generate a fresh key run:
 ```
-sudo -u tezos mavryk-client gen keys baker
+sudo -u mavryk mavryk-client gen keys baker
 ```
 The newly generated address will be displayed as a part of the command output.
 
@@ -203,7 +203,7 @@ Once the key is imported, you'll need to register your baker. If you imported yo
 using a ledger, open a Mavryk Wallet or Mavryk Baking app on your ledger again. In any
 case, run the following command:
 ```
-sudo -u tezos mavryk-client register key baker as delegate
+sudo -u mavryk mavryk-client register key baker as delegate
 ```
 
 Check a blockchain explorer (e.g. https://tzkt.io/ or https://tzstats.com/) to see the baker status and
@@ -222,9 +222,9 @@ This service will trigger the following services to start:
 
 Once services have started, you can check their logs via `journalctl`:
 ```
-journalctl -f _UID=$(id tezos -u)
+journalctl -f _UID=$(id mavryk -u)
 ```
-This command will show logs for all services that are using the `tezos` user.
+This command will show logs for all services that are using the `mavryk` user.
 
 You'll see the following messages in the logs in case everything has started
 successfully:
