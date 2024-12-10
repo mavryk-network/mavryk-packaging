@@ -6,7 +6,6 @@
         "mavryk-dac-node",
         "mavryk-dal-node",
         "mavryk-signer",
-        "mavryk-proxy-server",
         "mavryk-codec",
         "mavryk-client",
         "mavryk-admin-client",

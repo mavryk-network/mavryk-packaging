@@ -129,7 +129,7 @@ def test_node_mainnet_service():
 
 
 def test_baking_mainnet_service():
-    baking_service_test("mainnet")
+    baking_service_test("mainnet", ["PtBoreas"])
 
 
 def test_node_boreasnet_service():

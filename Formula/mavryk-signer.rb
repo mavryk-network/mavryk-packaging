@@ -9,9 +9,9 @@ class MavrykSigner < Formula
   end
   homepage "https://gitlab.com/mavryk-network/mavryk-protocol"
 
-  url "https://gitlab.com/mavryk-network/mavryk-protocol.git", :tag => "v20.2-rc1-mavryk", :shallow => false
+  url "https://gitlab.com/mavryk-network/mavryk-protocol.git", :tag => "mavkit-v20.2-rc3", :shallow => false
 
-  version "v20.2-rc1"
+  version "v20.2-rc3"
 
   build_dependencies = %w[pkg-config coreutils autoconf rsync wget rustup-init cmake opam]
   build_dependencies.each do |dependency|
@@ -26,8 +26,6 @@ class MavrykSigner < Formula
 
   bottle do
     root_url "https://github.com/mavryk-network/mavryk-packaging/releases/download/#{MavrykSigner.version}/"
-    sha256 cellar: :any, arm64_sonoma: "28847b6a5d1b33ea5c2ccee6517e3b23f3c3566b1652f7083249e5208ec2b571"
-    sha256 cellar: :any, monterey: "d09f93834335b4f48c022a8e40433fb3abb376a1ac50458e4efbaef261cf1e1e"
   end
 
   def make_deps

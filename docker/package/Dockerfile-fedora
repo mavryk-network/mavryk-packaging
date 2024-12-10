@@ -18,13 +18,17 @@ RUN useradd dockerbuilder
 ENV HOME /mavryk-packaging
 
 WORKDIR /mavryk-packaging/docker/sources
-ARG MAVKIT_VERSION
+COPY meta.json meta.json
 COPY docker/fetch_mavryk_sources.py .
 RUN python3 fetch_mavryk_sources.py
+
+COPY docker/create_opam_repo.sh .
+RUN ./create_opam_repo.sh
 
 WORKDIR /mavryk-packaging/docker
 COPY meta.json /mavryk-packaging/meta.json
 COPY protocols.json /mavryk-packaging/protocols.json
+COPY docker/supported_versions.json /mavryk-packaging/docker/supported_versions.json
 COPY docker/package/*.py /mavryk-packaging/docker/package/
 COPY docker/package/defaults /mavryk-packaging/docker/package/defaults
 COPY docker/package/scripts /mavryk-packaging/docker/package/scripts

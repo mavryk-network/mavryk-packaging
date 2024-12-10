@@ -19,7 +19,7 @@ Static binaries building using custom alpine image.
 image defined in [Dockerfile](build/Dockerfile). In order to build them you should specify
 `MAVKIT_VERSION` env variable and run the script:
 ```
-export MAVKIT_VERSION="v17.3"
+export MAVKIT_VERSION="v20.2"
 ./docker-static-build.sh
 ```
 After that, directory will contain built static binaries.
@@ -32,7 +32,7 @@ one can build native binaries for current architecture or build `aarch64` binari
 In order to build only specific binaries, or experimental/dev ones, you should specify
 `MAVKIT_EXECUTABLES` env variable:
 ```
-export MAVKIT_VERSION="v17.3"
+export MAVKIT_VERSION="v20.2"
 export MAVKIT_EXECUTABLES="mavkit-smart-rollup-wasm-debugger mavkit-protocol-compiler mavkit-dal-node"
 ./docker-static-build.sh
 ```
@@ -92,7 +92,7 @@ To see all available options, run:
 In order to build binary `.deb` packages specify `MAVKIT_VERSION` and
 run the following command:
 ```
-export MAVKIT_VERSION="v17.3"
+export MAVKIT_VERSION="v20.2"
 cd .. && ./docker/package.py --os ubuntu --type binary
 ```
 
@@ -101,14 +101,14 @@ It is also possible to specify packages to build with `-p` or `--packages` optio
 ```
 # cd .. && ./docker/package.py -os ubuntu --type binary --packages <mavryk-binary-1> <mavryk-binary-2>
 # Example for baker
-export MAVKIT_VERSION="v17.3"
+export MAVKIT_VERSION="v20.2"
 cd .. && ./docker/package.py --os ubuntu --type binary -p mavryk-client mavryk-node
 ```
 
 In order to choose specific ubuntu distribution to build for (see [support policy](../docs/support-policy.md)),
 use `-d` or `--distributions` option:
 ```
-export MAVKIT_VERSION="v17.3"
+export MAVKIT_VERSION="v20.2"
 cd .. && ./docker/package.py --os ubuntu --type binary -d focal jammy -p mavryk-client mavryk-node
 ```
 
@@ -126,7 +126,7 @@ sudo apt install <path to deb file>
 
 In order to build source packages run the following commands:
 ```
-export MAVKIT_VERSION="v17.3"
+export MAVKIT_VERSION="v20.2"
 cd .. && ./docker/package.py --os ubuntu --type source
 # you can also build single source package
 cd .. && ./docker/package.py --os ubuntu --type source --packages mavryk-client
@@ -145,7 +145,7 @@ the submitter info and signed.
 
 If you want to sign resulted source packages automatically, you can provide signer identity through `--gpg-sign` or `-s` option:
 ```
-export MAVKIT_VERSION="v17.3"
+export MAVKIT_VERSION="v20.2"
 cd .. && ./docker/package.py --os ubuntu --type source -d focal jammy -p mavryk-client -s <signer_info>
 ```
 For example, `signer_info` can be the following: `Tristan Allaire <tristan@mavryk.io>`
@@ -219,7 +219,7 @@ To see all available options, run:
 In order to build binary `.rpm` packages specify `MAVKIT_VERSION` and
 run the following command:
 ```
-export MAVKIT_VERSION="v17.3"
+export MAVKIT_VERSION="v20.2"
 cd .. && ./docker/package.py --os fedora --type binary
 ```
 
@@ -227,14 +227,14 @@ It is also possible to specify packages to build with `-p` or `--packages` optio
 ```
 # cd .. && ./docker/package.py --os fedora --type binary --packages <mavryk-binary-1> <mavryk-binary-2>
 # Example for baker
-export MAVKIT_VERSION="v17.3"
+export MAVKIT_VERSION="v20.2"
 cd .. && ./docker/package.py --os fedora --type binary -p mavryk-client mavryk-node
 ```
 
 In order to build packages for specific Fedora distribution (see [support policy](../docs/support-policy.md)),
 use `-d` or `--distributions` option:
 ```
-export MAVKIT_VERSION="v17.3"
+export MAVKIT_VERSION="v20.2"
 cd .. && ./docker/package.py --os fedora -d 38 --type binary -p mavryk-baking
 ```
 
@@ -255,7 +255,7 @@ sudo dnf install <path to rpm file>
 
 In order to build source packages run the following commands:
 ```
-export MAVKIT_VERSION="v17.3"
+export MAVKIT_VERSION="v20.2"
 cd .. && ./docker/package.py --os fedora --type source
 # you can also build single source package
 cd .. && ./docker/package.py --os fedora --type source -p mavryk-client
@@ -263,7 +263,7 @@ cd .. && ./docker/package.py --os fedora --type source -p mavryk-client
 
 If you want to sign resulted source packages automatically, you can provide signer identity through `--gpg-sign` or `-s` option:
 ```
-export MAVKIT_VERSION="v17.3"
+export MAVKIT_VERSION="v20.2"
 cd .. && ./docker/package.py --os fedora --type source -p mavryk-client -s <signer_info>
 ```
 For example, `signer_info` can be the following: `Tristan Allaire <tristan@mavryk.io>`

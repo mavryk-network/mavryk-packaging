@@ -3,6 +3,7 @@
 
 import os
 import sys
+import json
 import shutil
 import argparse
 import urllib.request
@@ -94,7 +95,7 @@ def get_fedora_run_deps(binaries_dir):
     ]
 
 
-def get_build_deps(binaries_dir):
+def get_build_deps(binaries_dir, extra_deps=[]):
     """
     List all the common build dependencies. Return an empty list when using prebuilt static binaries.
     """
@@ -110,13 +111,13 @@ def get_build_deps(binaries_dir):
         "wget",
         "unzip",
         "rsync",
-        "gcc",
         "cargo",
+        "gcc",
         "opam",
         "git",
         "autoconf",
         "coreutils",
-    ]
+    ] + extra_deps
 
 
 def build_fedora(args):
@@ -180,7 +181,7 @@ def build_ubuntu(args):
 
     binaries_dir = args.binaries_dir
 
-    build_deps = get_build_deps(binaries_dir)
+    build_deps = get_build_deps(binaries_dir, ["cargo-1.78"])
 
     home = os.environ["HOME"]
 
@@ -218,25 +219,34 @@ def build_ubuntu(args):
                         "mavryk-rc" if "rc" in version or "beta" in version else "mavryk"
                     )
                     name = package.name.lower()
-                    # distributions list is always unempty at this point
-                    # and sources archive is the same for all distributions
-                    dist = distributions[0]
-                    url = f"https://launchpad.net/~mavrykdynamics/+archive/ubuntu/{repo}/+sourcefiles/{name}/2:{version}-0ubuntu1~{dist}/{name}_{version}.orig.tar.gz"
-                    source_archive = f"{name}_{package.meta.version}.orig.tar.gz"
-                    try:
-                        urllib.request.urlretrieve(
-                            url,
-                            source_archive,
-                            lambda count, block_size, total_size: print(
-                                f"{package.name} source is downloading: "
-                                + str(round(count * block_size / total_size * 100, 2))
-                                + "%",
-                                end="\r",
-                            ),
-                        )
-                        print(f"{package.name} source was downloaded successfully")
-                        package.source_archive = os.path.realpath(source_archive)
-                    except (urllib.error.URLError, ValueError):
+
+                    with open("supported_versions.json", "r") as f:
+                        distributions = json.loads(f.read())["ubuntu"]
+
+                    success = False
+                    for dist in distributions:
+                        source_archive = f"{name}_{package.meta.version}.orig.tar.gz"
+                        url = f"https://launchpad.net/~mavrykdynamics/+archive/ubuntu/{repo}/+sourcefiles/{name}/2:{version}-0ubuntu1~{dist}/{name}_{version}.orig.tar.gz"
+                        try:
+                            urllib.request.urlretrieve(
+                                url,
+                                source_archive,
+                                lambda count, block_size, total_size: print(
+                                    f"{package.name} source is downloading: "
+                                    + str(
+                                        round(count * block_size / total_size * 100, 2)
+                                    )
+                                    + "%",
+                                    end="\r",
+                                ),
+                            )
+                            print(f"{package.name} source was downloaded successfully")
+                            package.source_archive = os.path.realpath(source_archive)
+                            success = True
+                            break
+                        except (urllib.error.URLError, ValueError):
+                            continue
+                    if not success:
                         errors.append(
                             f"ERROR: source archive for {package.name} is not available"
                         )

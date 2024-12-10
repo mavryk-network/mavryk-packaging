@@ -17,7 +17,7 @@ git clone https://gitlab.com/mavryk-network/mavryk-protocol.git upstream-repo
 cd upstream-repo
 latest_upstream_tag_hash="$(git rev-list --tags --max-count=1)"
 latest_upstream_tag="$(git describe --tags "$latest_upstream_tag_hash")"
-full_opam_repository_tag='' # will be set by version.sh
+opam_repository_tag='' # will be set by version.sh
 git checkout "$latest_upstream_tag"
 source scripts/version.sh
 # copying metadata from mavkit repo
@@ -43,10 +43,10 @@ if [[ "$latest_upstream_tag" != "$our_mavryk_tag" ]]; then
     echo "Updating Mavryk to $packaging_tag"
 
     ./scripts/update-input.py mavryk "$latest_upstream_tag_hash"
-    ./scripts/update-input.py opam-repository "$full_opam_repository_tag"
+    ./scripts/update-input.py opam-repository "$opam_repository_tag"
     git commit -a -m "[Chore] Bump Mavryk sources to $packaging_tag" --gpg-sign="info@mavryk.io"
 
-    ./scripts/update-brew-formulae.sh "$packaging_tag-1"
+    ./scripts/update-brew-formulae.sh "$latest_upstream_tag" "$packaging_tag-1"
     git commit -a -m "[Chore] Update brew formulae for $packaging_tag" --gpg-sign="info@mavryk.io"
 
     sed -i 's/"release": "[0-9]\+"/"release": "1"/' ./meta.json

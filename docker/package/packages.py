@@ -22,8 +22,8 @@ networks = {
     "boreasnet": "https://testnets.mavryk.network/basenet",
 }
 networks_protos = {
-    "mainnet": ["PtBoreas"],
-    "basenet": ["PtBoreas"],
+    "mainnet": ["PtAtLas"],
+    "basenet": ["PtAtLas"],
     "boreasnet": ["PtBoreas"],
 }
 
@@ -250,6 +250,9 @@ def mk_node_unit(
 node_units = []
 node_postinst_steps = postinst_steps_common
 node_additional_scripts = []
+node_postinst_steps += """
+curl -sSL https://testnets.mavryk.network/testnets.json -o /var/lib/mavryk/testnets.json
+"""
 for network, network_config in networks.items():
     config_file_append = [
         f'MAVRYK_NODE_DIR="/var/lib/mavryk/node-{network}"',
@@ -271,9 +274,15 @@ for network, network_config in networks.items():
         )
     )
     node_postinst_steps += f"""
-mkdir -p /var/lib/mavryk/node-{network}
-[ ! -f /var/lib/mavryk/node-{network}/config.json ] && mavkit-node config init --data-dir /var/lib/mavryk/node-{network} --network {network_config}
-chown -R mavryk:mavryk /var/lib/mavryk/node-{network}
+config="$(cat /var/lib/mavryk/testnets.json | jq .{network})"
+if [ "$config" != "null" ]; then
+    mkdir -p /var/lib/mavryk/node-{network}
+    [ ! -f /var/lib/mavryk/node-{network}/config.json ] && mavkit-node config init --data-dir /var/lib/mavryk/node-{network} --network {network_config}
+    chown -R mavryk:mavryk /var/lib/mavryk/node-{network}
+else
+    echo "Network {network} not found in testnets.json"
+    echo "Skipping node setup for {network}..."
+fi
 """
 
 # Add custom config service
@@ -315,6 +324,7 @@ packages.append(
             additional_native_deps=[
                 "mavryk-sapling-params",
                 "curl",
+                "jq",
                 {"ubuntu": "netbase"},
             ],
             additional_scripts=node_additional_scripts,

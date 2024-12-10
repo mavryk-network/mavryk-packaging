@@ -3,7 +3,7 @@
 
 class MavrykSignerUnix < Formula
   url "file:///dev/null"
-  version "v20.2-rc1"
+  version "v20.2-rc3"
 
   depends_on "mavryk-signer"
 

@@ -18,6 +18,7 @@ supported by Canonical.
 Currently, these are versions:
 * 20.04 LTS (Focal Fossa)
 * 22.04 LTS (Jammy Jellyfish)
+* 24.04 LTS (Noble Numbat)
 
 There are packages for `arm64` and `amd64` architectures.
 
@@ -37,18 +38,12 @@ There are packages for `arm64` and `amd64` architectures.
 We aim to provide packages for all [currently supported Fedora releases](https://docs.fedoraproject.org/en-US/releases/).
 
 Currently, these are versions:
-* Fedora 38
-* Fedora 39
+* Fedora 40
+* Fedora 41
 
 There are packages for `x86_64` and `aarch64` architectures.
 
 ## macOS brew formulae
 
 Brew formulae provided by `mavryk-packaging` aim to support all maintained macOS versions, currently:
-* macOS 12 (Monterey)
 * macOS 13 (Ventura)
-
-Unfortunately, the ability to provide pre-compiled brew bottles for formulae has
-a hard dependency on the available build infrastructure.
-Thus we currently only provide brew bottles for the following macOS versions:
-* macOS 12 (Monterey) both `x86_64` and `arm64`

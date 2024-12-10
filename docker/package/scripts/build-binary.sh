@@ -11,17 +11,26 @@ export OPAMROOT=$PWD/opamroot
 dune_filepath="$1"
 binary_name="$2"
 
-cd mavryk-protocol
-opam init local ../opam-repository --bare --disable-sandboxing
-opam switch create . --repositories=local --no-install
+opam init local ./opam-repository --bare --disable-sandboxing
+
+cd mavryk
+
+ocaml_version=''
+
+source scripts/version.sh
+
+opam switch create . --repositories=local "ocaml-base-compiler.$ocaml_version" --no-install
+
+export OPAMSWITCH="$PWD"
+opam repository remove default > /dev/null 2>&1
 
 eval "$(opam env)"
-OPAMASSUMEDEPEXTS=true opam install conf-rust conf-rust-2021
+
+OPAMASSUMEDEPEXTS=true opam install conf-rust
 
 export CFLAGS="-fPIC ${CFLAGS:-}"
-opam install opam/virtual/mavkit-deps.opam --deps-only --criteria="-notuptodate,-changed,-removed"
+OPAMASSUMEDEPEXTS=true opam install opam/virtual/mavkit-deps.opam.locked --deps-only --criteria="-notuptodate,-changed,-removed"
 
-eval "$(opam env)"
 dune build "$dune_filepath"
 cp "./_build/default/$dune_filepath" "../$binary_name"
 cd ..

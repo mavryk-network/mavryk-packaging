@@ -88,7 +88,7 @@ def run_build(args: Arguments) -> List[str]:
         f"""
     {virtualisation_engine}
     build -t mavryk-{target_os}-{image}
-    -f docker/package/Dockerfile-{target_os} --build-arg MAVKIT_VERSION={mavkit_version} --build-arg dist={image} .
+    -f docker/package/Dockerfile-{target_os} --build-arg dist={image} .
     """
     )
 

@@ -184,11 +184,11 @@ def is_non_protocol_testnet(network):
 # is no longer a named network, so we need to provide the URL
 # of the network configuration instead of the network name
 # in 'mavkit-node config init' command.
-def network_name_or_teztnets_url(network):
+def network_name_or_testnets_url(network):
     if is_non_protocol_testnet(network):
         return network
     else:
-        return f"https://teztnets.com/{network}"
+        return f"https://testnets.mavryk.network/{network}"
 
 
 # Steps
@@ -197,8 +197,7 @@ network_query = Step(
     id="network",
     prompt="Which Mavryk network would you like to use?\nCurrently supported:",
     help="The selected network will be used to set up all required services.\n"
-    "The currently supported protocol is PtBoreas (used on `boreasnet`, `basenet, and `mainnet`)\n"
-    "and PtBoreas (used on `boreasnet`, is going to be used on `basenet`, and `mainnet`).\n"
+    "The currently supported protocol is PtBoreas (used on `boreasnet`, `ghostnet`, and `mainnet`).\n"
     "Keep in mind that you must select the test network (e.g. basenet)\n"
     "if you plan on baking with a faucet JSON file.\n",
     options=networks,
@@ -434,7 +433,7 @@ class Setup(Setup):
                 + self.config["network"]
                 + " config init"
                 + " --network "
-                + network_name_or_teztnets_url(self.config["network"])
+                + network_name_or_testnets_url(self.config["network"])
                 + " --rpc-addr "
                 + self.config["node_rpc_addr"]
             )
@@ -860,81 +859,61 @@ block timestamp: {timestamp} ({time_ago})
             ).stdout.decode("utf-8")
             return json.loads(output)
 
-        def get_adaptive_issuance_launch_cycle():
-            output = get_proc_output(
-                f"curl {self.config['node_rpc_endpoint']}/chains/main/blocks/head/context/adaptive_issuance_launch_cycle"
-            ).stdout.decode("utf-8")
-            return json.loads(output)
-
-        def get_current_cycle():
-            output = get_proc_output(
-                f"curl {self.config['node_rpc_endpoint']}/chains/main/blocks/head/metadata"
-            ).stdout.decode("utf-8")
-            return json.loads(output)["level_info"]["cycle"]
-
         mavryk_client_options = self.get_mavryk_client_options()
         baker_alias = self.config["baker_alias"]
         baker_key_hash = self.config["baker_key_hash"]
 
-        adaptive_issuance_launch_cycle = get_adaptive_issuance_launch_cycle()
+        minimal_frozen_stake = get_minimal_frozen_stake()
 
-        current_cycle = get_current_cycle()
+        staked_balance = get_staked_balance(baker_key_hash)
 
-        # TODO remove this check when ParisB protocol is activated at mainnet
-        if adaptive_issuance_launch_cycle is not None and int(current_cycle) >= int(
-            adaptive_issuance_launch_cycle
-        ):
-            minimal_frozen_stake = get_minimal_frozen_stake()
+        if int(staked_balance) < int(minimal_frozen_stake):
 
-            staked_balance = get_staked_balance(baker_key_hash)
+            print()
 
-            if int(staked_balance) < int(minimal_frozen_stake):
+            self.query_step(get_stake_tez_query(staked_balance, minimal_frozen_stake))
 
-                self.query_step(
-                    get_stake_tez_query(staked_balance, minimal_frozen_stake)
+            print_and_log(f"Staking {self.config['stake_tez']}Tz...")
+
+            if self.check_ledger_use():
+                ledger_app = "Wallet"
+                print(f"Please open the Mavryk {ledger_app} app on your ledger.")
+                print(
+                    color(
+                        "Please note, that if you are using Mavryk Wallet app of version 3.0.0 or higher,\n"
+                        'you need to enable "expert mode" in the Mavryk Wallet app settings on the Ledger device.',
+                        color_yellow,
+                    )
+                )
+                print(
+                    color(
+                        f"Waiting for the Mavryk {ledger_app} to be opened...",
+                        color_green,
+                    ),
+                )
+                wait_for_ledger_app(ledger_app, self.config["client_data_dir"])
+                print(
+                    color(
+                        "Waiting for your response to the prompt on your Ledger Device...",
+                        color_green,
+                    )
                 )
 
-                print_and_log(f"Staking {self.config['stake_tez']}Tz...")
+            get_proc_output(
+                f"sudo -u mavryk {suppress_warning_text} mavkit-client {mavryk_client_options} "
+                f"stake {self.config['stake_tez']} for {baker_alias}"
+            )
 
-                if self.check_ledger_use():
-                    ledger_app = "Wallet"
-                    print(f"Please open the Mavryk {ledger_app} app on your ledger.")
-                    print(
-                        color(
-                            "Please note, that if you are using Mavryk Wallet app of version 3.0.0 or higher,\n"
-                            'you need to enable "expert mode" in the Mavryk Wallet app settings on the Ledger device.',
-                            color_yellow,
-                        )
-                    )
-                    print(
-                        color(
-                            f"Waiting for the Mavryk {ledger_app} to be opened...",
-                            color_green,
-                        ),
-                    )
-                    wait_for_ledger_app(ledger_app, self.config["client_data_dir"])
-                    print(
-                        color(
-                            "Waiting for your response to the prompt on your Ledger Device...",
-                            color_green,
-                        )
-                    )
-
-                get_proc_output(
-                    f"sudo -u mavryk {suppress_warning_text} mavkit-client {mavryk_client_options} "
-                    f"stake {self.config['stake_tez']} for {baker_alias}"
+            if self.check_ledger_use():
+                ledger_app = "Baking"
+                print(f"Please reopen the Mavryk {ledger_app} app on your ledger.")
+                print(
+                    color(
+                        f"Waiting for the Mavryk {ledger_app} to be opened...",
+                        color_green,
+                    ),
                 )
-
-                if self.check_ledger_use():
-                    ledger_app = "Baking"
-                    print(f"Please reopen the Mavryk {ledger_app} app on your ledger.")
-                    print(
-                        color(
-                            f"Waiting for the Mavryk {ledger_app} to be opened...",
-                            color_green,
-                        ),
-                    )
-                    wait_for_ledger_app(ledger_app, self.config["client_data_dir"])
+                wait_for_ledger_app(ledger_app, self.config["client_data_dir"])
 
     def register_baker(self):
         print()

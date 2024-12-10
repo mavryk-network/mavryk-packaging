@@ -7,20 +7,13 @@
 
 if [[ -d ./Formula ]]
 then
-    regex="(v.*)-[0-9]*"
-    if [[ $1 =~ $regex ]]; then
-        tag="${BASH_REMATCH[0]}"
-        version="${BASH_REMATCH[1]}"
-        find ./Formula -type f \( -name 'mavryk-*.rb' ! -name 'mavryk-sapling-params.rb' \) \
-            -exec sed -i "s/version \"v.*\"/version \"$tag\"/g" {} \; \
-            -exec sed -i "s/:tag => \".*\"/:tag => \"$version\"/g" {} \; \
-            -exec sed -i "/catalina/d" {} \; \
-            -exec sed -i "/monterey/d" {} \; \
-            -exec sed -i "/arm64_sonoma/d" {} \; \
-            -exec sed -i "/mojave/d" {} \;
-    else
-        echo "The argument does not look like a tag, which should have a form of 'v*-[0-9]*'"
-    fi
+    tag="$1"
+    version="$2"
+    find ./Formula -type f \( -name 'mavryk-*.rb' ! -name 'mavryk-sapling-params.rb' \) \
+        -exec sed -i "s/version \"v.*\"/version \"$version\"/g" {} \; \
+        -exec sed -i "s/:tag => \".*\"/:tag => \"$tag\"/g" {} \; \
+        -exec sed -i "/ventura/d" {} \; \
+        -exec sed -i "/arm64_ventura/d" {} \;
 else
     echo "Please run this script from the base directory (mavryk-packaging)."
 fi
