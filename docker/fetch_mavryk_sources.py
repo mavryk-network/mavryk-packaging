@@ -55,4 +55,14 @@ subprocess.run(["mv", "opam-repository", ".."])
 os.chdir("..")
 subprocess.run(["rm", "-rf", "opam-repository-mavryk"])
 os.chdir("opam-repository")
-subprocess.run(["opam", "admin", "cache"])
+result = subprocess.run(["opam", "admin", "cache"], capture_output=True, text=True)
+print(result.stdout)
+if result.stderr:
+    print(result.stderr)
+if result.returncode != 0:
+    print(f"WARNING: opam admin cache exited with code {result.returncode}")
+# Verify critical packages are cached
+import glob
+rust_libs_cached = glob.glob("cache/**/*tezos-rust-libs*", recursive=True)
+if not rust_libs_cached:
+    raise Exception("FATAL: tezos-rust-libs was not cached. The Launchpad build will fail.")
