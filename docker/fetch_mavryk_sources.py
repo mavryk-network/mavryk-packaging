@@ -65,25 +65,29 @@ rust_libs_url = "https://gitlab.com/tezos/tezos-rust-libs/-/archive/v1.6/tezos-r
 rust_libs_file = "/tmp/tezos-rust-libs-v1.6.zip"
 subprocess.run(["wget", "-q", "-O", rust_libs_file, rust_libs_url], check=True)
 with open(rust_libs_file, "rb") as f:
-    actual_hash = hashlib.sha512(f.read()).hexdigest()
-cache_dir = f"cache/sha512/{actual_hash[:2]}"
-os.makedirs(cache_dir, exist_ok=True)
-shutil.copy(rust_libs_file, f"{cache_dir}/{actual_hash}")
+    file_data = f.read()
+actual_sha512 = hashlib.sha512(file_data).hexdigest()
+actual_sha256 = hashlib.sha256(file_data).hexdigest()
 
-# Update the opam file to use the correct checksum
+# Place in cache under both hash schemes
+for algo, hash_val in [("sha512", actual_sha512), ("sha256", actual_sha256)]:
+    cache_dir = f"cache/{algo}/{hash_val[:2]}"
+    os.makedirs(cache_dir, exist_ok=True)
+    shutil.copy(rust_libs_file, f"{cache_dir}/{hash_val}")
+
+# Update the opam file to use the correct checksums
 import glob
 opam_files = glob.glob("packages/tezos-rust-libs/*/opam")
 for opam_file in opam_files:
     with open(opam_file, "r") as f:
         content = f.read()
-    content = re.sub(
-        r'sha512=[a-f0-9]+',
-        f'sha512={actual_hash}',
-        content
-    )
+    content = re.sub(r'sha512=[a-f0-9]+', f'sha512={actual_sha512}', content)
+    content = re.sub(r'sha256=[a-f0-9]+', f'sha256={actual_sha256}', content)
     with open(opam_file, "w") as f:
         f.write(content)
-    print(f"Updated checksum in {opam_file} to sha512={actual_hash}")
+    print(f"Updated checksums in {opam_file}")
+    print(f"  sha512={actual_sha512}")
+    print(f"  sha256={actual_sha256}")
 
 # Regenerate the repo index after modifying opam files
 subprocess.run(["opam", "admin", "index"], check=True)
