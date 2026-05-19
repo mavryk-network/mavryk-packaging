@@ -38,18 +38,19 @@ There are packages for `arm64` and `amd64` architectures.
 We aim to provide packages for all [currently supported Fedora releases](https://docs.fedoraproject.org/en-US/releases/).
 
 Currently, these are versions:
-* Fedora 40
 * Fedora 41
+* Fedora 42
+* Fedora 43
 
 There are packages for `x86_64` and `aarch64` architectures.
 
 ## macOS brew formulae
 
 Brew formulae provided by `mavryk-packaging` aim to support all maintained macOS versions, currently:
-* macOS 12 (Monterey)
-* macOS 13 (Ventura)
+* macOS 14 (Sonoma)
+* macOS 15 (Sequoia)
 
 Unfortunately, the ability to provide pre-compiled brew bottles for formulae has
 a hard dependency on the available build infrastructure.
 Thus we currently only provide brew bottles for the following macOS versions:
-* macOS 12 (Monterey) both `x86_64` and `arm64`
+* macOS 14 (Sonoma) `arm64`
