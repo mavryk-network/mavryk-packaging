@@ -1,5 +1,6 @@
 {
   "release": "1",
+  "version_suffix": "+repack2",
   "maintainer": "Mavryk Dynamics Cowbot <cowbot@mavryk.io>",
   "mavryk_ref": "mavkit-v20.4"
 }

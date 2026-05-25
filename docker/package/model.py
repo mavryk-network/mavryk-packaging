@@ -56,7 +56,7 @@ class AbstractPackage:
 
   * Publish {self.meta.version}-{self.meta.release} version of {self.name}
 
- -- {maintainer} {date}"""
+ -- {maintainer}  {date}"""
         with open(out, "w") as f:
             f.write(changelog_contents)
 

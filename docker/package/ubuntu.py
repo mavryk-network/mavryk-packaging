@@ -110,7 +110,7 @@ def build_ubuntu_package(
         pkg.gen_license("debian/copyright")
         pkg.meta.version = fixed_version
         subprocess.run(
-            "rm -f debian/*.ex debian/*.EX debian/README*", shell=True, check=True
+            "rm -rf debian/*.ex debian/*.EX debian/README*", shell=True, check=True
         )
         pkg.gen_changelog(ubuntu_version, pkg.meta.maintainer, date, "debian/changelog")
         subprocess.run(

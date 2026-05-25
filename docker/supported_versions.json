@@ -2,8 +2,7 @@
   "ubuntu": [
     "focal",
     "jammy",
-    "noble",
-    "plucky"
+    "noble"
   ],
   "fedora": [
     "42",

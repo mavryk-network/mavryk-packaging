@@ -18,9 +18,13 @@ RUN if [ "$dist" = "focal" ]; then apt-get install -y dh-systemd; fi
 
 RUN install -m 0755 /usr/bin/python3 /usr/bin/builder
 
-RUN if [ "$dist" != "noble" ]; then add-apt-repository ppa:ubuntu-mozilla-security/rust-next -y; fi
+RUN if [ "$dist" = "focal" ] || [ "$dist" = "jammy" ]; then add-apt-repository ppa:ubuntu-mozilla-security/rust-next -y; fi
 RUN apt-get update -y
-RUN apt-get -y install opam cargo cargo-1.78
+RUN if [ "$dist" = "focal" ] || [ "$dist" = "jammy" ]; then \
+      apt-get -y install opam cargo cargo-1.78; \
+    else \
+      apt-get -y install opam cargo; \
+    fi
 
 ENV USER dockerbuilder
 RUN useradd dockerbuilder

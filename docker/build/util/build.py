@@ -84,7 +84,11 @@ def run_build(args: Arguments) -> List[str]:
     mavkit_version = args.mavkit_version
     # Optional suffix to alter Debian upstream version without changing the
     # upstream Git tag used for fetching sources. Example: +repack1, +ds1.
-    version_suffix = os.getenv("MAVKIT_VERSION_SUFFIX", "")
+    # The persistent default lives in meta.json ("version_suffix"); the
+    # MAVKIT_VERSION_SUFFIX env var, when set, overrides it.
+    meta_path = Path(__file__).resolve().parents[3] / "meta.json"
+    meta_version_suffix = json.loads(meta_path.read_text()).get("version_suffix", "")
+    version_suffix = os.getenv("MAVKIT_VERSION_SUFFIX", meta_version_suffix)
     # Ensure Dockerfile fetches a real tag that exists (no +suffix)
     base_mavkit_version = mavkit_version.split("+")[0]
 
